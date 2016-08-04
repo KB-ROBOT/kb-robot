@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<title>后台管理系统</title>
+<link rel="stylesheet" href="css/bootstrap.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<link rel="stylesheet" type="text/css" href="css/font-awesome.css">
+<link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap-datetimepicker.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap-datetimepicker.min.css">
+</head>
+
+<body>
+<div class="page-container">
+	<div class="sidebar-menu toggle-others fixed">
+    	<div class="sidebar-menu-inner">
+        	<div class="header">
+            	<a href=""><img src="images/logo.png"></a>
+            </div>
+            <ul id="main-menu" class="main-menu">
+            	<li>
+                	<a href="home.html"><i class="fa fa-home"></i><span>首页</span></a>
+                </li>
+                <li>
+                	<a href="set.html"><i class="fa fa-cog"></i><span>基本设定</span></a>
+                </li>
+                <li>
+                	<a href="javascript:;" class="submenu"><i class="fa fa-link"></i><span>机器人接入</span><font class="fa fa-angle-right"></font></a>
+                    <ul>
+						<li><a href="access-wx.html">微信接入</a></li>
+                        <li><a href="access-web.html">网页接入</a></li>
+                    </ul>
+                </li> 
+                <li>
+                	<a href="javascript:;" class="submenu"><i class="fa fa-tasks"></i><span>素材管理</span><font class="fa fa-angle-right"></font></a>
+                     <ul>
+                    	<li><a href="message-text.html">文本消息</a></li>
+                        <li><a href="message-img.html">图文消息</a></li>
+                        <li><a href="message-voice.html">语音消息</a></li>
+                    </ul>
+                </Li>
+                <li>
+                	<a href="javascript:;" class="submenu"><i class="fa fa-book"></i><span>知识库管理</span><font class="fa fa-angle-down"></font></a>
+                    <ul>
+                    	<li><a href="overview-Q&A.html">问答总览</a></li>
+                        <li><a href="add-question.html">添加问题</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="work-order.html"><i class="fa fa-calendar"></i><span>工单</span></a>
+                </li>
+                <li>
+                	<a href="javascript:;" class="submenu"><i class="fa fa-cloud"></i><span>数据分析</span><font class="fa fa-angle-right"></font></a>
+                    <ul>
+                    	<li><a href="visit-data.html">访客次数统计</a></li>
+                        <li><a href="knowledge-count.html">知识库统计</a></li>
+                        <li><a href="question-count.html">问题明细统计</a></li>
+                        <li><a href="knowledge-radar.html">知识雷达</a></li>
+                        <li><a href="visit-log.html">访客日志</a></li>
+                    </ul>
+                </li>
+                <li class="active">
+                	<a href="help.html"><i class="fa fa-wrench"></i><span>帮助中心</span></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="main-content">
+    	<div class="navbar user-info-navbar">
+			<h1 class="fl">帮助中心</h1>
+            <ul class="fr user-info-menu">
+            	<li>
+                	<a href=""><i style="background:url(images/robot.png) center center no-repeat;"></i>我的机器人</a>
+                </li> 
+                <li>
+                	<a href=""><i style="background:url(images/qq.png) center center no-repeat;"></i>联系客服</a>
+                </li> 
+                <li class="dropdown">
+                	<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown"><i style="background:url(images/user.png) center center no-repeat;"></i>账户中心
+                    	<span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu"  role="menu">
+                      <li><a href=""><i class="fa fa-key"></i>修改密码</a></li>
+                      <li><a href=""><i class="fa fa-edit"></i>账户信息</a></li>
+                      <li><a href=""><i class="fa fa-exchange"></i>切换公众号</a></li>
+                      <li><a href=""><i class="fa fa-power-off"></i>退出</a></li>
+                   </ul>
+                </li> 
+            </ul>
+        </div>
+        
+        <div class="section row">
+        	<div class="panel col-sm-12">
+                <div class="panel-cont">
+                	
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<script type="text/javascript" src="js/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+<script type="text/ecmascript" src="js/jquery-ui.js"></script>
+<script type="text/ecmascript" src="js/jquery-ui.min.js"></script>
+<script type="text/ecmascript" src="js/bootstrap-datetimepicker.js"></script>
+<script type="text/ecmascript" src="js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/ecmascript" src="js/style.js"></script>
+</body>
+</html>
