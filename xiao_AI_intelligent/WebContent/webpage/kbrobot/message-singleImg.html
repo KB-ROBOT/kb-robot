@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<title>后台管理系统</title>
+<link rel="stylesheet" href="css/bootstrap.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<link rel="stylesheet" type="text/css" href="css/font-awesome.css">
+<link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap-datetimepicker.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap-datetimepicker.min.css">
+</head>
+
+<body>
+<div class="page-container">
+	<div class="sidebar-menu toggle-others fixed">
+    	<div class="sidebar-menu-inner">
+        	<div class="header">
+            	<a href="home.html"><img src="images/logo.png"></a>
+            </div>
+            <ul id="main-menu" class="main-menu">
+            	<li>
+                	<a href="home.html"><i class="fa fa-home"></i><span>首页</span></a>
+                </li>
+                <li>
+                	<a href="set.html"><i class="fa fa-cog"></i><span>基本设定</span></a>
+                </li>
+                <Li>
+                	<a href="javascript:;" class="submenu"><i class="fa fa-link"></i><span>机器人接入</span><font class="fa fa-angle-right"></font></a>
+                    <ul>
+						<li><a href="access-wx.html">微信接入</a></li>
+                        <li><a href="access-web.html">网页接入</a></li>
+                    </ul>
+                </Li> 
+                <Li class="active">
+                	<a href="javascript:;" class="submenu close_bg"><i class="fa fa-tasks"></i><span>素材管理</span><font class="fa fa-angle-down"></font></a>
+                     <ul style="display:block;">
+                    	<li><a href="message-text.html">文本消息</a></li>
+                        <li class="active"><a href="message-img.html">图文消息</a></li>
+                        <li><a href="message-voice.html">语音消息</a></li>
+                    </ul>
+                </Li>
+                <Li>
+                	<a href="javascript:;" class="submenu"><i class="fa fa-book"></i><span>知识库管理</span><font class="fa fa-angle-right"></font></a>
+                    <ul>
+                    	<li><a href="overview-Q&A.html">问答总览</a></li>
+                        <li><a href="add-question.html">添加问题</a></li>
+                    </ul>
+                </Li>
+                <li>
+                    <a href="work-order.html"><i class="fa fa-calendar"></i><span>工单</span></a>
+                </li>
+               <li>
+                	<a href="javascript:;" class="submenu"><i class="fa fa-cloud"></i><span>数据分析</span><font class="fa fa-angle-right"></font></a>
+                    <ul>
+                    	<li><a href="visit-data.html">访客次数统计</a></li>
+                        <li><a href="knowledge-count.html">知识库统计</a></li>
+                        <li><a href="question-count.html">问题明细统计</a></li>
+                        <li><a href="knowledge-radar.html">知识雷达</a></li>
+                        <li><a href="visit-log.html">访客日志</a></li>
+                    </ul>
+                </li>
+                <li>
+                	<a href="help.html"><i class="fa fa-wrench"></i><span>帮助中心</span></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="main-content">
+    	<div class="navbar user-info-navbar">
+			<h1 class="fl">素材管理</h1>
+            <ul class="fr user-info-menu">
+            	<li>
+                	<a href=""><i style="background:url(images/robot.png) center center no-repeat;"></i>我的机器人</a>
+                </li> 
+                <li>
+                	<a href=""><i style="background:url(images/qq.png) center center no-repeat;"></i>联系客服</a>
+                </li> 
+                <li class="dropdown">
+                	<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown"><i style="background:url(images/user.png) center center no-repeat;"></i>账户中心
+                    	<span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu"  role="menu">
+                      <li><a href=""><i class="fa fa-key"></i>修改密码</a></li>
+                      <li><a href=""><i class="fa fa-edit"></i>账户信息</a></li>
+                      <li><a href=""><i class="fa fa-exchange"></i>切换公众号</a></li>
+                      <li><a href=""><i class="fa fa-power-off"></i>退出</a></li>
+                   </ul>
+                </li> 
+            </ul>
+        </div>
+        
+        <div class="section row">
+        	<div class="col-sm-3"></div>
+
+        	<div class="panel col-sm-12">
+                <div class="panel-cont">
+                	<h4 class="title">添加单图文消息</h4>
+                    <form id="imgTxt">
+						<div class="col-sm-12 row-fluid"> 
+							<!--左侧开始-->
+							<div class="col-sm-3">
+								<div class="col-sm-12 thumbnail">
+									<ol style="margin-left:-35px;" class="left_list">
+                        				<li>
+											<div class="yun_position_relative">
+                                            	<div class="yun_align_new"> <img id="img1" src="images/thumb_index.png"> </div>
+                                             		<div class="yun_display_none">
+                                            			<div class="yun_position_absolute_0"> <a onclick="Location('collapse_0')"><i class="fa fa-pencil"></i></a> </div>
+                                            		</div>
+											</div>
+                                            <div class="yun_position_absolute">
+                                            	<div class="yun_color_fff"> <span id="left_title_0" class="yun_img_text_title fonts">主标题</span> </div>
+                                            </div>
+                                        </li>
+									</ol>
+								</div>
+							</div>
+                          	<!--左侧结束--> 
+                          	<!--右侧开始-->
+							<div class="col-sm-9">
+								<ol class="accordion panel-group right_list" id="accordion2">
+									<li class="accordion-group mt10">
+										<div class="panel-heading">
+											<h4 class="panel-title">
+                                            	<a href="#collapse_0" data-parent="#accordion2" data-toggle="collapse" class="collapsed" id="right_title_0" onclick="Location('collapse_0')">主标题</a>
+                                            </h4>
+                        				</div>
+                        				<div class="panel-collapse collapse in" id="collapse_0">
+                          					<div class="panel-body">
+                                                <label>标题</label>
+                                                <input type="text" name="title" id="title1" class="form-control" maxlength="64" onchange="">
+                                                <label class="m10">作者</label>
+                                                <input type="text" name="author" id="author1" class="form-control" maxlength="8">
+                            					<div class="imgFile_1" style="margin-top:10px;position:relative;">
+                                                    <span class="btn btn-success fileinput-button">
+                                                        <i class="fa fa-plus"></i> <span>请选择封面图片</span>
+                                                        <input id="fileupload_1" type="file" name="file">
+                                                    </span>
+													<p class="clearBoth">大图片建议尺寸：900像素 * 500像素;</p>
+													<p class="help-block">
+                                                        <input type="checkbox" class="showPiccheckBox" checked="">
+                                                        <input id="sourceurl1" type="hidden" name="showPic" value="1">
+                                                    	封面图片显示在正文中
+                                                    </p>
+                                                  	<div id="files_1" class="files"></div>
+                                                </div>
+                                                <label class="m10">图文内容</label>
+                                                <textarea style="height: 200px; width: 100%;" name="content"></textarea>
+											</div>
+                        				</div>
+                      				</li>
+                    			</ol>
+                    			<!--右侧结束--> 
+                    			<div class="row"><div class="col-lg-5 choose-btn"><a>保存</a><a href="message-img.html" class="cancel-btn tab-return">返回</a></div></div>
+							</div>
+                  		</div>
+                	</div>
+              </form>    	
+            </div>
+        </div>
+    </div> 
+</div>
+
+<script type="text/javascript" src="js/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="js/bootstrap.js"></script>
+<script type="text/ecmascript" src="js/jquery-ui.js"></script>
+<script type="text/ecmascript" src="js/jquery-ui.min.js"></script>
+<script type="text/ecmascript" src="js/bootstrap-datetimepicker.js"></script>
+<script type="text/ecmascript" src="js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/ecmascript" src="js/style.js"></script>
+</body>
+</html>
