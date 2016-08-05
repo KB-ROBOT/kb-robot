@@ -100,7 +100,7 @@
 </head>
 
 <body class="login">
-	<div class="login-main">
+	<div class="login-main reg-box">
 		<div class="col-lg-2">
 			<a href="">
 				<img src="./plug-in/kbrobot/images/logo.png">
