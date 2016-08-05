@@ -54,7 +54,6 @@ public class RobotBindController extends BaseController  {
 		
 		/*
 		 * 当前微信账号基本设置
-		 * 
 		 */
 		//获取当前微信账户id
 		String accountId = ResourceUtil.getWeiXinAccountId();
