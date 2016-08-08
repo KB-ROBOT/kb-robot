@@ -1,6 +1,9 @@
 package com.kbrobot.controller.core;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,7 +20,11 @@ import weixin.guanjia.account.entity.WeixinAccountEntity;
 import weixin.guanjia.account.service.WeixinAccountServiceI;
 import weixin.guanjia.base.entity.Subscribe;
 import weixin.guanjia.base.service.SubscribeServiceI;
+import weixin.guanjia.menu.entity.MenuEntity;
+import weixin.guanjia.menu.service.WeixinMenuServiceI;
 import weixin.guanjia.message.entity.AutoResponse;
+import weixin.guanjia.message.entity.NewsTemplate;
+import weixin.guanjia.message.entity.TextTemplate;
 import weixin.guanjia.message.service.AutoResponseServiceI;
 
 /**
@@ -35,6 +42,8 @@ public class RobotBindController extends BaseController  {
 	private SubscribeServiceI subscribeService;//关注事件
 	@Autowired
 	private AutoResponseServiceI autoResponseService;//关键字回复
+	@Autowired
+	private WeixinMenuServiceI weixinMenuService;//微信菜单
 	
 	/**
 	 * 微信绑定
@@ -59,9 +68,38 @@ public class RobotBindController extends BaseController  {
 		String accountId = ResourceUtil.getWeiXinAccountId();
 		//关注回复消息
 		List<Subscribe> subscribeList = subscribeService.findByProperty(Subscribe.class, "accountid", accountId);
-		//关键字
-		List<AutoResponse> autoResponses = autoResponseService.findByProperty(AutoResponse.class, "accountId", accountId);
 		
+		//Map<String,Object> subscribeTemplate = new HashMap<String,Object>();
+		
+		
+		/*for(Subscribe sub: subscribeList ){
+			if("text".equals(sub.getMsgType())){
+				TextTemplate textTemplate = subscribeService.get(TextTemplate.class, sub.getTemplateId());
+				
+			}
+			else if("news".equals(sub.getMsgType())){
+				NewsTemplate newsTemplate = subscribeService.get(NewsTemplate.class, sub.getTemplateId());
+			}
+		}*/
+		
+		
+		//关键字
+		List<AutoResponse> autoResponseList = autoResponseService.findByProperty(AutoResponse.class, "accountId", accountId);
+		//菜单
+		List<MenuEntity> menuList = this.weixinMenuService.findByProperty(MenuEntity.class,"accountId",accountId);
+		
+		List<MenuEntity> fatherMenuList = new ArrayList<MenuEntity>();
+		
+		for(MenuEntity menu : menuList){
+			if(menu.getMenuEntity()==null){
+				fatherMenuList.add(menu);
+			}
+		}
+		
+		modelMap.put("subscribeList", subscribeList);
+		modelMap.put("autoResponseList", autoResponseList);
+		modelMap.put("menuList", menuList);
+		modelMap.put("fatherMenuList", fatherMenuList);
 		
 		ModelAndView modelAndView = new ModelAndView("kbrobot/access-wx");
 		return modelAndView;

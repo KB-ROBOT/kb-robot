@@ -24,7 +24,7 @@ public class MenuEntity extends IdEntity {
 	private String msgType;//消息类型，是文本消息还是图文消息
 	private String templateId;//模板Id
 	private String orders;
-	private MenuEntity menuEntity;
+	private MenuEntity menuEntity;//父节点
 	private List<MenuEntity> menuList; 
 	
 	private String accountId;

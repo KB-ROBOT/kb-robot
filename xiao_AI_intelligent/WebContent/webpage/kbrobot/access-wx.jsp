@@ -7,13 +7,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <title>凯博机器人后台管理系统</title>
 <jsp:include page="./includePage/linkSource.jsp"></jsp:include>
-<script type="text/javascript">
-	$(document).ready(function(){
-		
-	});
-</script>
 </head>
-
 <body>
 	<div class="page-container">
 		<!-- 左侧导航start -->
@@ -30,10 +24,10 @@
 					<h4 class="title">微信接入</h4>
 					<div class="tabs-nav">
 						<ul class="clearfix">
-							<li data="cont1" class="curr">公众号绑定</li>
-							<li data="cont2">关注欢迎语</li>
-							<li data="cont3">关键字管理</li>
-							<li data="cont4">菜单管理</li>
+							<a href="#cont1"><li data="cont1" class="curr">公众号绑定</li></a>
+							<a href="#cont2"><li data="cont2">关注欢迎语</li></a>
+							<a href="#cont3"><li data="cont3">关键字管理</li></a>
+							<a href="#cont4"><li data="cont4">菜单管理</li></a>
 						</ul>
 					</div>
 					<div class="conts">
@@ -104,15 +98,22 @@
 									<th>类型</th>
 									<th>操作</th>
 								</tr>
-								<tr>
-									<td>营改增</td>
-									<td>素材名称</td>
-									<td>
-										<div class="choose-btn">
-											<a class="delete-btn">删除</a>
-										</div>
-									</td>
-								</tr>
+								<c:forEach items="${subscribeList}" var="subscribe" varStatus="status">
+									<tr>
+										<td>${subscribe.templateName}</td>
+										<td>
+											<c:if test="${subscribe.msgType=='text'}">文本</c:if>
+											<c:if test="${subscribe.msgType=='news'}">图文</c:if>
+										</td>
+										<td>
+											<div class="choose-btn">
+												<a>编辑</a>
+												<a class="delete-btn">删除</a>
+											</div>
+										</td>
+									</tr>
+								</c:forEach>
+
 							</table>
 						</div>
 						<div class="cont" id="cont3" style="display: none;">
@@ -127,16 +128,18 @@
 									<th>素材</th>
 									<th>操作</th>
 								</tr>
-								<tr>
-									<td>营改增</td>
-									<td>素材名称</td>
-									<td>
-										<div class="choose-btn">
-											<a>编辑</a>
-											<a class="delete-btn">删除</a>
-										</div>
-									</td>
-								</tr>
+								<c:forEach items="${autoResponseList}" var="autoResponse" varStatus="status">
+									<tr>
+										<td>${autoResponse.keyWord }</td>
+										<td>${autoResponse.templateName }</td>
+										<td>
+											<div class="choose-btn">
+												<a>编辑</a>
+												<a class="delete-btn">删除</a>
+											</div>
+										</td>
+									</tr>
+								</c:forEach>
 							</table>
 						</div>
 						<div class="cont" id="cont4" style="display: none;">
@@ -154,7 +157,7 @@
 										</tr>
 										<tr>
 											<td valign="top" style="width: 30%;">
-												<p data="define1" class="nav-define">
+												<!-- <p data="define1" class="nav-define">
 													<b>我要咨询</b>
 													<span class="fr">
 														<a data-toggle="modal" data-target="#myModal" href="javascript:;" class="fa fa-plus-square show-click" title="添加子菜单"></a>
@@ -177,7 +180,31 @@
 															<a href="javascript:;" class="fa fa-trash-o" title="删除"></a>
 														</span>
 													</p>
-												</div>
+												</div> -->
+												<c:forEach items="${fatherMenuList}" var="fatherMenu" varStatus="status">
+													<p data="define1" class="nav-define">
+														<b>${fatherMenu.menuKey}</b>
+														<span class="fr">
+															<a data-toggle="modal" data-target="#myModal" href="javascript:;" class="fa fa-plus-square show-click" title="添加子菜单"></a>
+															<a href="javascript:;" class="fa fa-pencil" title="编辑"></a>
+															<a href="javascript:;" class="fa fa-trash-o" title="删除"></a>
+														</span>
+													</p>
+													<c:forEach items="${menuList}" var="menu" varStatus="status">
+														<c:if test="${fatherMenu.id==menu.id&&menu.menuEntity!=null }">
+															<div class="sub-menu">
+																<p data="define2" class="nav-define">
+																	${menu.menuKey }
+																	<span class="fr">
+																		<a href="javascript:;" class="fa fa-pencil" title="编辑"></a>
+																		<a href="javascript:;" class="fa fa-trash-o" title="删除"></a>
+																	</span>
+																</p>
+															</div>
+														</c:if>
+													</c:forEach>
+												</c:forEach>
+
 											</td>
 											<td>
 												<div class="defines">
@@ -365,11 +392,18 @@
 					<div class="modal-footer">
 						<button type="button" class="btn btn-primary">确定</button>
 						<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-
 					</div>
 				</div>
 			</div>
 		</div>
+		<!-- 添加菜单对话框结束 -->
 	</div>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			var currHash = window.location.hash;
+			currHash = currHash.replace(/#/,'');
+			$('.tabs li[data='+currHash+']').click();
+		});
+	</script>
 </body>
 </html>
