@@ -2,6 +2,7 @@ package weixin.guanjia.message.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,9 +16,11 @@ import org.jeecgframework.core.util.MyBeanUtils;
 import org.jeecgframework.core.util.ResourceUtil;
 import org.jeecgframework.core.util.StringUtil;
 import org.jeecgframework.tag.core.easyui.TagUtil;
+import org.jeecgframework.web.system.pojo.base.TSUser;
 import org.jeecgframework.web.system.service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -47,6 +50,110 @@ public class TextTemplateController {
 	private WeixinAccountServiceI weixinAccountService;
 	private String message;
 	
+	
+	/**
+	 * 后台文本消息
+	 * @param modelMap
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(params = "textList")
+	public ModelAndView getTestList(ModelMap modelMap,HttpServletRequest request) {
+		
+		//获取当前微信账户id
+		String accountId = ResourceUtil.getWeiXinAccountId();
+		List<TextTemplate> textTemplateList =   textTemplateService.findByProperty(TextTemplate.class, "accountId", accountId);
+		modelMap.put("textTemplateList", textTemplateList);
+		
+		return new ModelAndView("kbrobot/message-textList");
+	}
+	
+	/**
+	 * 保存文本模板修改
+	 * @param textTemplate
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(params = "doSave")
+	@ResponseBody
+	public AjaxJson doSave(TextTemplate textTemplate, HttpServletRequest req) {
+
+		AjaxJson j = new AjaxJson();
+		String id = textTemplate.getId();
+		if (StringUtil.isNotEmpty(id)) {
+			TextTemplate tempAutoResponse = this.textTemplateService.getEntity(TextTemplate.class, textTemplate.getId());
+			this.message = "修改关文本模板成功！";
+			try {
+				MyBeanUtils.copyBeanNotNull2Bean(textTemplate, tempAutoResponse);
+				this.textTemplateService.saveOrUpdate(tempAutoResponse);
+				systemService.addLog(message, Globals.Log_Type_UPDATE, Globals.Log_Leavel_INFO);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		} else {
+			String accountId = ResourceUtil.getWeiXinAccountId();
+			if (!"-1".equals(accountId)) {
+				SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss");
+				textTemplate.setAddTime(sdf.format(new Date()));
+				this.textTemplateService.save(textTemplate);
+			} else {
+				j.setSuccess(false);
+				j.setMsg("请添加一个公众帐号。");
+			}
+		}
+		return j;
+	}
+	
+	/**
+	 * 删除信息
+	 * @param textTemplate
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(params = "del")
+	@ResponseBody
+	public AjaxJson del(TextTemplate textTemplate, HttpServletRequest req) {
+		AjaxJson j = new AjaxJson();
+		textTemplate = this.textTemplateService.getEntity(TextTemplate.class, textTemplate.getId());
+		this.textTemplateService.delete(textTemplate);
+
+		message = "删除数据成功！";
+		systemService.addLog(message, Globals.Log_Type_DEL, Globals.Log_Leavel_INFO);
+		j.setMsg(this.message);
+		return j;
+	}
+	
+	/**
+	 * 
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(params = "goEdit")
+	@ResponseBody
+	public AjaxJson goEdit(HttpServletRequest req) {
+		AjaxJson j = new AjaxJson();
+		
+		String id = req.getParameter("id");
+		req.setAttribute("id", id);
+		if (StringUtil.isNotEmpty(id)) {
+			TextTemplate textTemplate = this.textTemplateService.getEntity(TextTemplate.class, id);
+			j.setObj(textTemplate);
+			j.setSuccess(true);
+		}
+		else{
+			j.setMsg("未找到该素材！");
+			j.setSuccess(false);
+		}
+		return j;
+	}
+	
+	
+	
+	
+	
+	
+	
     /**
      * 转向消息自动回复模板
      * @return
@@ -69,36 +176,14 @@ public class TextTemplateController {
 			HttpServletResponse response, DataGrid dataGrid) {
 		CriteriaQuery cq = new CriteriaQuery(TextTemplate.class, dataGrid);
 		cq.eq("accountId", ResourceUtil.getWeiXinAccountId());
-		org.jeecgframework.core.extend.hqlsearch.HqlGenerateUtil.installHql(cq,
-				textTemplate);
+		org.jeecgframework.core.extend.hqlsearch.HqlGenerateUtil.installHql(cq, textTemplate);
 
 		this.textTemplateService.getDataGridReturn(cq, true);
 
 		TagUtil.datagrid(response, dataGrid);
 	}
 
-	/**
-	 * 删除信息
-	 * @param textTemplate
-	 * @param req
-	 * @return
-	 */
-	@RequestMapping(params = "del")
-	@ResponseBody
-	public AjaxJson del(TextTemplate textTemplate,
-			HttpServletRequest req) {
-		AjaxJson j = new AjaxJson();
-		textTemplate = this.textTemplateService.getEntity(TextTemplate.class,
-				textTemplate.getId());
-
-		this.textTemplateService.delete(textTemplate);
-
-		message = "删除信息数据成功！";
-		systemService.addLog(message, Globals.Log_Type_DEL,
-				Globals.Log_Leavel_INFO);
-		j.setMsg(this.message);
-		return j;
-	}
+	
 	
 	/**
 	 * 批量删除文本消息
@@ -120,7 +205,8 @@ public class TextTemplateController {
 				systemService.addLog(message, Globals.Log_Type_DEL,
 						Globals.Log_Leavel_INFO);
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			error += 1;
 			message = "删除信息数据失败";
@@ -153,47 +239,6 @@ public class TextTemplateController {
 		return new ModelAndView("weixin/guanjia/texttemplate/textTemplateInfo");
 	}
 
-	/**
-	 * 保存文本模板修改
-	 * @param textTemplate
-	 * @param req
-	 * @return
-	 */
-	@RequestMapping(params = "doSave")
-	@ResponseBody
-	public AjaxJson doSave(TextTemplate textTemplate,
-			HttpServletRequest req) {
-
-		AjaxJson j = new AjaxJson();
-		String id = textTemplate.getId();
-		if (StringUtil.isNotEmpty(id)) {
-			TextTemplate tempAutoResponse = this.textTemplateService.getEntity(
-					TextTemplate.class, textTemplate.getId());
-			this.message = "修改关文本模板成功！";
-			try {
-				MyBeanUtils
-						.copyBeanNotNull2Bean(textTemplate, tempAutoResponse);
-				this.textTemplateService.saveOrUpdate(tempAutoResponse);
-				systemService.addLog(message, Globals.Log_Type_UPDATE,
-						Globals.Log_Leavel_INFO);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		} else {
-			String accountId = ResourceUtil.getWeiXinAccountId();
-			if (!"-1".equals(accountId)) {
-				SimpleDateFormat sdf = new SimpleDateFormat(
-						"yyyy-MM-dd HH:mm:ss");
-				textTemplate.setAddTime(sdf.format(new Date()));
-				this.textTemplateService.save(textTemplate);
-			} else {
-				j.setSuccess(false);
-				j.setMsg("请添加一个公众帐号。");
-			}
-		}
-		return j;
-	}
 
 	public String getMessage() {
 		return message;

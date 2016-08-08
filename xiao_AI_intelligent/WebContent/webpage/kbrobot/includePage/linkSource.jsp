@@ -24,11 +24,19 @@
 <script type="text/javascript" src="plug-in/jquery/jquery.cookie.js"></script>
 <script type="text/javascript" src="plug-in/lhgDialog/lhgdialog.min.js"></script>
 
-<!-- UE富文本(要放在自定义js前面加载) -->
-<script type="text/javascript" src="plug-in/kbrobot/js/umeditor.config.js"></script>
+<!-- UM富文本(要放在自定义js前面加载) -->
+<!-- <script type="text/javascript" src="plug-in/kbrobot/js/umeditor.config.js"></script>
 <script type="text/javascript" src="plug-in/kbrobot/js/umeditor.js"></script>
 <script type="text/javascript" src="plug-in/kbrobot/js/umeditor.min.js"></script>
-<script type="text/javascript" src="plug-in/kbrobot/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript" src="plug-in/kbrobot/lang/zh-cn/zh-cn.js"></script> -->
+
+<!-- UE富文本(要放在自定义js前面加载) -->
+<script type="text/javascript" charset="utf-8" src="plug-in/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="plug-in/ueditor/ueditor.all.min.js"> </script>
+<!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
+<!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
+<script type="text/javascript" charset="utf-8" src="plug-in/ueditor/lang/zh-cn/zh-cn.js"></script>
+
 
 <!-- 自定义js -->
 <script type="text/ecmascript" src="plug-in/kbrobot/js/style.js"></script>

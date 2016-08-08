@@ -42,7 +42,7 @@
 				</a>
 				<ul>
 					<li>
-						<a href="message-text.html">文本消息</a>
+						<a href="textTemplateController.do?textList">文本消息</a>
 					</li>
 					<li>
 						<a href="message-img.html">图文消息</a>
