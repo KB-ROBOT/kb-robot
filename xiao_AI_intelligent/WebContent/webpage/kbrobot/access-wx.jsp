@@ -405,5 +405,6 @@
 			$('.tabs li[data='+currHash+']').click();
 		});
 	</script>
+
 </body>
 </html>

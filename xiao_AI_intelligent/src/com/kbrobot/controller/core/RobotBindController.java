@@ -1,9 +1,7 @@
 package com.kbrobot.controller.core;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -23,8 +21,6 @@ import weixin.guanjia.base.service.SubscribeServiceI;
 import weixin.guanjia.menu.entity.MenuEntity;
 import weixin.guanjia.menu.service.WeixinMenuServiceI;
 import weixin.guanjia.message.entity.AutoResponse;
-import weixin.guanjia.message.entity.NewsTemplate;
-import weixin.guanjia.message.entity.TextTemplate;
 import weixin.guanjia.message.service.AutoResponseServiceI;
 
 /**
