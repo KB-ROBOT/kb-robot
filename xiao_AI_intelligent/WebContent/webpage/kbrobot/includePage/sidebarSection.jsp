@@ -45,7 +45,7 @@
 						<a href="textTemplateController.do?textList">文本消息</a>
 					</li>
 					<li>
-						<a href="message-img.html">图文消息</a>
+						<a href="newsTemplateController.do?newsList">图文消息</a>
 					</li>
 					<li>
 						<a href="message-voice.html">语音消息</a>

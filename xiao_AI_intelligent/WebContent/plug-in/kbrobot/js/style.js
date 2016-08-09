@@ -152,7 +152,7 @@ $(document).ready(function () {
 	}); 
 
 	//修改时页面初始化拼接
-	function loadInfo(id){
+	/*function loadInfo(id){
 		$.ajax({
 			type:'get',
 			datatype:'json',
@@ -273,28 +273,10 @@ $(document).ready(function () {
 			}
 		});
 
-	}
+	}*/
 
-	//点击修改
-	function Location(id){
-		$('#'+id).collapse('show');
-		$('#'+id).parent().siblings().children('.collapse').removeClass("in");
-		$('#'+id).parent().siblings().children('.collapse').attr("style","height:0;");
-	}
-	//点击删除
-	function delpage(left_id,right_id){
-		var length = $('.left_list li').length;
-
-		if(length <= 2){
-			toastr.error("多图文最少由两个图文组成", opts);
-			return;
-		}
-		$('#'+left_id).remove();
-		$('#'+right_id).remove();
-		$('#'+right_id).removeClass('accordion-group');
-	}
 	var li_TnpLength=20;
-
+	var i = 0;
 
 	//点击添加
 	$('#addline').click(function(e) {
@@ -303,19 +285,18 @@ $(document).ready(function () {
 			toastr.error("多图文最多由十个图文组成", opts);
 			return;
 		}
-		var i = 0;
 		var s='';
 		var m='',b=''; 
 		//左侧添加
-		i = li_TnpLength++;
+		i++;
 		s = '<li id="left_'+i+'" class="yun_position_relative">';
 		s += '<div class="row yun_border_bottom_e">';
 		s += '<div class="col-sm-8 yun_overflow_hidden fonts" id="left_title_'+i+'">标题'+i+'</div>';
 		s += '<div class="col-sm-4">';
-		s += '<img id=\"img'+(i+1)+'\" class=\"pull-right\" src=\"images/thumb.png\">';
+		s += '<img id=\"img'+(i+1)+'\" class=\"pull-right\" src=\"plug-in/kbrobot/images/thumb.png\">';
 		s += '</div>';
 		s += '</div>';
-		s += '<div class="yun_display_block">';
+		s += '<div class="yun_display_none">';
 		s += '<div class="yun_position_absolute_0">';
 		s += '<a onClick="Location(\'collapse_'+i+'\')"><i class="fa fa-pencil"></i></a>&nbsp;';
 		s += '<a onClick="delpage(\'left_'+i+'\',\'right_'+i+'\')"><i class="fa fa-trash-o"></i></a>';
@@ -331,25 +312,49 @@ $(document).ready(function () {
 		m += '</div>';
 		m += '<div id="collapse_'+i+'" class="panel-collapse collapse" aria-expanded="false">';
 		m += '<div class="panel-body"><label>标题</label>';
-		m += '<input type=\"text\" name=\"title\" id=\"title'+(i+1)+'\" class=\"form-control\" maxlength=\"64\" onChange=\"change(this,\'left_title_'+i+'\',\'right_title_'+i+'\')\">';
-		m += '<label class="m10">作者</label><input type=\"text\" name=\"author\" id=\"author'+(i+1)+'\" class=\"form-control\" maxlength=\"8\" >';
-		m += '<div class=\"imgFile_'+(i+1)+'\"  style=\"margin-top:10px;position:relative;\">'; 
+		m += '<input type=\"text\" name=\"title\" id=\"title'+(i+1)+'\" class=\"form-control\" maxlength=\"64\" onChange=\"testChange(this,\'left_title_'+i+'\',\'right_title_'+i+'\')\">';
+		m += '<label class="m10">作者</label><input type=\"text\" name=\"author\" id=\"author'+i+'\" class=\"form-control\" maxlength=\"8\" >';
+		m += '<div class=\"imgFile_'+i+'\"  style=\"margin-top:10px;position:relative;\">'; 
 		m += '<span class=\"btn btn-success fileinput-button\"> <i class=\"fa fa-plus\"></i> <span>请选择封面图片</span>';
-		m += '<input id="\fileupload_1\" type=\"file\" name=\"file\">';
+		m += '<input id="\fileupload_1\" type=\"file\" name=\"file\" onChange=\"imageChange()"\>';
 		m += '</span><p class="clearBoth">小图片建议尺寸：200像素 * 200像素;</p>  ';
-		m +=' <p class="help-block"><input  type="checkbox" class="showPiccheckBox"  checked ><input id=\"sourceurl'+(i+1)+'\" type="hidden" name="showPic" value="1">&nbsp;封面图片显示在正文中</p>';
+		//m +=' <p class="help-block"><input  type="checkbox" class="showPiccheckBox"  checked ><input id=\"sourceurl'+i+'\" type="hidden" name="showPic" value="1">&nbsp;封面图片显示在正文中</p>';
 		m += '</div>';
-		m += '<div id=\"files_'+(i+1)+'\" class=\"files\"></div></div>';
-		m += '<label class="m10">图文内容</label><textarea style=\"height:200px;width:100%;\"  name=\"content\" id=\"content_'+(i+1)+'\"></textarea>';
+		m += '<div id=\"files_'+i+'\" class=\"files\"></div></div>';
+		m += '<label class="m10">图文内容</label><script style=\"height:200px;width:100%;\" type="text/plain"  name=\"content\" id=\"content_'+i+'\"></script>';
 		m += '</div>';
 		m += '</div>';
 		m += '</li>';
 		$('.right_list').append(m);
 		//编辑器
-		UE.getEditor('content_'+(i+1));
+		UE.getEditor('content_'+i);
 		//打开折叠
 		Location('collapse_'+i);
+		
+		
+		//重新注册文件上传事件
+		
+		
 	});
 
 });
+
+
+//点击修改
+function Location(id){
+	$('#'+id).collapse('show');
+	$('#'+id).parent().siblings().children('.collapse').removeClass("in");
+	$('#'+id).parent().siblings().children('.collapse').attr("style","height:0;");
+}
+//点击删除
+function delpage(left_id,right_id){
+	var length = $('.left_list li').length;
+
+	if(length <= 1){
+		return;
+	}
+	$('#'+left_id).remove();
+	$('#'+right_id).remove();
+	$('#'+right_id).removeClass('accordion-group');
+}
 

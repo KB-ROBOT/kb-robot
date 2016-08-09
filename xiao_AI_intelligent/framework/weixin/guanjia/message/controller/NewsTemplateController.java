@@ -19,6 +19,7 @@ import org.jeecgframework.tag.core.easyui.TagUtil;
 import org.jeecgframework.web.system.service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,7 +35,7 @@ import weixin.guanjia.message.service.NewsTemplateServiceI;
 
 /**
  * 图文消息
-* 
+ * 
  */
 @Controller
 @RequestMapping("/newsTemplateController")
@@ -50,17 +51,85 @@ public class NewsTemplateController {
 	@Autowired
 	private WeixinAccountServiceI weixinAccountService;
 	private String message;
-	
+
+
+
+	@RequestMapping(params="newsList")
+	public ModelAndView getNewsList(ModelMap modelMap){
+
+		//获取当前微信账户id
+		String accountId = ResourceUtil.getWeiXinAccountId();
+		List<NewsTemplate> newsList = newsItemService.findByProperty(NewsTemplate.class, "accountId", accountId);
+		modelMap.put("newsList", newsList);
+		
+		return new ModelAndView("kbrobot/message-img");
+	}
+
+	@RequestMapping(params="goAddNewsTemplate")
+	public ModelAndView goAddNewsTemplate(ModelMap modelMap){
+		
+		return new ModelAndView("kbrobot/message-imgAdd");
+	}
+
+	/**
+	 * 新增图文模板
+	 * @param newsTemplate
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(params="doSave")
+	@ResponseBody
+	public AjaxJson doSave(NewsTemplate newsTemplate,HttpServletRequest req){
+		AjaxJson j = new AjaxJson();
+		String id= newsTemplate.getId();
+		if(StringUtil.isNotEmpty(id)){
+
+			NewsTemplate  tempAutoResponse= this.newsTemplateService.getEntity(NewsTemplate.class, newsTemplate.getId());
+			this.message =  "修改图文模板成功！";
+			try {
+				MyBeanUtils.copyBeanNotNull2Bean(newsTemplate, tempAutoResponse);
+				this.newsTemplateService.saveOrUpdate(tempAutoResponse);
+				systemService.addLog(message, Globals.Log_Type_UPDATE, Globals.Log_Leavel_INFO);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}else{
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			newsTemplate.setAddTime(sdf.format(new Date()));
+			String accountId = ResourceUtil.getWeiXinAccountId();
+			if (!"-1".equals(accountId)) {
+				this.newsTemplateService.save(newsTemplate);
+			} else {
+				j.setSuccess(false);
+				j.setMsg("请添加一个公众帐号。");
+			}
+		}
+		return j;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/**
 	 * 列表展示
 	 * @return
 	 */
-    @RequestMapping(params="list")
+	@RequestMapping(params="list")
 	public ModelAndView list(){
 		return new ModelAndView("weixin/guanjia/newstemplate/newsTemplateList");
 	}
-    
-    @RequestMapping(params = "datagrid")
+
+	@RequestMapping(params = "datagrid")
 	@ResponseBody
 	/**
 	 * 查询数据
@@ -70,36 +139,36 @@ public class NewsTemplateController {
 	 * @param dataGrid
 	 */
 	public void datagrid(NewsTemplate newsTemplate,HttpServletRequest request, HttpServletResponse response, DataGrid dataGrid) {
-		
+
 		CriteriaQuery cq = new CriteriaQuery(NewsTemplate.class, dataGrid);
 		cq.eq("accountId", ResourceUtil.getWeiXinAccountId());
 		org.jeecgframework.core.extend.hqlsearch.HqlGenerateUtil.installHql(cq, newsTemplate);
-		
+
 		this.newsTemplateService.getDataGridReturn(cq, true);
-		
+
 		TagUtil.datagrid(response, dataGrid);
 	}
-    
-    /**
-     * 删除信息模板
-     * @param newsTemplate
-     * @param req
-     * @return
-     */
+
+	/**
+	 * 删除信息模板
+	 * @param newsTemplate
+	 * @param req
+	 * @return
+	 */
 	@RequestMapping(params="del")
 	@ResponseBody
 	public AjaxJson del(NewsTemplate newsTemplate,HttpServletRequest req){
 		AjaxJson j = new AjaxJson();
 		newsTemplate = this.newsTemplateService.getEntity(NewsTemplate.class, newsTemplate.getId());
-		
+
 		this.newsTemplateService.delete(newsTemplate);
-	
+
 		message = "删除信息数据成功！";
 		systemService.addLog(message, Globals.Log_Type_DEL, Globals.Log_Leavel_INFO);
 		j.setMsg(this.message);
 		return j;
 	}
-	
+
 	/**
 	 * 批量删除图文消息
 	 * 
@@ -130,7 +199,7 @@ public class NewsTemplateController {
 		j.setMsg(message);
 		return j;
 	}
-	
+
 	/**
 	 * 跳转到信息模板
 	 * @param req
@@ -149,52 +218,23 @@ public class NewsTemplateController {
 		return new ModelAndView("weixin/guanjia/newstemplate/newsTemplateInfo");
 	}
 
-	@RequestMapping(params="doSave")
-	@ResponseBody
-	public AjaxJson doSave(NewsTemplate newsTemplate,HttpServletRequest req){
-		AjaxJson j = new AjaxJson();
-		String id= newsTemplate.getId();
-		if(StringUtil.isNotEmpty(id)){
-			
-			NewsTemplate  tempAutoResponse= this.newsTemplateService.getEntity(NewsTemplate.class, newsTemplate.getId());
-			this.message =  "修改图文模板成功！";
-			try {
-				MyBeanUtils.copyBeanNotNull2Bean(newsTemplate, tempAutoResponse);
-				this.newsTemplateService.saveOrUpdate(tempAutoResponse);
-				systemService.addLog(message, Globals.Log_Type_UPDATE, Globals.Log_Leavel_INFO);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-		}else{
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			newsTemplate.setAddTime(sdf.format(new Date()));
-			String accountId = ResourceUtil.getWeiXinAccountId();
-			if (!"-1".equals(accountId)) {
-				this.newsTemplateService.save(newsTemplate);
-			} else {
-				j.setSuccess(false);
-				j.setMsg("请添加一个公众帐号。");
-			}
-		}
-		return j;
-	}
 	
-    /**
-     * 跳转到消息模板
-     * @param req
-     * @return
-     */
+
+	/**
+	 * 跳转到消息模板
+	 * @param req
+	 * @return
+	 */
 	@RequestMapping(params="goNewsItem")
 	public ModelAndView goNewsItem(HttpServletRequest req){
 		String templateId = req.getParameter("templateId");
 		req.setAttribute("templateId", templateId);
-		
+
 		if(StringUtil.isNotEmpty(templateId)){
 			NewsTemplate newsTemplate = this.newsTemplateService.getEntity(NewsTemplate.class, templateId);
 			req.setAttribute("type", newsTemplate.getType());
 		}
-		
+
 		String id = req.getParameter("id");
 		req.setAttribute("id", id);
 		if(StringUtil.isNotEmpty(id)){
@@ -212,15 +252,15 @@ public class NewsTemplateController {
 			List<NewsItem> newsItemList = this.newsTemplateService.findByProperty(NewsItem.class, "newsTemplate.id", templateId);
 			req.setAttribute("orders", (newsItemList.size()+1));
 		}
-		
+
 		return new ModelAndView("weixin/guanjia/newstemplate/itemInfo");
 	}
-	
+
 	@RequestMapping(params="jumpupload")
 	public ModelAndView jumpUpload(HttpServletRequest req){
 		return new ModelAndView("weixin/guanjia/newstemplate/upload");
 	}
-	
+
 	/**
 	 * 保存新增关键字
 	 * @param newsItem
@@ -230,11 +270,11 @@ public class NewsTemplateController {
 	@RequestMapping(params="saveNewsTemplate")
 	@ResponseBody
 	public AjaxJson saveNewsTemplate(NewsItem newsItem,HttpServletRequest req){
-		
+
 		AjaxJson j = new AjaxJson();
 		String id= newsItem.getId();
 		if(StringUtil.isNotEmpty(id)){
-			
+
 			NewsItem  tempAutoResponse= this.newsTemplateService.getEntity(NewsItem.class, newsItem.getId());
 			this.message =  "修改关键字回复成功！";
 			try {
@@ -244,19 +284,19 @@ public class NewsTemplateController {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
+
 		}else{
 			String templateId = req.getParameter("templateId");
-//			org.jeecgframework.core.util.LogUtil.info("....imagepath...."+newsItem.getImagePath()+".......content..."+newsItem.getContent());
-//			org.jeecgframework.core.util.LogUtil.info("....title...."+newsItem.getTitle()+"....templateId...."+templateId);
+			//			org.jeecgframework.core.util.LogUtil.info("....imagepath...."+newsItem.getImagePath()+".......content..."+newsItem.getContent());
+			//			org.jeecgframework.core.util.LogUtil.info("....title...."+newsItem.getTitle()+"....templateId...."+templateId);
 			NewsTemplate newsTemplate = this.newsTemplateService.getEntity(NewsTemplate.class, templateId);
 			newsItem.setNewsTemplate(newsTemplate);
 			this.newsItemService.save(newsItem);
 		}
 		return j;
 	}
-	
-	
+
+
 
 	public String getMessage() {
 		return message;

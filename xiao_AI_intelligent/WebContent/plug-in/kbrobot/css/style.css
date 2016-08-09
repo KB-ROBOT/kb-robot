@@ -7,7 +7,7 @@ ul,li{list-style:none;}
 .fr{float:right;}
 .clearfix{clear:both;}
 body,html{background:#f4f4f4;}
-img{border:0;width:100%;}
+img{border:0;}
 .hand{cursor:pointer;}
 .mt20{margin-top:20px;}
 .page-container{display: table;width: 100%;height: 100%;vertical-align: top;border-collapse: collapse;border-spacing: 0px;table-layout: fixed;}
@@ -55,6 +55,7 @@ img{border: 0 none;height: auto;max-width: 100%;vertical-align: middle;}
 .dock-btn{display:inline-block;margin-left:20px;}
 .wx-list{width:100%;margin:10px 20px;}
 
+.addBtn{width:25%;font-size:12px;border-radius:5px;text-align:center;background:#35a2d8;color:#fff;padding:10px;margin-top: 10px;cursor:pointer;}
 .submit-btn{display:block;background:#35a2d8;color:#fff !important;width:10%;margin:20px auto;line-height:36px;border-radius:5px;text-align:center;}
 .choose-btn{float:none;margin:10px auto;text-align:center;}
 .choose-btn a{display:inline-block;width:25%;line-height:36px;border-radius:5px;text-align:center;background:#35a2d8;color:#fff;margin: 20px;cursor:pointer;}
@@ -228,11 +229,14 @@ body.login{display:block;width: 100%;height: 100%;overflow: hidden;}
     margin-bottom: 26px;
     position: relative;
     width:100%;}
+/* .Img-list .Img-box img{width:430px;height:150px;}
 .Img-btn{padding:10px 0;overflow:hidden;}
 .Img-btn a{display:inline-block;width:50%;text-align:center;float:left;}
-.Img-btn a.fa-pencil{border-right:1px solid #ddd;}
+.Img-btn a.fa-pencil{border-right:1px solid #ddd;} */
+
+.doubleImg-list .doubleImg-box img{width:430px;height:150px;}
 .doubleImg-box{position:relative;}
-.doubleImg-box h4{position:absolute;width:100%;background: none repeat scroll 0 0 rgba(0, 0, 0, 0.6) !important;color:#fff;padding:5px 10px;font-size:14px;margin:0;bottom:0;}
+.doubleImg-box h5{position:absolute;width:100%;background: none repeat scroll 0 0 rgba(0, 0, 0, 0.6) !important;color:#fff;padding:5px 10px;font-size:14px;margin:0;bottom:0;}
 .doubleImg-list ul{padding:0;}
 .doubleImg-list ul li{background-color: #fff;
     border-top: 1px solid #c6c6c6;
@@ -241,4 +245,4 @@ body.login{display:block;width: 100%;height: 100%;overflow: hidden;}
 .doubleImg-list ul li span img{border: 1px solid #b2b8bd;
     height: 70px;
     width: 70px;}
-.doubleImg-list ul li h4{width:74%;float:left;margin:0;height:70px;line-height:70px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.doubleImg-list ul li h5{width:74%;float:left;margin:0;height:70px;line-height:70px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}

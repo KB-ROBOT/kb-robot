@@ -107,8 +107,7 @@ public class HqlGenerateUtil {
 
 				Object value = PropertyUtils.getSimpleProperty(searchObj, name);
 				// 根据类型分类处理
-				if (type.contains("class java.lang")
-						|| type.contains("class java.math")) {
+				if (type.contains("class java.lang") || type.contains("class java.math")) {
 					if(parameterMap==null){
 						map.get(type).addCriteria(cq, aliasName, value);
 					}else{

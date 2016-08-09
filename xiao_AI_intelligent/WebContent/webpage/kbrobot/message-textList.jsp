@@ -148,7 +148,9 @@
 					<div class="panel-cont">
 						<h4 class="title">
 							文本消息列表
-							<a data-toggle="modal" data-target="#textTemplateAdd" href="javascript:;" class="fa fa-plus fr" style="margin-top: 20px;" title="添加"></a>
+							<a data-toggle="modal" data-target="#textTemplateAdd" href="javascript:;" class="fa fr addBtn" title="添加">
+								<i class="fa fa-plus-circle"></i>添加文本消息
+							</a>
 						</h4>
 						<table class="table table-model-2">
 							<tr>
@@ -182,10 +184,13 @@
 	<div class="modal fade" id="textTemplateAdd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h3 id="myModalLabel">文本消息</h3>
+				</div>
 				<div class="panel-cont">
-					<h4 class="title">文本消息</h4>
 					<form>
-					 <input type="hidden" name="id">
+						<input type="hidden" name="id">
 						<div class="form-group">
 							<label class="control-label">标题</label> <input type="text" class="form-control" name="templateName" maxlength="50">
 						</div>

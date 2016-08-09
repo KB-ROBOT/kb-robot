@@ -121,7 +121,7 @@ public class FileUploadController extends BaseController {
 	@RequestMapping(params = "view", method = {RequestMethod.GET,RequestMethod.POST})
 	 public void get(HttpServletResponse response,String index){
 		 FileMeta getFile = files.get(Integer.parseInt(index));
-		 try {		
+		 try {
 			 	response.setContentType(getFile.getFileType());
 			 	response.setHeader("Content-disposition", "attachment; filename=\""+getFile.getFileName()+"\"");
 		        FileCopyUtils.copy(getFile.getBytes(), response.getOutputStream());

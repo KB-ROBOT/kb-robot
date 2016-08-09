@@ -17,6 +17,10 @@
 <script type="text/ecmascript" src="plug-in/kbrobot/js/jquery-ui.min.js"></script>
 <script type="text/ecmascript" src="plug-in/kbrobot/js/bootstrap-datetimepicker.js"></script>
 <script type="text/ecmascript" src="plug-in/kbrobot/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<!--fileupload-->
+<script src="plug-in/jquery-plugs/fileupload/js/vendor/jquery.ui.widget.js"></script>
+<script src="plug-in/jquery-plugs/fileupload/js/jquery.iframe-transport.js"></script>
+<script src="plug-in/jquery-plugs/fileupload/js/jquery.fileupload.js"></script>
 <!-- 弹出对话框 -->
 <script type="text/ecmascript" src="plug-in/artDiglog/dist/dialog-min.js"></script>
 
@@ -39,7 +43,7 @@
 
 
 <!-- 自定义js -->
-<script type="text/ecmascript" src="plug-in/kbrobot/js/style.js"></script>
+<script type="text/javascript" src="plug-in/kbrobot/js/style.js"></script>
 
 <!-- 网站图标 -->
 <link rel="shortcut icon" href="plug-in/karobot/images/favicon.ico" type="image/x-icon" />
