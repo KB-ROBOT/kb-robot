@@ -134,6 +134,7 @@
 															<input id="fileupload_1" type="file" name="file"  data-url="fileUploadController.do?upload">
 														</span>
 														<p class="clearBoth">大图片建议尺寸：900像素 * 500像素;</p>
+                                                        <div class="progress progress-bar-success"></div>
 														<div id="files_1" class="files"></div>
 													</div>
 													<label class="m10">图文内容</label>
