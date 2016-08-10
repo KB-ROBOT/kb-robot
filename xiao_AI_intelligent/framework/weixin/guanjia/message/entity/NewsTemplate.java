@@ -1,5 +1,6 @@
 package weixin.guanjia.message.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -19,7 +20,7 @@ public class NewsTemplate extends IdEntity{
 	private String templateName;
 	private String addTime;
 	private String type;
-	private List<NewsItem> newsItemList;
+	private List<NewsItem> newsItemList ;
 	private String accountId;
 
 	@Column(name = "accountid",length=100)

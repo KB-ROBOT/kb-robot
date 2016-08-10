@@ -75,6 +75,54 @@ public class WeixinArticleController extends BaseController {
 		this.message = message;
 	}
 
+	
+	 /**
+     * 保存文件信息
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(params = "upload", method = RequestMethod.POST)
+    @ResponseBody
+    public  AjaxJson upload(MultipartHttpServletRequest request, HttpServletResponse response) {
+    	AjaxJson j = new AjaxJson();
+		Map<String, Object> attributes = new HashMap<String, Object>();
+		TSTypegroup tsTypegroup=systemService.getTypeGroup("fieltype","文档分类");
+		TSType tsType = systemService.getType("files","附件", tsTypegroup);
+		String fileKey = oConvertUtils.getString(request.getParameter("fileKey"));// 文件ID
+		String documentTitle = oConvertUtils.getString(request.getParameter("documentTitle"));// 文件标题
+		TSDocument document = new TSDocument();
+		if (StringUtil.isNotEmpty(fileKey)) {
+			document.setId(fileKey);
+			document = systemService.getEntity(TSDocument.class, fileKey);
+			document.setDocumentTitle(documentTitle);
+		}
+		document.setSubclassname(MyClassLoader.getPackPath(document));
+		document.setCreatedate(DateUtils.gettimestamp());
+		document.setTSType(tsType);
+		UploadFile uploadFile = new UploadFile(request, document);
+		uploadFile.setCusPath("files");
+		uploadFile.setSwfpath("swfpath");
+		document = systemService.uploadFile(uploadFile);
+		attributes.put("url", document.getRealpath());
+		attributes.put("fileKey", document.getId());
+		attributes.put("name", document.getAttachmenttitle());
+		attributes.put("viewhref", "commonController.do?openViewFile&fileid=" + document.getId());
+		attributes.put("delurl", "commonController.do?delObjFile&fileKey=" + document.getId());
+		j.setMsg("文件添加成功");
+		j.setAttributes(attributes);
+
+		return j;
+    }
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	/**
 	 * 微信单图消息列表 页面跳转
@@ -263,44 +311,4 @@ public class WeixinArticleController extends BaseController {
 		}
 		return new ModelAndView("weixin/guanjia/newstemplate/weixinArticle-update");
 	}
-	
-    /**
-     * 保存文件信息
-     * @param request
-     * @param response
-     * @return
-     */
-    @RequestMapping(params = "upload", method = RequestMethod.POST)
-    @ResponseBody
-    public  AjaxJson upload(MultipartHttpServletRequest request, HttpServletResponse response) {
-    	AjaxJson j = new AjaxJson();
-		Map<String, Object> attributes = new HashMap<String, Object>();
-		TSTypegroup tsTypegroup=systemService.getTypeGroup("fieltype","文档分类");
-		TSType tsType = systemService.getType("files","附件", tsTypegroup);
-		String fileKey = oConvertUtils.getString(request.getParameter("fileKey"));// 文件ID
-		String documentTitle = oConvertUtils.getString(request.getParameter("documentTitle"));// 文件标题
-		TSDocument document = new TSDocument();
-		if (StringUtil.isNotEmpty(fileKey)) {
-			document.setId(fileKey);
-			document = systemService.getEntity(TSDocument.class, fileKey);
-			document.setDocumentTitle(documentTitle);
-
-		}
-		document.setSubclassname(MyClassLoader.getPackPath(document));
-		document.setCreatedate(DateUtils.gettimestamp());
-		document.setTSType(tsType);
-		UploadFile uploadFile = new UploadFile(request, document);
-		uploadFile.setCusPath("files");
-		uploadFile.setSwfpath("swfpath");
-		document = systemService.uploadFile(uploadFile);
-		attributes.put("url", document.getRealpath());
-		attributes.put("fileKey", document.getId());
-		attributes.put("name", document.getAttachmenttitle());
-		attributes.put("viewhref", "commonController.do?openViewFile&fileid=" + document.getId());
-		attributes.put("delurl", "commonController.do?delObjFile&fileKey=" + document.getId());
-		j.setMsg("文件添加成功");
-		j.setAttributes(attributes);
-
-		return j;
-    }
 }

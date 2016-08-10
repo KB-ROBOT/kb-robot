@@ -41,16 +41,15 @@
 											<c:forEach items="${news.newsItemList}" var="newsItem" begin="0" end="0" varStatus="status">
 												<div>
 													<img src="${newsItem.imagePath}">
-													<h4>标题</h4>
 												</div>
 											</c:forEach>
 										</div>
 										<ul>
 											<c:forEach items="${news.newsItemList}" var="newsItem" begin="1" varStatus="status">
 												<li>
-													<h5>标题</h5>
+													<h5>${newsItem.title}</h5>
 													<span class="fr">
-														<img src="images/sz.png">
+														<img src="${newsItem.imagePath}">
 													</span>
 												</li>
 											</c:forEach>

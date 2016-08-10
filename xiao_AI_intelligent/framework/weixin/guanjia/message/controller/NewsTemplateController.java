@@ -20,14 +20,15 @@ import org.jeecgframework.web.system.service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import weixin.guanjia.account.service.WeixinAccountServiceI;
 import weixin.guanjia.message.entity.NewsItem;
 import weixin.guanjia.message.entity.NewsTemplate;
-import weixin.guanjia.message.entity.TextTemplate;
 import weixin.guanjia.message.service.AutoResponseServiceI;
 import weixin.guanjia.message.service.NewsItemServiceI;
 import weixin.guanjia.message.service.NewsTemplateServiceI;
@@ -95,14 +96,22 @@ public class NewsTemplateController {
 			}
 
 		}else{
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			newsTemplate.setAddTime(sdf.format(new Date()));
-			String accountId = ResourceUtil.getWeiXinAccountId();
-			if (!"-1".equals(accountId)) {
-				this.newsTemplateService.save(newsTemplate);
-			} else {
+			
+			if(newsTemplate.getTemplateName()==null||newsTemplate.getTemplateName().equals("")){
 				j.setSuccess(false);
-				j.setMsg("请添加一个公众帐号。");
+				j.setMsg("输入信息有误");
+			}
+			else{
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				newsTemplate.setAddTime(sdf.format(new Date()));
+				String accountId = ResourceUtil.getWeiXinAccountId();
+				if (!"-1".equals(accountId)) {
+					newsTemplate.setAccountId(accountId);
+					this.newsTemplateService.save(newsTemplate);
+				} else {
+					j.setSuccess(false);
+					j.setMsg("请添加一个公众帐号。");
+				}
 			}
 		}
 		return j;
