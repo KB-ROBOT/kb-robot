@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import weixin.guanjia.account.service.WeixinAccountServiceI;
 import weixin.guanjia.base.entity.Subscribe;
 import weixin.guanjia.base.service.SubscribeServiceI;
 import weixin.guanjia.message.entity.NewsTemplate;
