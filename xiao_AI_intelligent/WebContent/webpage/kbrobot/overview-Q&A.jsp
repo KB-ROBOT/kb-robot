@@ -47,20 +47,11 @@
 										<div class="input-group input-group-minimal form-inline">
 											<input type="text" name="question" class="form-control pull-right" style="height: auto !important; border-right: 1px solid #e4e4e4;">
 											<span class="input-group-btn yun_btn">
-												<div class="btn-group">
-													<button class="btn  dropdown-toggle" data-toggle="dropdown">
-														<span class="searchQA">问题</span>
-														<span class="caret"></span>
-													</button>
-													<ul class="dropdown-menu">
-														<li>
-															<a href="javascript:void(0)" id="search_panpect_Que">问题</a>
-														</li>
-														<li>
-															<a href="javascript:void(0)" id="search_panpect_Ans">答案</a>
-														</li>
-													</ul>
-												</div>
+												<div class="form-group">
+                                                    <select class=" form-control">
+                                                        <option>问题</option><option>答案</option>
+                                                    </select>
+                                            	</div>
 												<button class="btn btn-white dropdown-toggle" style="margin-left: 3px;" onclick="listPanpect(1);return false;">
 													<i class="fa fa-search"></i>
 												</button>
