@@ -72,17 +72,20 @@ public class RobotQuestionController extends BaseController {
 		if(StringUtil.isEmpty(curPageNO)){
 			curPageNO = "1";
 		}
-		//
-		//request.getParameter("")
 		
 		CriteriaQuery cq = new CriteriaQuery(RobotQuestionEntity.class, Integer.valueOf(curPageNO));
+		//搜索参数
+		String searchKey = request.getParameter("searchKey");
+		String searchParam = request.getParameter("searchParam");
+		if(StringUtil.isNotEmpty(searchKey)){
+			cq.like(searchKey, searchParam);
+		}
+		
 		cq.eq("accoundId", accountId);
-		//cq.like("", "");
 		cq.setPageSize(3);
 		cq.setMyAction("./robotQuestionController.do?questionList");
 		PageList questionPageList = systemService.getPageList(cq, true);
 		
-		//List<RobotQuestionEntity> questionList = robotQuestionService.findByProperty(RobotQuestionEntity.class, "accoundId", accountId);
 		request.setAttribute("questionPageList", questionPageList);
 		
 		return new ModelAndView("kbrobot/overview-Q&A");

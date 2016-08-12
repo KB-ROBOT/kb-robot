@@ -12,7 +12,8 @@ import java.util.List;
 public class PageList {
 	private int curPageNO;
 	private int offset;
-	private String toolBar;//分页工具条
+	//private String toolBar;//分页工具条
+	private Pager pager;//分页工具类
 	private int count;
 	private List resultList = null;//结果集
 	public PageList() {
@@ -26,10 +27,17 @@ public class PageList {
 	 * @param curPageNO
 	 * @param count
 	 */
-	public PageList(List resultList, String toolBar, int offset, int curPageNO, int count) {
+	/*public PageList(List resultList, String toolBar, int offset, int curPageNO, int count) {
 		this.curPageNO = curPageNO;
 		this.offset = offset;
 		this.toolBar = toolBar;
+		this.resultList = resultList;
+		this.count = count;
+	}*/
+	public PageList(List resultList,Pager pager, int offset, int curPageNO, int count) {
+		this.curPageNO = curPageNO;
+		this.offset = offset;
+		this.pager = pager;
 		this.resultList = resultList;
 		this.count = count;
 	}
@@ -61,14 +69,22 @@ public class PageList {
 		this.resultList = resultList;
 	}
 
-	public String getToolBar() {
+	/*public String getToolBar() {
 		return toolBar;
-	}
+	}*/
 
 	public int getCount() {
 		return count;
 	}
 
+	public Pager getPager() {
+		return pager;
+	}
+	
+	public void setPager(Pager pager) {
+		this.pager = pager;
+	}
+	
 	public int getCurPageNO() {
 		return curPageNO;
 	}

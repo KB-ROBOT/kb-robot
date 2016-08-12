@@ -1,8 +1,6 @@
 package org.jeecgframework.core.common.hibernate.qbc;
 
 import java.util.Map;
-
-import org.omg.CORBA.PUBLIC_MEMBER;
 /**
  *类描述：分页工具类
  *张代浩
@@ -42,6 +40,7 @@ public class PagerUtil {
 		} catch (Exception e) {
 			org.jeecgframework.core.util.LogUtil.info("生成工具条出错!");
 		}
+		
 		return pager.getToolBar(url);
 	}
 
@@ -73,4 +72,30 @@ public class PagerUtil {
 		}
 		return curPageNO;
 	}
+	
+	
+	/**
+	 * 得到一个page对象
+	 * @param url
+	 * @param allCounts
+	 * @param curPageNO
+	 * @param pageSize
+	 * @param map
+	 * @return
+	 */
+	public static Pager getPager(String url, int allCounts, int curPageNO, int pageSize, Map<String, Object> map){
+		Pager pager = null;
+		try {
+			if (curPageNO > (int) Math.ceil((double) allCounts / pageSize))
+				curPageNO = (int) Math.ceil((double) allCounts / pageSize);
+			if (curPageNO <= 1)
+				curPageNO = 1;
+			// 得到offset
+			pager = new Pager(url,allCounts, curPageNO, pageSize, map);
+		} catch (Exception e) {
+			org.jeecgframework.core.util.LogUtil.info("生成工具条出错!");
+		}
+		return pager;
+	}
+	
 }

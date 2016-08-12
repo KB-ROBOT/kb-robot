@@ -39,6 +39,7 @@ import org.jeecgframework.core.common.hibernate.qbc.CriteriaQuery;
 import org.jeecgframework.core.common.hibernate.qbc.DetachedCriteriaUtil;
 import org.jeecgframework.core.common.hibernate.qbc.HqlQuery;
 import org.jeecgframework.core.common.hibernate.qbc.PageList;
+import org.jeecgframework.core.common.hibernate.qbc.Pager;
 import org.jeecgframework.core.common.hibernate.qbc.PagerUtil;
 import org.jeecgframework.core.common.model.common.DBTable;
 import org.jeecgframework.core.common.model.json.DataGridReturn;
@@ -631,20 +632,23 @@ public abstract class GenericBaseCommonDao<T, PK extends Serializable>
 		int curPageNO = PagerUtil.getcurPageNo(allCounts, cq.getCurPage(),
 				pageSize);// 当前页
 		int offset = PagerUtil.getOffset(allCounts, curPageNO, pageSize);
-		String toolBar = "";
+		//String toolBar = "";
+		Pager pager = null;
 		if (isOffset) {// 是否分页
 			criteria.setFirstResult(offset);
 			criteria.setMaxResults(cq.getPageSize());
-			if (cq.getIsUseimage() == 1) {
+			/*if (cq.getIsUseimage() == 1) {
 				toolBar = PagerUtil.getBar(cq.getMyAction(), cq.getMyForm(),allCounts, curPageNO, pageSize, cq.getMap());
 			}
 			else {
 				toolBar = PagerUtil.getBar(cq.getMyAction(), allCounts,curPageNO, pageSize, cq.getMap());
-			}
+			}*/
+			pager = PagerUtil.getPager(cq.getMyAction(), allCounts,curPageNO, pageSize, cq.getMap());
+			
 		} else {
 			pageSize = allCounts;
 		}
-		return new PageList(criteria.list(), toolBar, offset, curPageNO,allCounts);
+		return new PageList(criteria.list(), pager, offset, curPageNO,allCounts);
 	}
 
 	/**
@@ -763,9 +767,7 @@ public abstract class GenericBaseCommonDao<T, PK extends Serializable>
 	 * @param isOffset
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public PageList getPageList(final HqlQuery hqlQuery,
-			final boolean needParameter) {
+	public PageList getPageList(final HqlQuery hqlQuery, final boolean needParameter) {
 
 		Query query = getSession().createQuery(hqlQuery.getQueryString());
 		if (needParameter) {
@@ -774,13 +776,14 @@ public abstract class GenericBaseCommonDao<T, PK extends Serializable>
 		}
 		int allCounts = query.list().size();
 		int curPageNO = hqlQuery.getCurPage();
-		int offset = PagerUtil.getOffset(allCounts, curPageNO,
-				hqlQuery.getPageSize());
-		String toolBar = PagerUtil.getBar(hqlQuery.getMyaction(), allCounts,
-				curPageNO, hqlQuery.getPageSize(), hqlQuery.getMap());
+		int offset = PagerUtil.getOffset(allCounts, curPageNO, hqlQuery.getPageSize());
+		
+		//String toolBar = PagerUtil.getBar(hqlQuery.getMyaction(), allCounts, curPageNO, hqlQuery.getPageSize(), hqlQuery.getMap());
+		Pager pager = PagerUtil.getPager(hqlQuery.getMyaction(), allCounts, curPageNO, hqlQuery.getPageSize(), hqlQuery.getMap());
 		query.setFirstResult(offset);
 		query.setMaxResults(hqlQuery.getPageSize());
-		return new PageList(query.list(), toolBar, offset, curPageNO, allCounts);
+		//return new PageList(query.list(), toolBar, offset, curPageNO, allCounts);
+		return new PageList(query.list(), pager, offset, curPageNO, allCounts);
 	}
 
 	/**

@@ -21,9 +21,8 @@
 			<!-- 顶部导航end -->
 
 			<div class="section row">
-				
-				${questionPageList.toolBar}
-			
+
+
 				<div class="panel col-sm-12">
 					<div class="panel-cont">
 						<h4 class="title">问答总览</h4>
@@ -42,17 +41,18 @@
 											</a>
 										</div>
 									</div>
-									<form id="search_form" class="navbar-left navbar-form" style="margin: 0;">
-										<input type="hidden" name="isLeaf" class="isLeaf"> <input type="hidden" name="groupId"> <input type="hidden" name="queryType" value="1">
+									<form id="search_form" action="robotQuestionController.do?questionList" method="POST" class="navbar-left navbar-form" style="margin: 0;">
+										<!-- <input type="hidden" name="isLeaf" class="isLeaf"> <input type="hidden" name="groupId"> <input type="hidden" name="queryType" value="1"> -->
 										<div class="input-group input-group-minimal form-inline">
-											<input type="text" name="question" class="form-control pull-right" style="height: auto !important; border-right: 1px solid #e4e4e4;">
+											<input type="text" name="searchParam" class="form-control pull-right" vlaue="" style="height: auto !important; border-right: 1px solid #e4e4e4;">
 											<span class="input-group-btn yun_btn">
 												<div class="form-group">
-                                                    <select class=" form-control">
-                                                        <option>问题</option><option>答案</option>
-                                                    </select>
-                                            	</div>
-												<button class="btn btn-white dropdown-toggle" style="margin-left: 3px;" onclick="listPanpect(1);return false;">
+													<select name="searchKey" class=" form-control">
+														<option value="questionTitle">问题</option>
+														<option value="questionAnswer">答案</option>
+													</select>
+												</div>
+												<button class="btn btn-white dropdown-toggle" style="margin-left: 3px;" onclick="submit();">
 													<i class="fa fa-search"></i>
 												</button>
 											</span>
@@ -105,62 +105,66 @@
 						<div class="row">
 							<div class="col-lg-12">
 								<ul class="view-QA">
-									<li>
-										<div class="QA-div">
-											<div class="QA-header">
-												<p class="fl">
-													1.&nbsp;怎么办理发票&nbsp;&nbsp;&nbsp;&nbsp;
-													<a data-toggle="modal" data-target="#editqueModal" href="javascript:;">
-														<i class="fa fa-edit"></i>
-													</a>
-												</p>
-												<ul class="QA-list fr">
-													<li class="dropdown hover-line">
-														<a>
-															<i class="fa fa-asterisk"></i>
+									<c:forEach items="${questionPageList.resultList}" var="question" varStatus="status">
+										<li>
+											<div class="QA-div">
+												<div class="QA-header">
+													<p class="fl">
+														${status.index + 1} .&nbsp;${question.questionTitle}
+														<a data-toggle="modal" data-target="#editqueModal" data-questionid="${question.id}" href="javascript:;">
+															<i class="fa fa-edit"></i>
 														</a>
-													</li>
-													<li class="dropdown hover-line">
-														<a data-toggle="modal" data-target="#delQueModal" href="javascript:;">
-															<i class="fa fa-trash-o"></i>
-														</a>
-													</li>
-												</ul>
-											</div>
-											<div class="QA-content">
-												<p>
-													答案：
-													<span>办理发票</span>
-												</p>
-											</div>
-											<div class="QA-foot">
-												<a href="javascript:;" class="similarBtn">添加相似问法（1）个</a>
-												&nbsp;&nbsp;|&nbsp;&nbsp;
-												<a href="javascript:;" data-toggle="modal" data-target="#editAnsModal">编辑答案</a>
-												&nbsp;&nbsp;|&nbsp;&nbsp;
-												<span>最后编辑时间：2016-07-29 19:01</span>
-												<div class="add-similar" style="display: none;">
-													<dl>
-														<dd>
-															1. 如何办理发票
-															<span>
-																<a href="javascript:;" data-toggle="modal" data-target="#editSimiQueModal">编辑</a>
-																&nbsp;&nbsp;|&nbsp;&nbsp;
-																<a href="">删除</a>
-															</span>
-														</dd>
-													</dl>
-													<form style="height: 100%;">
-														<div class="input-group" style="clear: both;">
-															<input type="text" name="question" class="form-control" maxlength="200" style="width: 300px;">&nbsp;
-															<button type="button" class="btn btn-white btn-sm add_Que_similar" style="margin-top: -3px;">添加相似问法</button>
-														</div>
-													</form>
+													</p>
+													<ul class="QA-list fr">
+														<li class="dropdown hover-line">
+															<a>
+																<i class="fa fa-asterisk"></i>
+															</a>
+														</li>
+														<li class="dropdown hover-line">
+															<a data-toggle="modal" data-target="#delQueModal" href="javascript:;">
+																<i class="fa fa-trash-o"></i>
+															</a>
+														</li>
+													</ul>
 												</div>
+												<div class="QA-content">
+													答案：
+													<p>
+														<span>${question.questionAnswer}</span>
+													</p>
+												</div>
+												<%-- <div class="QA-foot">
+													<a href="javascript:;" class="similarBtn">添加相似问法（1）个</a>
+													&nbsp;&nbsp;|&nbsp;&nbsp;
+													<a href="javascript:;" data-toggle="modal" data-target="#editAnsModal">编辑答案</a>
+													&nbsp;&nbsp;|&nbsp;&nbsp;
+													<span>最后编辑时间：2016-07-29 19:01</span>
+													<div class="add-similar" style="display: none;">
+														<dl>
+															<dd>
+																1. 如何办理发票
+																<span>
+																	<a href="javascript:;" data-toggle="modal" data-target="#editSimiQueModal">编辑</a>
+																	&nbsp;&nbsp;|&nbsp;&nbsp;
+																	<a href="">删除</a>
+																</span>
+															</dd>
+														</dl>
+														<form style="height: 100%;">
+															<div class="input-group" style="clear: both;">
+																<input type="text" name="question" class="form-control" maxlength="200" style="width: 300px;">&nbsp;
+																<button type="button" class="btn btn-white btn-sm add_Que_similar" style="margin-top: -3px;">添加相似问法</button>
+															</div>
+														</form>
+													</div>
+												</div> --%>
 											</div>
-										</div>
-									</li>
-									<li>
+										</li>
+									</c:forEach>
+
+
+									<%-- <li>
 										<div class="QA-div">
 											<div class="QA-header">
 												<p class="fl">
@@ -197,9 +201,9 @@
 												<div class="add-similar" style="display: none;">
 													<dl>
 														<dt>暂时没有相似问法，请添加！</dt>
-														<!--<dd>1. 如何办理发票<span><a href="javascript:;" data-toggle="modal" data-target="#editSimiQueModal">编辑</a>
+														<dd>1. 如何办理发票<span><a href="javascript:;" data-toggle="modal" data-target="#editSimiQueModal">编辑</a>
                                                     	&nbsp;&nbsp;|&nbsp;&nbsp;<a href="">删除</a></span>
-                                                    </dd>-->
+                                                    </dd>
 													</dl>
 													<form style="height: 100%;">
 														<div class="input-group" style="clear: both;">
@@ -210,15 +214,16 @@
 												</div>
 											</div>
 										</div>
-									</li>
+									</li> --%>
 
 								</ul>
 							</div>
 						</div>
 						<!-- 页码 -->
 						<div class="row">
-							<div class="col-sm-6">
-								本页&nbsp;<b>0</b>&nbsp;条&nbsp;共&nbsp;<b>0</b>&nbsp;条
+							${questionPageList.pager.getToolsBarByUrl()}
+							<%-- <div class="col-sm-6">
+								共&nbsp;<b>${questionPageList.pager.pageCount}</b>&nbsp;页&nbsp;第&nbsp;<b>${questionPageList.pager.curPageNO}</b>&nbsp;页
 							</div>
 							<div class="col-sm-6">
 								<ul class="pagination fr">
@@ -238,7 +243,8 @@
 										<a href="#">下一页</a>
 									</li>
 								</ul>
-							</div>
+							</div> --%>
+							${questionPageList.pager.getToolBar(questionPageList.pager.url)}
 						</div>
 						<!-- 页码 -->
 					</div>
