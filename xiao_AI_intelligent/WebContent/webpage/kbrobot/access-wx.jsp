@@ -478,18 +478,17 @@
 										</tr>
 										<c:if test="${fatherMenuList.size()==0}">
 											<tr>
-												<td>
-												</td>
+												<td></td>
 												<td>
 													<p class="define-none" style="text-align: center;">你可以先添加一个菜单，然后开始为其设置响应动作</p>
 												</td>
 											</tr>
 										</c:if>
-										<c:forEach items="${fatherMenuList}" var="fatherMenu" begin="0" end="0" varStatus="status">
+										<c:forEach items="${fatherMenuList}" var="fatherMenu" varStatus="status">
 											<tr>
 												<td valign="top" style="width: 30%;">
 
-													<p data-seq="${status.index}" data-menuid="${fatherMenu.id}" data-menutype="${fatherMenu.type}"   class="nav-define">
+													<p data-seq="${status.index}" data-menuid="${fatherMenu.id}" data-menutype="${fatherMenu.type}" class="nav-define">
 														<b>${fatherMenu.name}</b>
 														<span class="fr">
 															<a href="javascript:void(0);" data-menuid="${fatherMenu.id}" class="fa fa-plus-square show-click child-menu-add" title="添加子菜单"></a>
@@ -500,7 +499,7 @@
 													<c:forEach items="${menuList}" var="menu" varStatus="statusChild">
 														<c:if test="${fatherMenu.id==menu.menuEntity.id&&menu.menuEntity!=null }">
 															<div class="sub-menu childMenu">
-																<p data-menuid="${menu.id}" data-menutype="${menu.type}"  class="nav-define">
+																<p data-menuid="${menu.id}" data-menutype="${menu.type}" class="nav-define">
 																	${menu.name }
 																	<span class="fr">
 																		<a href="javascript:void(0);" class="fa fa-pencil" title="编辑"></a>
@@ -511,81 +510,81 @@
 														</c:if>
 													</c:forEach>
 												</td>
-												<td class="menu_action_show" rowspan="${fatherMenuList.size()}">
-													<div class="defines">
-														<!-- 无法设置动作   -->
-														<div class="define" id="define_none_action" style="display: none; text-align: center;">已有子菜单无法设置动作</div>
-														<!-- 无法设置动作   -->
-														
-														<!-- 已经设置了动作 -->
-														<div class="define" id="define_reday_action" style="display: none; text-align: center;">
-															action is all ready set .
-														</div>
-														
-														<!-- 设置动作   -->
-														<div class="define" id="define_set_action" >
-															<div class="col-lg-12 choose-btn">
-																<p>请选择订阅者点击菜单后，公众号做出的相应动作</p>
-																<a class="tab-pane">
-																	<i class="fa fa-envelope-o"></i>发送消息
-																</a>
-																<a class="cancel-btn tab-url">
-																	<i class="fa fa-link"></i>跳转链接
-																</a>
-															</div>
-															<div class="col-lg-12 news" style="display: none;">
-																<p>订阅者点击该子菜单会显示以下信息</p>
-																<div class="new-nav">
-																	<span class="curre" data="text">文字消息</span>
-																	<span data="news">图文消息</span>
-																	<span data="voice">语音消息</span>
+												<c:if test="${status.isFirst()}">
+													<td class="menu_action_show" rowspan="${fatherMenuList.size()}">
+														<div class="defines">
+															<!-- 无法设置动作   -->
+															<div class="define" id="define_none_action" style="display: none; text-align: center;">已有子菜单无法设置动作</div>
+															<!-- 无法设置动作   -->
+
+															<!-- 已经设置了动作 -->
+															<div class="define" id="define_reday_action" style="display: none; text-align: center;">action is all ready set .</div>
+
+															<!-- 设置动作   -->
+															<div class="define" id="define_set_action">
+																<div class="col-lg-12 choose-btn">
+																	<p>请选择订阅者点击菜单后，公众号做出的相应动作</p>
+																	<a class="tab-pane">
+																		<i class="fa fa-envelope-o"></i>发送消息
+																	</a>
+																	<a class="cancel-btn tab-url">
+																		<i class="fa fa-link"></i>跳转链接
+																	</a>
 																</div>
-																<div class="new-conts">
-																	<div class="new" id="text" style="display: block;">
-																		<select name="menuText" class="form-control subscribeType">
-																			<option value="id">模板名称</option>
-																		</select>
-																		<div class="col-lg-5 choose-btn">
-																			<a data-type="click" data-msgType="text" class="menu_action_save">保存</a>
-																			<a class="cancel-btn tab-return">返回</a>
-																		</div>
+																<div class="col-lg-12 news" style="display: none;">
+																	<p>订阅者点击该子菜单会显示以下信息</p>
+																	<div class="new-nav">
+																		<span class="curre" data="text">文字消息</span>
+																		<span data="news">图文消息</span>
+																		<span data="voice">语音消息</span>
 																	</div>
-																	<div class="new lookup" id="news" style="display: none;">
-																		<!-- <input type="text" class="form-control" disabled="disabled" placeholder="请选择图文">
+																	<div class="new-conts">
+																		<div class="new" id="text" style="display: block;">
+																			<select name="menuText" class="form-control subscribeType">
+																				<option value="id">模板名称</option>
+																			</select>
+																			<div class="col-lg-5 choose-btn">
+																				<a data-type="click" data-msgType="text" class="menu_action_save">保存</a>
+																				<a class="cancel-btn tab-return">返回</a>
+																			</div>
+																		</div>
+																		<div class="new lookup" id="news" style="display: none;">
+																			<!-- <input type="text" class="form-control" disabled="disabled" placeholder="请选择图文">
 																		<button data-toggle="modal" data-target="#film_modal">查找图文</button> -->
-																		<select name="menuNews" class="form-control subscribeType">
-																			<option value="id">模板名称</option>
-																		</select>
-																		<div class="col-lg-5 choose-btn">
-																			<a data-type="click" data-msgType="news" class="menu_action_save">保存</a>
-																			<a class="cancel-btn tab-return">返回</a>
+																			<select name="menuNews" class="form-control subscribeType">
+																				<option value="id">模板名称</option>
+																			</select>
+																			<div class="col-lg-5 choose-btn">
+																				<a data-type="click" data-msgType="news" class="menu_action_save">保存</a>
+																				<a class="cancel-btn tab-return">返回</a>
+																			</div>
 																		</div>
-																	</div>
-																	<div class="new lookup" id="voice" style="display: none;">
-																		<input type="text" class="form-control" disabled="disabled" placeholder="请选择语音文件">
-																		<button data-toggle="modal" data-target="#volume_modal">查找语音</button>
-																		<div class="col-lg-5 choose-btn">
-																			<a>保存</a>
-																			<a class="cancel-btn tab-return">返回</a>
+																		<div class="new lookup" id="voice" style="display: none;">
+																			<input type="text" class="form-control" disabled="disabled" placeholder="请选择语音文件">
+																			<button data-toggle="modal" data-target="#volume_modal">查找语音</button>
+																			<div class="col-lg-5 choose-btn">
+																				<a>保存</a>
+																				<a class="cancel-btn tab-return">返回</a>
+																			</div>
 																		</div>
 																	</div>
 																</div>
-															</div>
-															<div class="col-lg-12 urls" style="display: none;">
-																<p>订阅者点击该子菜单会跳到以下链接</p>
-																<input type="text" name="menuUrl" class="form-control" placeholder="请输入URL">
-																<div class="col-lg-5 choose-btn">
-																	<a data-type="view" class="menu_action_save">保存</a>
-																	<a class="cancel-btn url-return">返回</a>
+																<div class="col-lg-12 urls" style="display: none;">
+																	<p>订阅者点击该子菜单会跳到以下链接</p>
+																	<input type="text" name="menuUrl" class="form-control" placeholder="请输入URL">
+																	<div class="col-lg-5 choose-btn">
+																		<a data-type="view" class="menu_action_save">保存</a>
+																		<a class="cancel-btn url-return">返回</a>
+																	</div>
 																</div>
 															</div>
 														</div>
-													</div>
-													<!-- 设置动作   -->
-												</td>
+														<!-- 设置动作   -->
+													</td>
+												</c:if>
 											</tr>
 										</c:forEach>
-										<c:forEach items="${fatherMenuList}" var="fatherMenu" begin="1"  varStatus="status">
+										<%-- <c:forEach items="${fatherMenuList}" var="fatherMenu" begin="1"  varStatus="status">
 											<tr>
 												<td valign="top" style="width: 30%;">
 
@@ -612,10 +611,12 @@
 													</c:forEach>
 												</td>
 											</tr>
-										</c:forEach>
+										</c:forEach> --%>
 									</table>
-                                    <p style="padding-left:20px;">发布之后才可以在微信里面显示</p>
-                                	<div class="col-lg-12 choose-btn"><a href="">生成代码</a></div> 
+									<p style="padding-left: 20px;">发布之后才可以在微信里面显示</p>
+									<div class="col-lg-12 choose-btn">
+										<a href="">发布到微信</a>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -729,9 +730,7 @@
 					</div>
 					<div class="modal-body">
 						<div class="form-group">
-							<label class="control-label">菜单名的名字长度不多于6个文字或字符</label>
-							<input type="text" class="form-control" name="menuName" maxlength="6" placeholder="请输入菜单名">
-							<input type="hidden" name="fatherMenuId">
+							<label class="control-label">菜单名的名字长度不多于6个文字或字符</label> <input type="text" class="form-control" name="menuName" maxlength="6" placeholder="请输入菜单名"> <input type="hidden" name="fatherMenuId">
 						</div>
 					</div>
 					<div class="modal-footer">
