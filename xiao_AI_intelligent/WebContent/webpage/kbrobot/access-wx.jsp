@@ -308,7 +308,6 @@
 							setTimeout("location.reload()", 100);
 						},
 						error : function() {// 请求失败处理函数
-							
 						},
 					});
 				},
