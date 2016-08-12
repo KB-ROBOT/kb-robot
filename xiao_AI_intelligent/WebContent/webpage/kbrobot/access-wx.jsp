@@ -614,6 +614,8 @@
 											</tr>
 										</c:forEach>
 									</table>
+                                    <p style="padding-left:20px;">发布之后才可以在微信里面显示</p>
+                                	<div class="col-lg-12 choose-btn"><a href="">生成代码</a></div> 
 								</div>
 							</div>
 						</div>
