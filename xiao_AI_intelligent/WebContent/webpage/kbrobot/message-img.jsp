@@ -7,6 +7,47 @@
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <title>凯博机器人后台管理系统</title>
 <jsp:include page="./includePage/linkSource.jsp"></jsp:include>
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		
+		//删除
+		$(".newsDel").on("click",function(){
+			var newsId = $(this).data("newsid");
+			dialog({
+			    title: '消息',
+			    content:"确认删除吗？",
+			    ok: function () {
+			    	var url = "./newsTemplateController.do?del";
+					$.ajax({
+						url : url,
+		                dataType:"json",
+						data: {"id":newsId},
+						success : function(data) {
+							if(data.success){
+								setTimeout("location.reload()",500);
+							}
+							else{
+								dialog({
+									content:data.msg,
+									title:"错误消息"
+								}).show();
+							}
+						},
+						error : function() {// 请求失败处理函数
+							
+						},
+					});
+			    },
+			    cancel: function () {
+			    }
+			})
+			.width(320)
+			.show();
+		});
+		
+	});
+</script>
 </head>
 <body>
 	<div class="page-container">
@@ -54,6 +95,10 @@
 												</li>
 											</c:forEach>
 										</ul>
+										<div class="Img-btn">
+											<a href="newsTemplateController.do?goNewsTemplateEdit&id=${news.id}" class="fa fa-pencil"></a>
+											<a href="javascript:void(0)" data-newsid="${news.id}" class="fa fa-trash-o newsDel"></a>
+										</div>
 									</div>
 								</div>
 							</c:forEach>

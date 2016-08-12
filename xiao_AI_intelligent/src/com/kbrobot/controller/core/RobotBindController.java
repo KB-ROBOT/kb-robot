@@ -1,17 +1,23 @@
 package com.kbrobot.controller.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.jeecgframework.core.common.controller.BaseController;
+import org.jeecgframework.core.common.model.json.AjaxJson;
 import org.jeecgframework.core.util.ResourceUtil;
 import org.jeecgframework.web.system.pojo.base.TSUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import weixin.guanjia.account.entity.WeixinAccountEntity;
@@ -21,7 +27,11 @@ import weixin.guanjia.base.service.SubscribeServiceI;
 import weixin.guanjia.menu.entity.MenuEntity;
 import weixin.guanjia.menu.service.WeixinMenuServiceI;
 import weixin.guanjia.message.entity.AutoResponse;
+import weixin.guanjia.message.entity.NewsTemplate;
+import weixin.guanjia.message.entity.TextTemplate;
 import weixin.guanjia.message.service.AutoResponseServiceI;
+import weixin.guanjia.message.service.NewsTemplateServiceI;
+import weixin.guanjia.message.service.TextTemplateServiceI;
 
 /**
  * 
@@ -40,6 +50,12 @@ public class RobotBindController extends BaseController  {
 	private AutoResponseServiceI autoResponseService;//关键字回复
 	@Autowired
 	private WeixinMenuServiceI weixinMenuService;//微信菜单
+	
+	@Autowired
+	private TextTemplateServiceI textTemplateService;//文本素材
+	@Autowired
+	private NewsTemplateServiceI newsTemplateService;//图文素材
+	
 	
 	/**
 	 * 微信绑定
@@ -110,4 +126,46 @@ public class RobotBindController extends BaseController  {
 		ModelAndView modelAndView = new ModelAndView("kbrobot/access-web");
 		return modelAndView;
 	}
+	
+	/**
+	 * 素材查找
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(params = "mediaSourceFind")
+	@ResponseBody
+	public AjaxJson mediaSourceFind(HttpServletRequest request){
+		AjaxJson j = new AjaxJson();
+		
+		//获取当前微信账户id
+		String accountId = ResourceUtil.getWeiXinAccountId();
+		
+		List<TextTemplate> textTemplateList =  textTemplateService.findByProperty(TextTemplate.class, "accountId", accountId);
+		
+		List<NewsTemplate> newsTemplateList = newsTemplateService.findByProperty(NewsTemplate.class, "accountId", accountId);
+		
+		//select newsTemplate.tempateName as templateName from weixin_texttemplate newsTemplate where newsTemplate.accountId =
+		/*List<TextTemplate> textTemplateList =  textTemplateService.findByQueryString("select tempateName from weixin_texttemplate where accountId ='"+accountId+"'");
+		
+		List<NewsTemplate> newsTemplateList = newsTemplateService.findByQueryString("select tempateName from weixin_newstemplate where accountId ='"+accountId+"'");
+		*/
+		/*for(NewsTemplate newsTemplate : newsTemplateList){
+			newsTemplate.setNewsItemList(null);
+		}*/
+
+		Map<String,Object> listMap = new HashMap<String,Object>();
+		listMap.put("textTemplateList", textTemplateList);
+		listMap.put("newsTemplateList", newsTemplateList);
+		
+		j.setAttributes(listMap);
+		j.setSuccess(true);
+		
+		return j;
+		
+		
+	}
+	
+	
+	
+	
 }

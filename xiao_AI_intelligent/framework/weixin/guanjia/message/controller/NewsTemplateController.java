@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import weixin.guanjia.account.service.WeixinAccountServiceI;
 import weixin.guanjia.message.entity.NewsItem;
@@ -94,7 +95,6 @@ public class NewsTemplateController {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 		}else{
 			
 			if(newsTemplate.getTemplateName()==null||newsTemplate.getTemplateName().equals("")){
@@ -117,9 +117,49 @@ public class NewsTemplateController {
 		return j;
 	}
 
+	/**
+	 * 删除信息模板
+	 * @param newsTemplate
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(params="del")
+	public AjaxJson del(NewsTemplate newsTemplate,HttpServletRequest req){
+		AjaxJson j = new AjaxJson();
+		if(newsTemplate==null||StringUtil.isEmpty(newsTemplate.getId())){
+			message = "信息有误";
+		}
+		else{
+			this.newsTemplateService.delete(newsTemplate);
 
+			message = "删除信息数据成功！";
+			systemService.addLog(message, Globals.Log_Type_DEL, Globals.Log_Leavel_INFO);
+		}
+		newsTemplate = this.newsTemplateService.getEntity(NewsTemplate.class, newsTemplate.getId());
+		
+		j.setMsg(this.message);
+		return j;
+	}
 
-
+	/**
+	 * 跳转到编辑
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(params="goNewsTemplateEdit")
+	public ModelAndView goNewsTemplateEdit(HttpServletRequest req){
+		String id = req.getParameter("id");
+		req.setAttribute("id", id);
+		if(StringUtil.isNotEmpty(id)){
+			NewsTemplate newsTemplate = this.newsTemplateService.getEntity(NewsTemplate.class, id);
+			req.setAttribute("newsTemplate", newsTemplate);
+		}
+		return new ModelAndView("kbrobot/message-imgAdd");
+	}
+	
+	
+	
+	
 
 
 
@@ -158,25 +198,6 @@ public class NewsTemplateController {
 		TagUtil.datagrid(response, dataGrid);
 	}
 
-	/**
-	 * 删除信息模板
-	 * @param newsTemplate
-	 * @param req
-	 * @return
-	 */
-	@RequestMapping(params="del")
-	@ResponseBody
-	public AjaxJson del(NewsTemplate newsTemplate,HttpServletRequest req){
-		AjaxJson j = new AjaxJson();
-		newsTemplate = this.newsTemplateService.getEntity(NewsTemplate.class, newsTemplate.getId());
-
-		this.newsTemplateService.delete(newsTemplate);
-
-		message = "删除信息数据成功！";
-		systemService.addLog(message, Globals.Log_Type_DEL, Globals.Log_Leavel_INFO);
-		j.setMsg(this.message);
-		return j;
-	}
 
 	/**
 	 * 批量删除图文消息

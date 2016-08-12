@@ -3,15 +3,12 @@ package weixin.guanjia.menu.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
-import net.sf.json.util.PropertyFilter;
 
 import org.jeecgframework.core.common.hibernate.qbc.CriteriaQuery;
 import org.jeecgframework.core.common.model.json.AjaxJson;
@@ -34,7 +31,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import weixin.guanjia.account.entity.WeixinAccountEntity;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
+import net.sf.json.util.PropertyFilter;
 import weixin.guanjia.account.service.WeixinAccountServiceI;
 import weixin.guanjia.base.service.WeixinExpandconfigServiceI;
 import weixin.guanjia.core.entity.common.Button;
@@ -66,6 +66,137 @@ public class MenuManagerController {
 	private WeixinExpandconfigServiceI weixinExpandconfigService;
 	private String message;
 
+	/**
+	 * 添加菜单
+	 * @param menuEntity
+	 * @param req
+	 * @param fatherName
+	 * @return
+	 */
+	@RequestMapping(params = "su")
+	@ResponseBody
+	public AjaxJson su(MenuEntity menuEntity, HttpServletRequest req,String fatherName) {
+		AjaxJson j = new AjaxJson();
+		//String id = oConvertUtils.getString(req.getParameter("id"));
+		
+		if (StringUtil.isNotEmpty(menuEntity.getId())) {
+			
+			MenuEntity tempMenu = this.systemService.getEntity(MenuEntity.class, menuEntity.getId());
+			
+			this.message = "更新" + tempMenu.getName() + "的菜单信息信息成功！";
+			try {
+				MyBeanUtils.copyBeanNotNull2Bean(menuEntity, tempMenu);
+				this.weixinMenuService.saveOrUpdate(tempMenu);
+				systemService.addLog(message, Globals.Log_Type_UPDATE,Globals.Log_Leavel_INFO);
+				
+			} catch (Exception e) {
+				this.message = "更新" + tempMenu.getName() + "的菜单信息信息成功！";
+				systemService.addLog(message, Globals.Log_Type_UPDATE,Globals.Log_Leavel_INFO);
+				e.printStackTrace();
+			}
+		}
+		else {
+			//String fatherId = req.getParameter("fatherId");
+			if (StringUtil.isNotEmpty(fatherName)) {
+				MenuEntity fatherMenu = this.systemService.getEntity(MenuEntity.class, fatherName);
+				menuEntity.setMenuEntity(fatherMenu);
+			}
+			String accountId = ResourceUtil.getWeiXinAccountId();
+			if (!"-1".equals(accountId)) {
+				this.weixinMenuService.save(menuEntity);
+				this.message = "添加" + menuEntity.getName() + "的信息成功！";
+				
+				j.setSuccess(true);
+				j.setMsg(this.message);
+			} else {
+				j.setSuccess(false);
+				j.setMsg("请添加一个公众帐号。");
+			}
+			
+			systemService.addLog(message, Globals.Log_Type_INSERT, Globals.Log_Leavel_INFO);
+		}
+		return j;
+	}
+	
+	@RequestMapping(params = "menuEnetityDetail")
+	@ResponseBody
+	public AjaxJson getMenuEnetityDetail(MenuEntity menuEntity, HttpServletRequest req){
+		AjaxJson j = new AjaxJson();
+		Map<String,Object> menuMap = new HashMap<String,Object>();
+		
+		if(StringUtil.isNotEmpty(menuEntity.getId())){
+			menuEntity = this.systemService.getEntity(MenuEntity.class,menuEntity.getId());
+			if (menuEntity.getMenuEntity() != null&& menuEntity.getMenuEntity().getId() != null) {
+				menuMap.put("fatherId", menuEntity.getMenuEntity().getId());
+				menuMap.put("fatherName", menuEntity.getMenuEntity().getName());
+			}
+			
+			menuMap.put("name", menuEntity.getName());
+			menuMap.put("type", menuEntity.getType());
+			menuMap.put("menuKey", menuEntity.getMenuKey());
+			menuMap.put("url", menuEntity.getUrl());
+			menuMap.put("orders", menuEntity.getOrders());
+			menuMap.put("templateId", menuEntity.getTemplateId());
+			menuMap.put("msgType", menuEntity.getMsgType());
+			
+			String type = menuEntity.getType();
+			
+			if("click".equals(type)){
+				if("text".equals(menuEntity.getMsgType())){
+					menuMap.put("templateObject", systemService.get(TextTemplate.class, menuEntity.getTemplateId()));
+				}
+				else if("news".equals(menuEntity.getMsgType())){
+					menuMap.put("templateObject",  systemService.get(NewsTemplate.class, menuEntity.getTemplateId()));
+				}
+			}
+			else if("view".equals(type)){
+				//url
+			}
+			
+			j.setAttributes(menuMap);
+			j.setSuccess(true);
+		}
+		else{
+			this.message = "参数有误";
+			j.setMsg(message);
+			j.setSuccess(false);
+		}
+		
+		return j;
+	}
+	/**
+	 * 删除菜单
+	 * @param menuEntity
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(params = "del")
+	@ResponseBody
+	public AjaxJson del(MenuEntity menuEntity, HttpServletRequest req) {
+		AjaxJson j = new AjaxJson();
+		menuEntity = this.systemService.getEntity(MenuEntity.class, menuEntity.getId());
+		
+		//找到所有子节点
+		List<MenuEntity> chileMenuList = this.systemService.findByProperty(MenuEntity.class, "menuEntity.id", menuEntity.getId());
+		chileMenuList.add(menuEntity);
+		//父节点、子节点删除
+		systemService.deleteAllEntitie(chileMenuList);
+		
+
+		message = "删除" + menuEntity.getName() + "菜单信息数据";
+		systemService.addLog(message, Globals.Log_Type_DEL, Globals.Log_Leavel_INFO);
+		j.setMsg(this.message);
+		return j;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	@RequestMapping(params = "list")
 	public ModelAndView list() {
 		return new ModelAndView("weixin/guanjia/menu/menulist");
@@ -108,22 +239,19 @@ public class MenuManagerController {
 
 
 	@RequestMapping(params = "gettemplate")
-	public void gettemplate(HttpServletRequest request,
-			HttpServletResponse response) {
+	public void gettemplate(HttpServletRequest request, HttpServletResponse response) {
 		String accountid = ResourceUtil.getWeiXinAccountId();
 		String msgType = request.getParameter("msgType");
 		String resMsg = "";
 		if ("text".equals(msgType)) {
-			List<TextTemplate> textList = this.weixinMenuService
-					.findByQueryString("from TextTemplate t where t.accountId = '"
+			List<TextTemplate> textList = this.weixinMenuService.findByQueryString("from TextTemplate t where t.accountId = '"
 							+  accountid+ "'");
 			JSONArray json = JSONArray.fromObject(textList);
 			resMsg = json.toString();
 		} else if ("news".equals(msgType)) {
 			JsonConfig jsonConfig = new JsonConfig();
 			jsonConfig.setExcludes(new String[] { "newsItemList" });
-			List<NewsTemplate> newsList = this.weixinMenuService
-					.findByQueryString("from NewsTemplate t where t.accountId = '"
+			List<NewsTemplate> newsList = this.weixinMenuService.findByQueryString("from NewsTemplate t where t.accountId = '"
 							+ accountid + "'");
 			JSONArray json = JSONArray.fromObject(newsList, jsonConfig);
 			resMsg = json.toString();
@@ -131,8 +259,7 @@ public class MenuManagerController {
 
 			JsonConfig jsonConfig = new JsonConfig();
 			jsonConfig.setExcludes(new String[] { "newsItemList" });
-			List<NewsTemplate> newsList = this.weixinMenuService
-					.findByQueryString("from WeixinExpandconfigEntity t where t.accountid = '"
+			List<NewsTemplate> newsList = this.weixinMenuService.findByQueryString("from WeixinExpandconfigEntity t where t.accountid = '"
 							+ accountid + "'");
 			JSONArray json = JSONArray.fromObject(newsList, jsonConfig);
 			resMsg = json.toString();
@@ -189,15 +316,10 @@ public class MenuManagerController {
 
 		org.jeecgframework.core.util.LogUtil.info("...menuEntity.getId()..." + menuEntity.getId());
 		if (StringUtil.isNotEmpty(menuEntity.getId())) {
-			menuEntity = this.systemService.getEntity(MenuEntity.class,
-					menuEntity.getId());
-			if (menuEntity.getMenuEntity() != null
-					&& menuEntity.getMenuEntity().getId() != null) {
-				req
-						.setAttribute("fatherId", menuEntity.getMenuEntity()
-								.getId());
-				req.setAttribute("fatherName", menuEntity.getMenuEntity()
-						.getName());
+			menuEntity = this.systemService.getEntity(MenuEntity.class,menuEntity.getId());
+			if (menuEntity.getMenuEntity() != null&& menuEntity.getMenuEntity().getId() != null) {
+				req.setAttribute("fatherId", menuEntity.getMenuEntity().getId());
+				req.setAttribute("fatherName", menuEntity.getMenuEntity().getName());
 			}
 			req.setAttribute("name", menuEntity.getName());
 			req.setAttribute("type", menuEntity.getType());
@@ -209,86 +331,19 @@ public class MenuManagerController {
 		}
 		String fatherId = req.getParameter("fatherId");
 		if (StringUtil.isNotEmpty(fatherId)) {
-			MenuEntity fatherMenuEntity = this.systemService.getEntity(
-					MenuEntity.class, fatherId);
+			MenuEntity fatherMenuEntity = this.systemService.getEntity(MenuEntity.class, fatherId);
 			req.setAttribute("fatherId", fatherId);
 			req.setAttribute("fatherName", fatherMenuEntity.getName());
-			org.jeecgframework.core.util.LogUtil.info(".....fatherName...."
-					+ fatherMenuEntity.getName());
+			org.jeecgframework.core.util.LogUtil.info(".....fatherName...."+ fatherMenuEntity.getName());
 		}
 		return new ModelAndView("weixin/guanjia/menu/menuinfo");
 	}
-
-	@RequestMapping(params = "su")
-	@ResponseBody
-	public AjaxJson su(MenuEntity menuEntity, HttpServletRequest req,String fatherName) {
-		AjaxJson j = new AjaxJson();
-		String id = oConvertUtils.getString(req.getParameter("id"));
-		
-		if (StringUtil.isNotEmpty(menuEntity.getId())) {
-			
-			MenuEntity tempMenu = this.systemService.getEntity(
-					MenuEntity.class, menuEntity.getId());
-		    MenuEntity menuTemp=new MenuEntity();
-		    if(oConvertUtils.isNotEmpty(fatherName)){
-		    	menuTemp.setId(fatherName);
-		    }
-			tempMenu.setMenuEntity(menuTemp);
-			tempMenu.getMenuEntity().getId();
-			this.message = "更新" + tempMenu.getName() + "的菜单信息信息成功！";
-			try {
-				MyBeanUtils.copyBeanNotNull2Bean(menuEntity, tempMenu);
-				this.weixinMenuService.saveOrUpdate(tempMenu);
-				systemService.addLog(message, Globals.Log_Type_UPDATE,
-						Globals.Log_Leavel_INFO);
-			} catch (Exception e) {
-				this.message = "更新" + tempMenu.getName() + "的菜单信息信息成功！";
-				systemService.addLog(message, Globals.Log_Type_UPDATE,
-						Globals.Log_Leavel_INFO);
-				e.printStackTrace();
-			}
-
-		} else {
-			this.message = "添加" + menuEntity.getName() + "的信息成功！";
-			String fatherId = req.getParameter("fatherId");
-			if (StringUtil.isNotEmpty(fatherName)) {
-				MenuEntity tempMenu = this.systemService.getEntity(
-						MenuEntity.class, fatherName);
-				menuEntity.setMenuEntity(tempMenu);
-			}
-			String accountId = ResourceUtil.getWeiXinAccountId();
-			if (!"-1".equals(accountId)) {
-				this.weixinMenuService.save(menuEntity);
-			} else {
-				j.setSuccess(false);
-				j.setMsg("请添加一个公众帐号。");
-			}
-			systemService.addLog(message, Globals.Log_Type_INSERT,
-					Globals.Log_Leavel_INFO);
-		}
-		return j;
-	}
-
+	
 	@RequestMapping(params = "jumpselect")
 	public ModelAndView jumpselect() {
 		return new ModelAndView("");
 	}
-
-	@RequestMapping(params = "del")
-	@ResponseBody
-	public AjaxJson del(MenuEntity menuEntity, HttpServletRequest req) {
-		AjaxJson j = new AjaxJson();
-		menuEntity = this.systemService.getEntity(MenuEntity.class, menuEntity
-				.getId());
-
-		this.systemService.delete(menuEntity);
-
-		message = "删除" + menuEntity.getName() + "菜单信息数据";
-		systemService.addLog(message, Globals.Log_Type_DEL,
-				Globals.Log_Leavel_INFO);
-		j.setMsg(this.message);
-		return j;
-	}
+	
 
 	@RequestMapping(params = "sameMenu")
 	@ResponseBody
@@ -307,7 +362,7 @@ public class MenuManagerController {
 					+ "'  order by  orders asc";
 			List<MenuEntity> childList = this.systemService
 					.findByQueryString(hqls);
-			// org.jeecgframework.core.util.LogUtil.info("....二级菜单的大小....." + childList.size());
+			org.jeecgframework.core.util.LogUtil.info("....二级菜单的大小....." + childList.size());
 			if (childList.size() == 0) {
 				if("view".equals(entity.getType())){
 					ViewButton viewButton = new ViewButton();
@@ -323,7 +378,8 @@ public class MenuManagerController {
 					firstArr[a] = cb;
 				}
 			
-			} else {
+			}
+			else {
 				ComplexButton complexButton = new ComplexButton();
 				complexButton.setName(entity.getName());
 
