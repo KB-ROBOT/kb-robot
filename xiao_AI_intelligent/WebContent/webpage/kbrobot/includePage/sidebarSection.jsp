@@ -60,7 +60,7 @@
 				</a>
 				<ul>
 					<li>
-						<a href="overview-Q&A.html">问答总览</a>
+						<a href="robotQuestionController.do?questionList">问答总览</a>
 					</li>
 					<li>
 						<a href="add-question.html">添加问题</a>

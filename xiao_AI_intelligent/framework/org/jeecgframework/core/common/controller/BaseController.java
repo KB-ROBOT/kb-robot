@@ -46,8 +46,7 @@ public class BaseController {
 	 * @author Alexander
 	 * @date 20131022
 	 */
-	public List<?> pageBaseMethod(HttpServletRequest request,
-			DetachedCriteria dc, CommonService commonService, int pageRow) {
+	public List<?> pageBaseMethod(HttpServletRequest request, DetachedCriteria dc, CommonService commonService, int pageRow) {
 		// 当前页
 		// 总条数
 		// 总页数

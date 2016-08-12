@@ -612,8 +612,7 @@ public abstract class GenericBaseCommonDao<T, PK extends Serializable>
 	 */
 	public PageList getPageList(final CriteriaQuery cq, final boolean isOffset) {
 
-		Criteria criteria = cq.getDetachedCriteria().getExecutableCriteria(
-				getSession());
+		Criteria criteria = cq.getDetachedCriteria().getExecutableCriteria(getSession());
 		CriteriaImpl impl = (CriteriaImpl) criteria;
 		// 先把Projection和OrderBy条件取出来,清空两者来执行Count操作
 		Projection projection = impl.getProjection();
@@ -637,32 +636,29 @@ public abstract class GenericBaseCommonDao<T, PK extends Serializable>
 			criteria.setFirstResult(offset);
 			criteria.setMaxResults(cq.getPageSize());
 			if (cq.getIsUseimage() == 1) {
-				toolBar = PagerUtil.getBar(cq.getMyAction(), cq.getMyForm(),
-						allCounts, curPageNO, pageSize, cq.getMap());
-			} else {
-				toolBar = PagerUtil.getBar(cq.getMyAction(), allCounts,
-						curPageNO, pageSize, cq.getMap());
+				toolBar = PagerUtil.getBar(cq.getMyAction(), cq.getMyForm(),allCounts, curPageNO, pageSize, cq.getMap());
+			}
+			else {
+				toolBar = PagerUtil.getBar(cq.getMyAction(), allCounts,curPageNO, pageSize, cq.getMap());
 			}
 		} else {
 			pageSize = allCounts;
 		}
-		return new PageList(criteria.list(), toolBar, offset, curPageNO,
-				allCounts);
+		return new PageList(criteria.list(), toolBar, offset, curPageNO,allCounts);
 	}
 
 	/**
 	 * 返回JQUERY datatables DataTableReturn模型对象
 	 */
-	public DataTableReturn getDataTableReturn(final CriteriaQuery cq,
-			final boolean isOffset) {
+	public DataTableReturn getDataTableReturn(final CriteriaQuery cq, final boolean isOffset) {
 
 		Criteria criteria = cq.getDetachedCriteria().getExecutableCriteria(
 				getSession());
 		CriteriaImpl impl = (CriteriaImpl) criteria;
 		// 先把Projection和OrderBy条件取出来,清空两者来执行Count操作
 		Projection projection = impl.getProjection();
-		final int allCounts = ((Long) criteria.setProjection(
-				Projections.rowCount()).uniqueResult()).intValue();
+		final int allCounts = ((Long) criteria.setProjection(Projections.rowCount()).uniqueResult()).intValue();
+		
 		criteria.setProjection(projection);
 		if (projection == null) {
 			criteria.setResultTransformer(CriteriaSpecification.ROOT_ENTITY);
@@ -673,8 +669,7 @@ public abstract class GenericBaseCommonDao<T, PK extends Serializable>
 			cq.setOrder(cq.getOrdermap());
 		}
 		int pageSize = cq.getPageSize();// 每页显示数
-		int curPageNO = PagerUtil.getcurPageNo(allCounts, cq.getCurPage(),
-				pageSize);// 当前页
+		int curPageNO = PagerUtil.getcurPageNo(allCounts, cq.getCurPage(),pageSize);// 当前页
 		int offset = PagerUtil.getOffset(allCounts, curPageNO, pageSize);
 		if (isOffset) {// 是否分页
 			criteria.setFirstResult(offset);
@@ -682,10 +677,9 @@ public abstract class GenericBaseCommonDao<T, PK extends Serializable>
 		} else {
 			pageSize = allCounts;
 		}
-		DetachedCriteriaUtil.selectColumn(cq.getDetachedCriteria(), cq
-				.getField().split(","), cq.getEntityClass(), false);
-		return new DataTableReturn(allCounts, allCounts, cq.getDataTables()
-				.getEcho(), criteria.list());
+		DetachedCriteriaUtil.selectColumn(cq.getDetachedCriteria(), cq.getField().split(","), cq.getEntityClass(), false);
+		
+		return new DataTableReturn(allCounts, allCounts, cq.getDataTables().getEcho(), criteria.list());
 	}
 
 	/**

@@ -1,14 +1,18 @@
 package com.kbrobot.controller.core;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.jeecgframework.core.common.controller.BaseController;
 import org.jeecgframework.core.common.hibernate.qbc.CriteriaQuery;
+import org.jeecgframework.core.common.hibernate.qbc.PageList;
 import org.jeecgframework.core.common.model.json.AjaxJson;
 import org.jeecgframework.core.common.model.json.DataGrid;
 import org.jeecgframework.core.constant.Globals;
 import org.jeecgframework.core.util.MyBeanUtils;
+import org.jeecgframework.core.util.ResourceUtil;
 import org.jeecgframework.core.util.StringUtil;
 import org.jeecgframework.tag.core.easyui.TagUtil;
 import org.jeecgframework.web.system.service.SystemService;
@@ -52,6 +56,38 @@ public class RobotQuestionController extends BaseController {
 	public void setMessage(String message) {
 		this.message = message;
 	}
+	
+	/**
+	 * 分页
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(params = "questionList")
+	public ModelAndView questionList(HttpServletRequest request){
+		
+		//获取当前微信账户id
+		String accountId = ResourceUtil.getWeiXinAccountId();
+		//当前页码
+		String curPageNO = request.getParameter("curPageNO");
+		if(StringUtil.isEmpty(curPageNO)){
+			curPageNO = "1";
+		}
+		//
+		//request.getParameter("")
+		
+		CriteriaQuery cq = new CriteriaQuery(RobotQuestionEntity.class, Integer.valueOf(curPageNO));
+		cq.eq("accoundId", accountId);
+		//cq.like("", "");
+		cq.setPageSize(3);
+		cq.setMyAction("./robotQuestionController.do?questionList");
+		PageList questionPageList = systemService.getPageList(cq, true);
+		
+		//List<RobotQuestionEntity> questionList = robotQuestionService.findByProperty(RobotQuestionEntity.class, "accoundId", accountId);
+		request.setAttribute("questionPageList", questionPageList);
+		
+		return new ModelAndView("kbrobot/overview-Q&A");
+	}
+	
 
 
 	/**
@@ -62,24 +98,6 @@ public class RobotQuestionController extends BaseController {
 	@RequestMapping(params = "robotQuestion")
 	public ModelAndView robotQuestion(HttpServletRequest request) {
 		return new ModelAndView("com/buss/com.kbrobot.entity/robotQuestionList");
-	}
-
-	/**
-	 * easyui AJAX请求数据
-	 * 
-	 * @param request
-	 * @param response
-	 * @param dataGrid
-	 * @param user
-	 */
-
-	@RequestMapping(params = "datagrid")
-	public void datagrid(RobotQuestionEntity robotQuestion,HttpServletRequest request, HttpServletResponse response, DataGrid dataGrid) {
-		CriteriaQuery cq = new CriteriaQuery(RobotQuestionEntity.class, dataGrid);
-		//查询条件组装器
-		org.jeecgframework.core.extend.hqlsearch.HqlGenerateUtil.installHql(cq, robotQuestion, request.getParameterMap());
-		this.robotQuestionService.getDataGridReturn(cq, true);
-		TagUtil.datagrid(response, dataGrid);
 	}
 
 	/**
