@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.codehaus.jackson.annotate.JsonBackReference;
 import org.jeecgframework.core.common.entity.IdEntity;
 
 @Entity
@@ -92,11 +93,14 @@ public class NewsItem extends IdEntity {
 	public void setContent(String content) {
 		this.content = content;
 	}
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="templateid")
+	@JsonBackReference
 	public NewsTemplate getNewsTemplate() {
 		return newsTemplate;
 	}
+	@JsonBackReference
 	public void setNewsTemplate(NewsTemplate newsTemplate) {
 		this.newsTemplate = newsTemplate;
 	}

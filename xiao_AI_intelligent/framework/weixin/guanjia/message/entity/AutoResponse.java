@@ -11,7 +11,7 @@ import org.jeecgframework.core.common.entity.IdEntity;
 public class AutoResponse extends IdEntity {
 
 	private String keyWord;
-	private String resContent;
+	private String templateId;
 	private String templateName;// 关联模板名称
 	private String addTime;
 	private String msgType;
@@ -35,13 +35,13 @@ public class AutoResponse extends IdEntity {
 		this.keyWord = keyWord;
 	}
 
-	@Column(name = "rescontent")
-	public String getResContent() {
-		return resContent;
+	@Column(name = "templateid")
+	public String getTemplateId() {
+		return templateId;
 	}
 
-	public void setResContent(String resContent) {
-		this.resContent = resContent;
+	public void setTemplateId(String templateId) {
+		this.templateId = templateId;
 	}
 
 	@Column(name = "addtime")

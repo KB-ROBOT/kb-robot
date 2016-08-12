@@ -43,6 +43,69 @@ public class AutoResponseController {
 	@Autowired
 	private WeixinAccountServiceI weixinAccountService;
 	private String message;
+	
+	
+	/**
+     * 保存关键字修改
+     * @param autoResponse
+     * @param req
+     * @return
+     */
+	@RequestMapping(params = "doSave")
+	@ResponseBody
+	public AjaxJson doSave(AutoResponse autoResponse, HttpServletRequest req) {
+		
+		String templateName = "";
+		AjaxJson j = new AjaxJson();
+		String id = autoResponse.getId();
+		if (StringUtil.isNotEmpty(id)) {
+			AutoResponse tempAutoResponse = this.autoResponseService.getEntity(
+					AutoResponse.class, autoResponse.getId());
+			//获取模板文名字
+			templateName = getTempName(autoResponse.getMsgType(), autoResponse.getTemplateId());
+			autoResponse.setTemplateName(templateName);
+			this.message = "修改关键字回复成功！";
+			try {
+				MyBeanUtils.copyBeanNotNull2Bean(autoResponse, tempAutoResponse);
+				this.autoResponseService.saveOrUpdate(tempAutoResponse);
+				
+				systemService.addLog(message, Globals.Log_Type_UPDATE,Globals.Log_Leavel_INFO);
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			
+			autoResponse.setAddTime(DateUtils.date_sdf.format(new Date()));
+			String templateId = autoResponse.getTemplateId();
+			String msgType = autoResponse.getMsgType();
+			templateName = getTempName(msgType, templateId);
+			autoResponse.setTemplateName(templateName);
+			String accountId = ResourceUtil.getWeiXinAccountId();
+			if (!"-1".equals(accountId)) {
+				autoResponse.setAccountId(ResourceUtil.getWeiXinAccountId());
+				this.autoResponseService.save(autoResponse);
+			} else {
+				j.setSuccess(false);
+				j.setMsg("请添加一个公众帐号。");
+			}
+		}
+		return j;
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
     
 	/*
 	 * 转向列表
@@ -115,7 +178,7 @@ public class AutoResponseController {
 		if (StringUtil.isNotEmpty(id)) {
 			AutoResponse autoResponse = this.autoResponseService.getEntity(AutoResponse.class, id);
 			String msgType = autoResponse.getMsgType();
-			String resContent = autoResponse.getResContent();
+			String resContent = autoResponse.getTemplateId();
 			String keyWord = autoResponse.getKeyWord();
 			String templateName = autoResponse.getTemplateName();
 			req.setAttribute("msgType", msgType);
@@ -127,54 +190,6 @@ public class AutoResponseController {
 	
 	}
 	
-    /**
-     * 保存关键字修改
-     * @param autoResponse
-     * @param req
-     * @return
-     */
-	@RequestMapping(params = "doSave")
-	@ResponseBody
-	public AjaxJson doSave(AutoResponse autoResponse, HttpServletRequest req) {
-		
-		String templateName = "";
-		AjaxJson j = new AjaxJson();
-		String id = autoResponse.getId();
-		if (StringUtil.isNotEmpty(id)) {
-			AutoResponse tempAutoResponse = this.autoResponseService.getEntity(
-					AutoResponse.class, autoResponse.getId());
-			//获取模板文名字
-			templateName = getTempName(autoResponse.getMsgType(), autoResponse.getResContent());
-			autoResponse.setTemplateName(templateName);
-			this.message = "修改关键字回复成功！";
-			try {
-				MyBeanUtils.copyBeanNotNull2Bean(autoResponse, tempAutoResponse);
-				this.autoResponseService.saveOrUpdate(tempAutoResponse);
-				
-				systemService.addLog(message, Globals.Log_Type_UPDATE,Globals.Log_Leavel_INFO);
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} else {
-			
-			autoResponse.setAddTime(DateUtils.date_sdf.format(new Date()));
-			String templateId = autoResponse.getResContent();
-			String msgType = autoResponse.getMsgType();
-			templateName = getTempName(msgType, templateId);
-			autoResponse.setTemplateName(templateName);
-			String accountId = ResourceUtil.getWeiXinAccountId();
-			if (!"-1".equals(accountId)) {
-				autoResponse.setAccountId(ResourceUtil.getWeiXinAccountId());
-				this.autoResponseService.save(autoResponse);
-			} else {
-				j.setSuccess(false);
-				j.setMsg("请添加一个公众帐号。");
-			}
-		}
-		return j;
-		
-	}
 	
 	/**
 	 * 获取模板文件名字

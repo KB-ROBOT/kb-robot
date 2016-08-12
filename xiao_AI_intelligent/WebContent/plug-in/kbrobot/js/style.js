@@ -23,23 +23,6 @@ $(document).ready(function () {
 		});
 	});
 
-	$('.news span').click(function(){
-		$('.news span').removeClass('curre');
-		var newtId = $(this).attr('data');
-		$('.new-conts .new').hide();
-		$('#' + newtId).show();
-		$(this).addClass('curre');
-	});
-
-	$('.fans-content p.nav-define').click(function(){
-		$('.define-none').hide();
-		$('.fans-content p.nav-define').removeClass('on');
-		var defineId = $(this).attr('data');
-		$('.defines .define').hide();
-		$('#' + defineId).show();
-		$(this).addClass('on');
-	});
-
 
 	//文本返回
 	$('.tab-pane').click(function(){
@@ -57,6 +40,7 @@ $(document).ready(function () {
 
 		$(this).parent().parent().hide().siblings('.choose-btn').show();
 	});
+	
 	
 	//tab选项卡
 	$('.tabs li').click(function(){

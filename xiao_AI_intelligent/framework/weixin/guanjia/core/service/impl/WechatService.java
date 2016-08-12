@@ -270,7 +270,7 @@ public class WechatService {
 				respMessage = MessageUtil.textMessageToXml(textMessage);
 			}
 			else if (MessageUtil.RESP_MESSAGE_TYPE_NEWS.equals(resMsgType)) {//图文
-				List<NewsItem> newsList = this.newsItemService.findByProperty(NewsItem.class,"newsTemplate.id", autoResponse.getResContent());
+				List<NewsItem> newsList = this.newsItemService.findByProperty(NewsItem.class,"newsTemplate.id", autoResponse.getTemplateId());
 				//NewsTemplate newsTemplate = newsTemplateService.getEntity(NewsTemplate.class, autoResponse.getResContent());
 				List<Article> articleList = new ArrayList<Article>();
 				for (NewsItem news : newsList) {

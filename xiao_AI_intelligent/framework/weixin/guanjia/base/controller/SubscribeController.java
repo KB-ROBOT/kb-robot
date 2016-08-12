@@ -43,7 +43,70 @@ public class SubscribeController {
 	private String message;
 
 	
-	
+	/**
+	 * 添加欢迎语
+	 * @param subscribe
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(params = "su")
+	@ResponseBody
+	public AjaxJson su(Subscribe subscribe, HttpServletRequest req) {
+		String accountId = ResourceUtil.getWeiXinAccountId();
+		AjaxJson j = new AjaxJson();
+		String id = subscribe.getId();
+		if (StringUtil.isNotEmpty(id)) {
+
+			Subscribe tempAutoResponse = this.subscribeService.getEntity(
+					Subscribe.class, subscribe.getId());
+			this.message = "修改关文本模板成功！";
+			try {
+				MyBeanUtils.copyBeanNotNull2Bean(subscribe, tempAutoResponse);
+				this.subscribeService.saveOrUpdate(tempAutoResponse);
+				systemService.addLog(message, Globals.Log_Type_UPDATE,
+						Globals.Log_Leavel_INFO);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		else {
+			//判断当前公众帐号是否已经配置欢迎语
+			int size = subscribeService.findByProperty(Subscribe.class, "accountid", accountId).size();				
+			//如果集合不为0
+			if(size!=0){
+				j.setSuccess(false);
+				j.setMsg("每个公众帐号只能配置一个欢迎语。");
+				return j;
+			}
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			subscribe.setAddTime(sdf.format(new Date()));
+			String templateId = subscribe.getTemplateId();
+			String msgType = subscribe.getMsgType();
+			String templateName = "";
+			if ("text".equals(msgType)) {
+				TextTemplate textTemplate = this.subscribeService.getEntity(TextTemplate.class, templateId);
+				if (textTemplate != null) {
+					templateName = textTemplate.getTemplateName();
+				}
+			} else if ("news".equals(msgType)) {
+				NewsTemplate newsTemplate = this.subscribeService.getEntity(NewsTemplate.class, templateId);
+				if (newsTemplate != null) {
+					templateName = newsTemplate.getTemplateName();
+				}
+			}
+			org.jeecgframework.core.util.LogUtil.info(".....templateName......"+templateName);
+			subscribe.setTemplateName(templateName);
+			subscribe.setAccountid(ResourceUtil.getWeiXinAccountId());
+			if (!"-1".equals(accountId)) {
+				this.subscribeService.save(subscribe);
+			}
+			else {
+				j.setSuccess(false);
+				j.setMsg("请添加一个公众帐号。");
+			}
+		}
+		return j;
+	}
 	
 	
 	
@@ -100,8 +163,7 @@ public class SubscribeController {
 		req.setAttribute("textList", textList);
 		req.setAttribute("newsList", newsList);
 		if (StringUtil.isNotEmpty(id)) {
-			Subscribe subscribe = this.subscribeService.getEntity(
-					Subscribe.class, id);
+			Subscribe subscribe = this.subscribeService.getEntity(Subscribe.class, id);
 			String lx = subscribe.getMsgType();
 			String templateId = subscribe.getTemplateId();
 			req.setAttribute("lx", lx);
@@ -110,63 +172,7 @@ public class SubscribeController {
 		}
 		return new ModelAndView("weixin/guanjia/gz/gz");
 	}
-
-	@RequestMapping(params = "su")
-	@ResponseBody
-	public AjaxJson su(Subscribe subscribe, HttpServletRequest req) {
-		String accountId = ResourceUtil.getWeiXinAccountId();
-		AjaxJson j = new AjaxJson();
-		String id = subscribe.getId();
-		if (StringUtil.isNotEmpty(id)) {
-
-			Subscribe tempAutoResponse = this.subscribeService.getEntity(
-					Subscribe.class, subscribe.getId());
-			this.message = "修改关文本模板成功！";
-			try {
-				MyBeanUtils.copyBeanNotNull2Bean(subscribe, tempAutoResponse);
-				this.subscribeService.saveOrUpdate(tempAutoResponse);
-				systemService.addLog(message, Globals.Log_Type_UPDATE,
-						Globals.Log_Leavel_INFO);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} else {
-			//判断当前公众帐号是否已经配置欢迎语
-			int size = subscribeService.findByProperty(Subscribe.class, "accountid", accountId).size();				
-			//如果集合不为0
-			if(size!=0){
-				j.setSuccess(false);
-				j.setMsg("每个公众帐号只能配置一个欢迎语。");
-				return j;
-			}
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			subscribe.setAddTime(sdf.format(new Date()));
-			String templateId = subscribe.getTemplateId();
-			String msgType = subscribe.getMsgType();
-			String templateName = "";
-			if ("text".equals(msgType)) {
-				TextTemplate textTemplate = this.subscribeService.getEntity(TextTemplate.class, templateId);
-				if (textTemplate != null) {
-					templateName = textTemplate.getTemplateName();
-				}
-			} else if ("news".equals(msgType)) {
-				NewsTemplate newsTemplate = this.subscribeService.getEntity(NewsTemplate.class, templateId);
-				if (newsTemplate != null) {
-					templateName = newsTemplate.getTemplateName();
-				}
-			}
-			org.jeecgframework.core.util.LogUtil.info(".....templateName......"+templateName);
-			subscribe.setTemplateName(templateName);
-			subscribe.setAccountid(ResourceUtil.getWeiXinAccountId());
-			if (!"-1".equals(accountId)) {
-				this.subscribeService.save(subscribe);
-			} else {
-				j.setSuccess(false);
-				j.setMsg("请添加一个公众帐号。");
-			}
-		}
-		return j;
-	}
+	
 
 	public String getMessage() {
 		return message;

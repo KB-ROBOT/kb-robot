@@ -103,16 +103,13 @@ public class WeixinAccountController extends BaseController {
 	 */
 	@RequestMapping(params = "doDel")
 	@ResponseBody
-	public AjaxJson doDel(WeixinAccountEntity weixinAccount,
-			HttpServletRequest request) {
+	public AjaxJson doDel(WeixinAccountEntity weixinAccount,HttpServletRequest request) {
 		AjaxJson j = new AjaxJson();
-		weixinAccount = systemService.getEntity(WeixinAccountEntity.class,
-				weixinAccount.getId());
+		weixinAccount = systemService.getEntity(WeixinAccountEntity.class,weixinAccount.getId());
 		message = "微信公众帐号信息删除成功";
 		try {
 			weixinAccountService.delete(weixinAccount);
-			systemService.addLog(message, Globals.Log_Type_DEL,
-					Globals.Log_Leavel_INFO);
+			systemService.addLog(message, Globals.Log_Type_DEL,Globals.Log_Leavel_INFO);
 		} catch (Exception e) {
 			e.printStackTrace();
 			message = "微信公众帐号信息删除失败";

@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:util="http://www.springframework.org/schema/util"
-	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:task="http://www.springframework.org/schema/task"
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:util="http://www.springframework.org/schema/util" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
@@ -16,8 +13,7 @@
 
 	<!-- 加载service,此时要排除要controller,因为controller已经spring-mvc中加载过了 -->
 	<context:component-scan base-package="org.jeecgframework.web.*,weixin.*,com.kbrobot.*">
-		<context:exclude-filter type="annotation"
-			expression="org.springframework.stereotype.Controller" />
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 
 	<!-- 引入属性文件 -->
@@ -37,8 +33,7 @@
 		<property name="minIdle" value="5" />
 		<!-- 获取连接最大等待时间 -->
 		<property name="maxWait" value="60000" />
-		<!-- <property name="poolPreparedStatements" value="true" /> <property 
-			name="maxPoolPreparedStatementPerConnectionSize" value="33" /> -->
+		<!-- <property name="poolPreparedStatements" value="true" /> <property name="maxPoolPreparedStatementPerConnectionSize" value="33" /> -->
 		<property name="validationQuery" value="${validationQuery.sqlserver}" />
 		<property name="testOnBorrow" value="false" />
 		<property name="testOnReturn" value="false" />
@@ -77,8 +72,7 @@
 		</property>
 		<property name="defaultTargetDataSource" ref="dataSource_jeecg" />
 	</bean>
-	<bean id="sessionFactory"
-		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="entityInterceptor" ref="hiberAspect" />
 		<property name="hibernateProperties">
@@ -115,19 +109,16 @@
 	</bean>
 
 	<!-- JDBC配置 -->
-	<bean id="namedParameterJdbcTemplate"
-		class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+	<bean id="namedParameterJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
 		<constructor-arg ref="dataSource" />
 	</bean>
 
 	<!-- 配置事物管理器，在*ServiceImpl里写@Transactional就可以启用事物管理 -->
-	<bean name="transactionManager"
-		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+	<bean name="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<!-- JSR303 Validator定义 -->
-	<bean id="validator"
-		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
 </beans>
