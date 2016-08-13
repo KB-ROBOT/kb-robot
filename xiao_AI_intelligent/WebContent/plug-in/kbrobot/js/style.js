@@ -51,22 +51,6 @@ $(document).ready(function () {
 		$(this).addClass('curr');
 	});
 
-	$("#add_Que_similar").click(function(){
-		$("#add_similar").append(function(n){
-			return "<div class=\"form-group simi_group\">\
-			<label class=\"control-label\">相似问法</label>\
-			<div class=\"input-group input-group-minimal\">\
-			<input class=\"form-control\" type=\"text\">\
-			<span class=\"input-group-btn\">\
-			<a href=\"javascript:;\" class=\"btn btn-white del_Que_similar\">\
-			<i class=\"fa fa-minus-square-o\"></i>\
-			</a>\
-			</span>\
-			</div>\
-			</div>";
-		});
-	});
-
 	//滑块
 
 	$(function() {

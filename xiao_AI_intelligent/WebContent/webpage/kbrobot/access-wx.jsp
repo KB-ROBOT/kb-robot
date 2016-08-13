@@ -20,6 +20,7 @@
 		var url = "./robotBindController.do?mediaSourceFind";
 		$.ajax({
 			url : url,// 请求的action路径
+			type : 'post',
 			dataType : "json",
 			success : function(data) {
 				textTemplateList = data.attributes.textTemplateList;
@@ -113,6 +114,7 @@
 
 			$.ajax({
 				url : url,// 请求的action路径
+				type : 'post',
 				dataType : "json",
 				data : data,
 				success : function(data) {
@@ -131,6 +133,7 @@
 			var url = './menuManagerController.do?su';
 			$.ajax({
 				url : url,// 请求的action路径
+				type : 'post',
 				dataType : "json",
 				data : {
 					"name" : menuName,
@@ -174,6 +177,7 @@
 				var url = './menuManagerController.do?menuEnetityDetail';
 				$.ajax({
 					url : url,// 请求的action路径
+					type : 'post',
 					dataType : "json",
 					data : {
 						"id":menuId
@@ -245,6 +249,7 @@
 			var url = './menuManagerController.do?su';
 			$.ajax({
 				url : url,// 请求的action路径
+				type : 'post',
 				dataType : "json",
 				data : menuObject,
 				success : function(data) {
@@ -266,6 +271,7 @@
 					var url = './menuManagerController.do?del';
 					$.ajax({
 						url : url,// 请求的action路径
+						type : 'post',
 						dataType : "json",
 						data : {"id":menuId},
 						success : function(data) {
@@ -302,6 +308,7 @@
 					var url = './weixinAccountController.do?doDel';
 					$.ajax({
 						url : url,// 请求的action路径
+						type : 'post',
 						dataType : "json",
 						data : {"id":accountId},
 						success : function(data) {

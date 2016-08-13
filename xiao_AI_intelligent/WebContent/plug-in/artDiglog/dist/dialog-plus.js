@@ -659,7 +659,7 @@ $.extend(Popup.prototype, {
 
 
 /** 当前叠加高度 */
-Popup.zIndex = 1024;
+Popup.zIndex = 1070;
 
 
 /** 顶层浮层的实例 */

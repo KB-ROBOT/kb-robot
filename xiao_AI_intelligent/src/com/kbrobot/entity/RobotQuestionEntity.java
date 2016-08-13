@@ -1,9 +1,15 @@
 package com.kbrobot.entity;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DynamicInsert;
@@ -32,6 +38,10 @@ public class RobotQuestionEntity implements java.io.Serializable {
 	private java.lang.String questionAnswer;
 	/**accoundId*/
 	private java.lang.String accoundId;
+	/**
+	 * 相似问题
+	 */
+	private List<RobotSimilarQuestionEntity> similarQuestionList;
 	/**createTime*/
 	private java.util.Date createTime;
 	/**updateTime*/
@@ -155,4 +165,20 @@ public class RobotQuestionEntity implements java.io.Serializable {
 	public void setMatchTimes(java.lang.Integer matchTimes){
 		this.matchTimes = matchTimes;
 	}
+	
+	/**
+	 * 相似问题
+	 * @return
+	 */
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name="question_id")
+	public List<RobotSimilarQuestionEntity> getSimilarQuestionList() {
+		return similarQuestionList;
+	}
+	public void setSimilarQuestionList(List<RobotSimilarQuestionEntity> similarQuestionList) {
+		this.similarQuestionList = similarQuestionList;
+	}
+	
+	
+	
 }

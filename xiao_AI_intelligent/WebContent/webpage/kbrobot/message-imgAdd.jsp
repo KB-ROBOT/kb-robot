@@ -228,7 +228,7 @@
 					data : newsTemplate,// {"newsTemplate":newsTemplate},
 					success : function(data) {
 						if (data.success) {
-							setTimeout("location.href='newsTemplateController.do?newsList'", 500);
+							setTimeout("location.href='newsTemplateController.do?newsList'", 100);
 						} else {
 							dialog({
 								content : data.msg,

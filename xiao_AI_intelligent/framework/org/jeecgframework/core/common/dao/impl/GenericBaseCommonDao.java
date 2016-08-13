@@ -617,8 +617,8 @@ public abstract class GenericBaseCommonDao<T, PK extends Serializable>
 		CriteriaImpl impl = (CriteriaImpl) criteria;
 		// 先把Projection和OrderBy条件取出来,清空两者来执行Count操作
 		Projection projection = impl.getProjection();
-		final int allCounts = ((Long) criteria.setProjection(
-				Projections.rowCount()).uniqueResult()).intValue();
+		final int allCounts = ((Long) criteria.setProjection(Projections.rowCount()).uniqueResult()).intValue();
+		
 		criteria.setProjection(projection);
 		if (projection == null) {
 			criteria.setResultTransformer(CriteriaSpecification.ROOT_ENTITY);
@@ -629,8 +629,7 @@ public abstract class GenericBaseCommonDao<T, PK extends Serializable>
 			cq.setOrder(cq.getOrdermap());
 		}
 		int pageSize = cq.getPageSize();// 每页显示数
-		int curPageNO = PagerUtil.getcurPageNo(allCounts, cq.getCurPage(),
-				pageSize);// 当前页
+		int curPageNO = PagerUtil.getcurPageNo(allCounts, cq.getCurPage(), pageSize);// 当前页
 		int offset = PagerUtil.getOffset(allCounts, curPageNO, pageSize);
 		//String toolBar = "";
 		Pager pager = null;

@@ -6529,7 +6529,7 @@ var fillCharReg = new RegExp(domUtils.fillChar, 'g');
             autoClearEmptyNode: true,
             fullscreen: false,
             readonly: false,
-            zIndex: 999,
+            zIndex: 1050,
             imagePopup: true,
             enterTag: 'p',
             customDomain: false,

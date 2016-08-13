@@ -8,7 +8,7 @@
 		</div>
 		<ul id="main-menu" class="main-menu">
 			<li class="active">
-				<a href="home.html">
+				<a href="loginController.do?login">
 					<i class="fa fa-home"></i>
 					<span>首页</span>
 				</a>
@@ -63,7 +63,7 @@
 						<a href="robotQuestionController.do?questionList">问答总览</a>
 					</li>
 					<li>
-						<a href="add-question.html">添加问题</a>
+						<a href="robotQuestionController.do?goQuestionAdd">添加问题</a>
 					</li>
 				</ul>
 			</Li>

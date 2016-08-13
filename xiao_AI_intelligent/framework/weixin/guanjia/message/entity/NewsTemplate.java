@@ -46,7 +46,7 @@ public class NewsTemplate extends IdEntity{
 		this.addTime = addTime;
 	}
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinColumn(name="templateid")  
+	@JoinColumn(name="templateid")
 	public List<NewsItem> getNewsItemList() {
 		return newsItemList;
 	}

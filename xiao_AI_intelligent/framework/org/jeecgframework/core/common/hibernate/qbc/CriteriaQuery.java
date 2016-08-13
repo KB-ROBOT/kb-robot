@@ -450,8 +450,8 @@ public class CriteriaQuery implements Serializable {
 	 */
 	public void like(String keyname, Object keyvalue) {
 		if (keyvalue != null && keyvalue != "") {
-			//criterionList.addPara(Restrictions.like(keyname, "%" + keyvalue+ "%"));
-			criterionList.addPara(Restrictions.like(keyname, keyvalue));
+			criterionList.addPara(Restrictions.like(keyname, "%" + keyvalue+ "%"));
+			//criterionList.addPara(Restrictions.like(keyname, keyvalue));
 			if (flag) {
 				this.put(keyname, keyvalue);
 			}
