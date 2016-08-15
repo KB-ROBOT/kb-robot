@@ -129,6 +129,9 @@
 						<value>ltpController.do?ltptest</value>
 						<!-- 验证码 -->
 						<value>loginController.do?initRandomCode</value>
+						<!-- 答案详情 -->
+						<value>robotQuestionController.do?getQuestionAnswerContent</value>
+						<value>robotQuestionController.do?getQuestionAnswerContent=</value>
 					</list>
 				</property>
 				<!-- 模糊匹配 -->

@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kbrobot.entity.RobotQuestionEntity;
+import com.kbrobot.entity.RobotSimilarQuestionEntity;
 import com.kbrobot.service.RobotQuestionServiceI;
 import com.kbrobot.utils.CustomServiceUtil;
 import com.kbrobot.utils.TextCompareUtil;
@@ -301,7 +302,7 @@ public class WechatService {
 		}
 		else {
 			// Step.2  通过微信扩展接口（支持二次开发，例如：翻译，天气）
-			LogUtil.info("------------微信客户端发送请求--------------Step.2  通过微信扩展接口（支持二次开发，例如：翻译，天气）---");
+			//LogUtil.info("------------微信客户端发送请求--------------Step.2  通过微信扩展接口（支持二次开发，例如：翻译，天气）---");
 			//List<WeixinExpandconfigEntity> weixinExpandconfigEntityLst = weixinExpandconfigService.findByQueryString("FROM WeixinExpandconfigEntity");
 			boolean findflag = false;// 是否找到关键字信息
 			/*if (weixinExpandconfigEntityLst.size() != 0) {
@@ -334,14 +335,14 @@ public class WechatService {
 			String speakStr = "";
 //==================================================2.根据消息内容查找回答（1.匹配知识库  [无果]---> 2.图灵智能回答）====================================================================
 			//@知识库
-			@SuppressWarnings("unchecked")
-			List<RobotQuestionEntity> questionList = new ArrayList<RobotQuestionEntity>(robotQuestionService.findByProperty(RobotQuestionEntity.class, "accoundId", sys_accountId));
+			List<RobotQuestionEntity> questionList = robotQuestionService.findByProperty(RobotQuestionEntity.class, "accoundId", sys_accountId);
 			double maxScore = 0;
 			for(RobotQuestionEntity que : questionList){
 				//遍历每个问题并得出相似度
 				String title = que.getQuestionTitle();
 				double currentScore = TextCompareUtil.getSimilarScore(title, content);
 				System.out.println("============相似度：" + currentScore +"\n" + title);
+				
 				//取得当前最大值
 				if(currentScore>maxScore){
 					maxScore = currentScore;
@@ -357,6 +358,32 @@ public class WechatService {
 						break;
 					}
 				}
+				
+				//遍历相似问题进行比较
+				List<RobotSimilarQuestionEntity> similarQueList = que.getSimilarQuestionList();
+				for(RobotSimilarQuestionEntity simliarQue : similarQueList){
+					String similarTile = simliarQue.getSimilarQuestionTitle();
+					
+					currentScore = TextCompareUtil.getSimilarScore(similarTile, content);
+					System.out.println("=======相似问题比较=====相似度：" + currentScore +"\n" + title);
+					
+					//取得当前最大值
+					if(currentScore>maxScore){
+						maxScore = currentScore;
+						textMessage.setContent("问题："+que.getQuestionTitle() +"\n"+ que.getQuestionAnswer());
+						/*
+						 * 设置合成语音字符串
+						 */
+						speakStr = que.getQuestionAnswer();
+						respMessage = MessageUtil.textMessageToXml(textMessage);
+						//如果相似度大于0.95 则判定为已经找到了答案
+						if(maxScore >= 0.95d){
+							findflag = true;
+							break;
+						}
+					}
+				}
+				
 			}
 			//假如最大分数大于当前阈值，则视为找到答案
 			if(maxScore>=0.75d){
@@ -370,9 +397,9 @@ public class WechatService {
 				if(result.get(ResultKey.resultType)==ReturnCode.TEXT){//文本
 					String resultText = result.get(ResultKey.text).toString();
 					textMessage.setContent(resultText);
-					/*
-					 * 设置合成语音字符串
-					 */
+					
+					 //设置合成语音字符串
+					 
 					speakStr = resultText;
 					respMessage = MessageUtil.textMessageToXml(textMessage);
 				}

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.json.JSONObject;
+import weixin.guanjia.core.util.WeixinUtil;
 
 import org.jeewx.api.core.common.WxstoreUtils;
 import org.jeewx.api.core.exception.WexinReqException;
@@ -34,7 +35,7 @@ public class JwThirdAPI {
 	//客服接口地址
     public static String send_message_url = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=ACCESS_TOKEN";
     //4、获取（刷新）授权公众号的令牌
-    private static String api_authorizer_token_url = "https:// api.weixin.qq.com /cgi-bin/component/api_authorizer_token?component_access_token=COMPONENT_ACCESS_TOKEN";
+    private static String api_authorizer_token_url = "https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token=COMPONENT_ACCESS_TOKEN";
     //5、获取授权方的账户信息
     private static String api_get_authorizer_info_url = "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token=COMPONENT_ACCESS_TOKEN";
     //6、获取授权方的选项设置信息
@@ -117,7 +118,12 @@ public class JwThirdAPI {
 		String requestUrl = api_authorizer_token_url.replace("COMPONENT_ACCESS_TOKEN", component_access_token);
 		JSONObject param = JSONObject.fromObject(apiAuthorizerToken);
 		JSONObject result = WxstoreUtils.httpRequest(requestUrl,"POST", param.toString());
+		//JSONObject result = WeixinUtil.httpsRequest(requestUrl,"POST", param.toString());
 		ApiAuthorizerTokenRet apiAuthorizerTokenRet = (ApiAuthorizerTokenRet)JSONObject.toBean(result, ApiAuthorizerTokenRet.class);
+		if (result.has("errcode")) {
+			logger.error("获取第三方平台access_token！errcode=" + result.getString("errcode") + ",errmsg = " + result.getString("errmsg"));
+			throw new WexinReqException("获取第三方平台access_token！errcode=" + result.getString("errcode") + ",errmsg = " + result.getString("errmsg"));
+		}
 		return apiAuthorizerTokenRet;
 	}
 	/**
@@ -128,6 +134,10 @@ public class JwThirdAPI {
 		JSONObject param = JSONObject.fromObject(apiGetAuthorizer);
 		JSONObject result = WxstoreUtils.httpRequest(requestUrl,"POST", param.toString());
 		ApiGetAuthorizerRet apiGetAuthorizerRet = (ApiGetAuthorizerRet)JSONObject.toBean(result, ApiGetAuthorizerRet.class);
+		if (result.has("errcode")) {
+			logger.error("获取第三方平台access_token！errcode=" + result.getString("errcode") + ",errmsg = " + result.getString("errmsg"));
+			throw new WexinReqException("获取第三方平台access_token！errcode=" + result.getString("errcode") + ",errmsg = " + result.getString("errmsg"));
+		}
 		return apiGetAuthorizerRet;
 	}
 	

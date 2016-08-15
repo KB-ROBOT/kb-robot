@@ -212,18 +212,17 @@ public class RobotQuestionController extends BaseController {
 	public ModelAndView goQuestionAdd(){
 		return new ModelAndView("kbrobot/question-add");
 	}
-
+	
 	/**
-	 * 知识库列表页面跳转
-	 * 
+	 * 取得答案的主体内容
 	 * @return
 	 */
-	@RequestMapping(params = "addorupdate")
-	public ModelAndView addorupdate(RobotQuestionEntity robotQuestion, HttpServletRequest req) {
-		if (StringUtil.isNotEmpty(robotQuestion.getId())) {
-			robotQuestion = robotQuestionService.getEntity(RobotQuestionEntity.class, robotQuestion.getId());
-			req.setAttribute("robotQuestionPage", robotQuestion);
-		}
-		return new ModelAndView("com/buss/com.kbrobot.entity/robotQuestion");
+	@RequestMapping(params = {"getQuestionAnswerContent","getQuestionAnswerContent="})
+	public ModelAndView getQuestionAnswerContent(RobotQuestionEntity robotQuestion,HttpServletRequest request){
+		RobotQuestionEntity entity = robotQuestionService.get(RobotQuestionEntity.class, robotQuestion.getId());
+		request.setAttribute("question", entity);
+		
+		return new ModelAndView("kbrobot/questionAnswerContent");
+		
 	}
 }
