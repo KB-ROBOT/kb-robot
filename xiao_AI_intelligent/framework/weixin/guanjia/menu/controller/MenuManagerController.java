@@ -3,6 +3,7 @@ package weixin.guanjia.menu.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.jeecgframework.core.common.hibernate.qbc.CriteriaQuery;
 import org.jeecgframework.core.common.model.json.AjaxJson;
 import org.jeecgframework.core.common.model.json.ComboTree;
@@ -20,10 +22,15 @@ import org.jeecgframework.core.util.LogUtil;
 import org.jeecgframework.core.util.MyBeanUtils;
 import org.jeecgframework.core.util.ResourceUtil;
 import org.jeecgframework.core.util.StringUtil;
-import org.jeecgframework.core.util.oConvertUtils;
 import org.jeecgframework.tag.vo.datatable.SortDirection;
 import org.jeecgframework.tag.vo.easyui.TreeGridModel;
+import org.jeecgframework.web.rest.entity.WeixinOpenAccountEntity;
 import org.jeecgframework.web.system.service.SystemService;
+import org.jeewx.api.core.exception.WexinReqException;
+import org.jeewx.api.third.JwThirdAPI;
+import org.jeewx.api.third.model.ApiAuthorizerToken;
+import org.jeewx.api.third.model.ApiAuthorizerTokenRet;
+import org.jeewx.api.third.model.ApiComponentToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -31,12 +38,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.kbrobot.utils.WeixinThirdUtil;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 import net.sf.json.util.PropertyFilter;
+import weixin.guanjia.account.entity.WeixinAccountEntity;
 import weixin.guanjia.account.service.WeixinAccountServiceI;
-import weixin.guanjia.base.service.WeixinExpandconfigServiceI;
 import weixin.guanjia.core.entity.common.Button;
 import weixin.guanjia.core.entity.common.CommonButton;
 import weixin.guanjia.core.entity.common.ComplexButton;
@@ -62,8 +71,8 @@ public class MenuManagerController {
 	private WeixinAccountServiceI weixinAccountService;
 	@Autowired
 	private WeixinMenuServiceI weixinMenuService;
-	@Autowired
-	private WeixinExpandconfigServiceI weixinExpandconfigService;
+/*	@Autowired
+	private WeixinExpandconfigServiceI weixinExpandconfigService;*/
 	private String message;
 
 	/**
@@ -206,7 +215,7 @@ public class MenuManagerController {
 	public void getSubMenu(HttpServletRequest request,
 			HttpServletResponse response) {
 		String accountid = ResourceUtil.getWeiXinAccountId();
-		String msgType = request.getParameter("msgType");
+		//String msgType = request.getParameter("msgType");
 		String resMsg = "";
 		 JsonConfig config = new JsonConfig();
 		 config.setJsonPropertyFilter(new PropertyFilter(){  
@@ -347,21 +356,18 @@ public class MenuManagerController {
 
 	@RequestMapping(params = "sameMenu")
 	@ResponseBody
-	public AjaxJson sameMenu(MenuEntity menuEntity, HttpServletRequest req) {
+	public AjaxJson sameMenu(MenuEntity menuEntity, HttpServletRequest req) throws WexinReqException {
 		AjaxJson j = new AjaxJson();
-		String hql = "from MenuEntity where fatherid is null and accountId = '"
-				+ ResourceUtil.getWeiXinAccountId() + "'  order by  orders asc";
+		String hql = "from MenuEntity where fatherid is null and accountId = '" + ResourceUtil.getWeiXinAccountId() + "'  order by  orders asc";
+		
 		List<MenuEntity> menuList = this.systemService.findByQueryString(hql);
 		org.jeecgframework.core.util.LogUtil.info(".....一级菜单的个数是....." + menuList.size());
 		Menu menu = new Menu();
 		Button firstArr[] = new Button[menuList.size()];
 		for (int a = 0; a < menuList.size(); a++) {
 			MenuEntity entity = menuList.get(a);
-			String hqls = "from MenuEntity where fatherid = '" + entity.getId()
-					+ "' and accountId = '" + ResourceUtil.getWeiXinAccountId()
-					+ "'  order by  orders asc";
-			List<MenuEntity> childList = this.systemService
-					.findByQueryString(hqls);
+			String hqls = "from MenuEntity where fatherid = '" + entity.getId() + "' and accountId = '" + ResourceUtil.getWeiXinAccountId() + "'  order by  orders asc";
+			List<MenuEntity> childList = this.systemService.findByQueryString(hqls);
 			org.jeecgframework.core.util.LogUtil.info("....二级菜单的大小....." + childList.size());
 			if (childList.size() == 0) {
 				if("view".equals(entity.getType())){
@@ -377,7 +383,6 @@ public class MenuManagerController {
 					cb.setType(entity.getType());
 					firstArr[a] = cb;
 				}
-			
 			}
 			else {
 				ComplexButton complexButton = new ComplexButton();
@@ -401,9 +406,7 @@ public class MenuManagerController {
 						cb1.setType(children.getType());
 						cb1.setKey(children.getMenuKey());
 						secondARR[i] = cb1;
-
 					}
-
 				}
 				complexButton.setSub_button(secondARR);
 				firstArr[a] = complexButton;
@@ -412,8 +415,15 @@ public class MenuManagerController {
 		menu.setButton(firstArr);
 		JSONObject jsonMenu = JSONObject.fromObject(menu);
 		String accessToken = weixinAccountService.getAccessToken();
-		String url = WeixinUtil.menu_create_url.replace("ACCESS_TOKEN",
-				accessToken);
+		
+		if(StringUtil.isEmpty(accessToken)){
+			//可能是第三方接入
+			WeixinAccountEntity weixinEntity = ResourceUtil.getWeiXinAccount();
+			accessToken = WeixinThirdUtil.getInstance().getAuthorizerAccessToken(weixinEntity.getWeixinAccountId());
+		}
+		
+		
+		String url = WeixinUtil.menu_create_url.replace("ACCESS_TOKEN", accessToken);
 		JSONObject jsonObject= new JSONObject();
 		try {
 			jsonObject = WeixinUtil.httpsRequest(url, "POST", jsonMenu.toString());
@@ -431,8 +441,7 @@ public class MenuManagerController {
 		} catch (Exception e) {
 			message = "同步菜单信息数据失败！";
 		}finally{
-			systemService.addLog(message, Globals.Log_Type_DEL,
-					Globals.Log_Leavel_INFO);
+			systemService.addLog(message, Globals.Log_Type_DEL, Globals.Log_Leavel_INFO);
 			j.setMsg(this.message);
 		}
 		return j;
@@ -463,6 +472,8 @@ public class MenuManagerController {
 		treeGrids = systemService.treegrid(menuList, treeGridModel);
 		return treeGrids;
 	}
+	
+	
 
 	public String getMessage() {
 		return message;

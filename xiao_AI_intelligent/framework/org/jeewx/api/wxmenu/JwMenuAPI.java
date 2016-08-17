@@ -54,7 +54,7 @@ public class JwMenuAPI {
 		}
 		return msg;
 	}
-	
+
 	/**
 	 * 获取所有的菜单
 	 * @param accessToken
@@ -91,7 +91,7 @@ public class JwMenuAPI {
 		}
 		return lstButton;
 	}
-	
+
 	/**
 	 * 删除所有的菜单
 	 * @param accessToken
@@ -105,7 +105,7 @@ public class JwMenuAPI {
 		String msg = result.getString(WeiXinConstant.RETURN_ERROR_INFO_MSG);
 		return msg;
 	}
-	
+
 	//update-begin--Author:luobaoli  Date:20150714 for：增加“获取自定义菜单配置接口”功能接口
 	//update-begin--Author:luobaoli  Date:20150715 for：优化该方法的处理逻辑
 	/**
@@ -119,9 +119,9 @@ public class JwMenuAPI {
 		cmcg.setAccess_token(accessToken);
 		JSONObject result = WeiXinReqService.getInstance().doWeinxinReqJson(cmcg);
 		Object error = result.get(WeiXinConstant.RETURN_ERROR_INFO_CODE);
-		
+
 		CustomWeixinButtonConfig customWeixinButtonConfig = (CustomWeixinButtonConfig) JSONObject.toBean(result, new CustomJsonConfig(CustomWeixinButtonConfig.class,"selfmenu_info"));
-		
+
 		JSONObject selfmenuInfo = result.getJSONObject("selfmenu_info");
 		if(selfmenuInfo!=null && !JSONUtils.isNull(selfmenuInfo)){ 
 			/**处理父类菜单 */
@@ -161,51 +161,53 @@ public class JwMenuAPI {
 	}
 	//update-end--Author:luobaoli  Date:20150715 for：优化该方法的处理逻辑
 	//update-end--Author:luobaoli  Date:20150714 for：增加“获取自定义菜单配置接口”功能接口
-	
+
 	public static void main(String[] args){
 		String s="";
 		try {
-			s = "3DGIfJqqupzTPxvq_P-0ATDC2MDjFLqaz8S41SPmRIqLaA3PSb8FgN_PuhpZ5jEB4D6w7ZNeX3gbC3CfSOAz2wt4DxVKi2HD5BCjoecrB0Q";
-//			s = JwTokenAPI.getAccessToken("wx00737224cb9dbc7d","b9479ebdb58d1c6b6efd4171ebe718b5");
-//			s = JwTokenAPI.getAccessToken("wx298c4cc7312063df","fbf8cebf983c931bd7c1bee1498f8605");
+			s = "oDw-LkezyLuP5A83LyKDvMbUA-SkHa12S9xNLLXTQz9EexzZOdnjUIz_SVkcAcUiOVLKvgbFbpTMZix-ulVrZs-j5XRb3obYQak-pz2Vxl1OM3a27MZAR2bu4dv_lCCNXAZaADAMPO";
+			//			s = JwTokenAPI.getAccessToken("wx00737224cb9dbc7d","b9479ebdb58d1c6b6efd4171ebe718b5");
+			//			s = JwTokenAPI.getAccessToken("wx298c4cc7312063df","fbf8cebf983c931bd7c1bee1498f8605");
 			System.out.println(s);
-//			WeixinButton button = new WeixinButton();
+			//			WeixinButton button = new WeixinButton();
 			CustomWeixinButtonConfig cb = JwMenuAPI.getAllMenuConfigure(s);
 			
-//			for(WeixinButton bb : b){
-//				System.out.println(bb.toString());
-//			}
-//			List<WeixinButton> sub_button = new ArrayList<WeixinButton>();
-//			List<WeixinButton> testsUb = new ArrayList<WeixinButton>();
-//			WeixinButton w = new WeixinButton();
-//			w.setName("测试菜单");
-//			testsUb.add(w);
-//			
-//			WeixinButton w1 = new WeixinButton();
-//			/*
-//			   "type": "scancode_waitmsg", 
-//               "name": "扫码带提示", 
-//               "key": "rselfmenu_0_0",
-//            */ 
-//			w1.setName("测试sub菜单");
-//			w1.setKey("rselfmenu_0_0");
-//			w1.setType("scancode_waitmsg");
-//			sub_button.add(w1);
-//			w.setSub_button(sub_button);
-//			
-//			
-//			//s = getMenuButtonJson("button",b);
-//			/*Gson gson = new Gson();
-//			System.out.println(json);*/
-//			s= JwMenuAPI.createMenu(s,testsUb);
-//			System.out.println(s);
+			System.out.println(s);
+
+			//			for(WeixinButton bb : b){
+			//				System.out.println(bb.toString());
+			//			}
+			//			List<WeixinButton> sub_button = new ArrayList<WeixinButton>();
+			//			List<WeixinButton> testsUb = new ArrayList<WeixinButton>();
+			//			WeixinButton w = new WeixinButton();
+			//			w.setName("测试菜单");
+			//			testsUb.add(w);
+			//			
+			//			WeixinButton w1 = new WeixinButton();
+			//			/*
+			//			   "type": "scancode_waitmsg", 
+			//               "name": "扫码带提示", 
+			//               "key": "rselfmenu_0_0",
+			//            */ 
+			//			w1.setName("测试sub菜单");
+			//			w1.setKey("rselfmenu_0_0");
+			//			w1.setType("scancode_waitmsg");
+			//			sub_button.add(w1);
+			//			w.setSub_button(sub_button);
+			//			
+			//			
+			//			//s = getMenuButtonJson("button",b);
+			//			/*Gson gson = new Gson();
+			//			System.out.println(json);*/
+			//			s= JwMenuAPI.createMenu(s,testsUb);
+			//			System.out.println(s);
 		} catch (WexinReqException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	
-	
-	
+
+
+
 }

@@ -39,12 +39,10 @@ import weixin.guanjia.menu.entity.MenuEntity;
 import weixin.guanjia.message.dao.TextTemplateDao;
 import weixin.guanjia.message.entity.AutoResponse;
 import weixin.guanjia.message.entity.NewsItem;
-import weixin.guanjia.message.entity.NewsTemplate;
 import weixin.guanjia.message.entity.ReceiveText;
 import weixin.guanjia.message.entity.TextTemplate;
 import weixin.guanjia.message.service.AutoResponseServiceI;
 import weixin.guanjia.message.service.NewsItemServiceI;
-import weixin.guanjia.message.service.NewsTemplateServiceI;
 import weixin.guanjia.message.service.ReceiveTextServiceI;
 import weixin.guanjia.message.service.TextTemplateServiceI;
 import weixin.idea.extend.function.KeyServiceI;
@@ -58,8 +56,8 @@ public class WechatService {
 	private AutoResponseServiceI autoResponseService;
 	@Autowired
 	private TextTemplateServiceI textTemplateService;
-	@Autowired
-	private NewsTemplateServiceI newsTemplateService;
+	/*@Autowired
+	private NewsTemplateServiceI newsTemplateService;*/
 	@Autowired
 	private ReceiveTextServiceI receiveTextService;
 	@Autowired
@@ -520,7 +518,7 @@ public class WechatService {
 			} else if (MessageUtil.RESP_MESSAGE_TYPE_NEWS.equals(type)) {
 				List<NewsItem> newsList = this.newsItemService.findByProperty(NewsItem.class,"newsTemplate.id", menuEntity.getTemplateId());
 				List<Article> articleList = new ArrayList<Article>();
-				NewsTemplate newsTemplate = newsTemplateService.getEntity(NewsTemplate.class, menuEntity.getTemplateId());
+				//NewsTemplate newsTemplate = newsTemplateService.getEntity(NewsTemplate.class, menuEntity.getTemplateId());
 				for (NewsItem news : newsList) {
 					Article article = new Article();
 					article.setTitle(news.getTitle());

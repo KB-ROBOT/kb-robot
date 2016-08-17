@@ -7,17 +7,22 @@ import java.util.Map;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jeecgframework.core.util.LogUtil;
 import org.json.JSONException;
 
 public class TextCompareUtil {
-
-	/*public static void main(String args[]) throws JSONException, IOException{
-		String str2 = "公司的优势介绍";
-		String str1 = "你好啊";
-		System.out.println(getSimilarScore(str1,str2));
+	
+	/*public static void main(String args[]){
+		String str1 = "计算机是什么";
+		String str2 = "什么是呵呵";
+		
+		try {
+			System.out.println(getSimilarScore(str1,str2));
+		} catch (JSONException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}*/
-
+	
 	/**
 	 * 比较两个文本的相似度
 	 * @param text1
@@ -31,44 +36,45 @@ public class TextCompareUtil {
 		Map<String, Integer> tfMap1 = getTFMap(text1);
 		Map<String, Integer> tfMap2 = getTFMap(text2);
 
-		Map<String, MutablePair<Integer, Integer>> tfs = new HashMap<String, MutablePair<Integer, Integer>>();
-
-		//计算相似度
-		for (String key : tfMap1.keySet()) {
-			MutablePair<Integer, Integer> pair = new MutablePair<Integer, Integer>(tfMap1.get(key), 0);  
-			tfs.put(key, pair);
-		}
-		for (String key : tfMap2.keySet()) {
-			MutablePair<Integer, Integer> pair = tfs.get(key);
-			if (null == pair) {
-				pair = new MutablePair<Integer, Integer>(0, tfMap2.get(key));
-			}
-			else{
-				pair.setRight(tfMap2.get(key));
-			}
-		}
-		double compareResult1 = caclIDF(tfs);
-		
+		Map<String, MutablePair<Integer, Integer>> tfsForward = new HashMap<String, MutablePair<Integer, Integer>>();
 		//计算第二遍
-		tfs = new HashMap<String, MutablePair<Integer, Integer>>();
+		Map<String, MutablePair<Integer, Integer>> tfsBackward = new HashMap<String, MutablePair<Integer, Integer>>();
 
 		//计算相似度
-		for (String key : tfMap2.keySet()) {
-			MutablePair<Integer, Integer> pair = new MutablePair<Integer, Integer>(tfMap2.get(key), 0);  
-			tfs.put(key, pair);
-		}
 		for (String key : tfMap1.keySet()) {
-			MutablePair<Integer, Integer> pair = tfs.get(key);
-			if (null == pair) {
-				pair = new MutablePair<Integer, Integer>(0, tfMap1.get(key));
+			//forward
+			MutablePair<Integer, Integer> pairForward = new MutablePair<Integer, Integer>(tfMap1.get(key), 0);  
+			tfsForward.put(key, pairForward);
+		}
+		for (String key : tfMap2.keySet()) {
+			//froward
+			MutablePair<Integer, Integer> pairForward = tfsForward.get(key);
+			if (null == pairForward) {
+				pairForward = new MutablePair<Integer, Integer>(0, tfMap2.get(key));
 			}
 			else{
-				pair.setRight(tfMap1.get(key));
+				pairForward.setRight(tfMap2.get(key));
+			}
+			
+			//backward
+			MutablePair<Integer, Integer> pairBackward = new MutablePair<Integer, Integer>(tfMap2.get(key), 0);  
+			tfsBackward.put(key, pairBackward);
+			
+		}
+		for(String key : tfMap1.keySet()){
+			//backward
+			MutablePair<Integer, Integer> pairBackward = tfsBackward.get(key);
+			if (null == pairBackward) {
+				pairBackward = new MutablePair<Integer, Integer>(0, tfMap1.get(key));
+			}
+			else{
+				pairBackward.setRight(tfMap1.get(key));
 			}
 		}
 		
-		double compareResult2 = caclIDF(tfs);
-
+		double compareResult1 = caclIDF(tfsForward);
+		double compareResult2 = caclIDF(tfsBackward);
+		
 		return (compareResult1 + compareResult2)/2.0;
 	}
 
@@ -109,7 +115,7 @@ public class TextCompareUtil {
 		double sqdoc1 = 0;  
 		double sqdoc2 = 0;  
 		Pair<Integer, Integer> count = null;
-		for (String key : tf.keySet()) {  
+		for (String key : tf.keySet()) {
 			count = tf.get(key);  
 			denominator += count.getLeft() * count.getRight();
 			sqdoc1 += count.getLeft() * count.getLeft();

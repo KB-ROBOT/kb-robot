@@ -22,8 +22,6 @@
 		//UM测试
 		//UM.getEditor('content_1');
 		
-		var captchaIsOk = false;
-
 		//获得验证码 
 		var handler = function(captchaObj) {
 			// 将验证码加到id为captcha的元素里
@@ -31,65 +29,25 @@
 			$("#userName,#password").focus(function() {
 				captchaObj.refresh();
 				$("#loginMessage").text("");
-				captchaIsOk = false;
 			});
 			//点击登陆事件
 			$(".btn-login").click(function() {
+				$("#loginMessage").append("");
 				var validate = captchaObj.getValidate();
 				if(validate){
-					var actionurl=$('form').attr('action');//提交路径
-					var checkurl=$('form').attr('check');//验证路径
-					var formData = new Object();
-					var data=$(":input").each(function() {
-						 formData[this.name] =$("#"+this.name ).val();
-					});
-					
-					formData["geetest_challenge"] = validate.geetest_challenge;
-					formData["geetest_validate"] = validate.geetest_validate;
-					formData["geetest_seccode"] = validate.geetest_seccode;
-					$.ajax({
-						async : false,
-						cache : false,
-						type : 'POST',
-						url : checkurl,// 请求的action路径
-						data : formData,
-						error : function() {// 请求失败处理函数
-							
-						},
-						success : function(data) {
-							var d = $.parseJSON(data);
-							if (d.success) {
-								setCookie();
-								setTimeout("window.location.href='"+actionurl+"'", 1000);
-							} else {
-								$("#loginMessage").append(d.msg);
-							}
-						}
-					});
+					goLogin(validate);
 				}
 				else{
-					$("#loginMessage").append("请完成验证码验证");
+					captchaObj.show();
 				}
 			});
 			
 			//验证码成功验证事件
 			captchaObj.onSuccess(function() {
+				var validate = captchaObj.getValidate();
 				$("#loginMessage").text("");
 				$("#loginForm").find(function() {
-					var userName = $("#userName").val();
-					var pwd = $("#password").val();
-
-					if (userName != '' && pwd != '') {
-						//$("#loginForm").submit();
-						captchaIsOk = true;
-					} else {
-						if (userName == '') {
-							$("#loginMessage").append("*登录名不能为空<br/>");
-						}
-						if (pwd == '') {
-							$("#loginMessage").append("*密码不能为空");
-						}
-					}
+					goLogin(validate);
 				});
 			});
 		};
@@ -112,7 +70,7 @@
 					initGeetest({
 						gt : dataJson.gt,
 						challenge : dataJson.challenge,
-						product : "float", // 验证码形式
+						product : "popup", // 验证码形式
 						offline : !dataJson.success
 					}, handler);
 
@@ -129,7 +87,54 @@
 			}
 		});
 		
+		function goLogin(validate){
+			var userName = $("#userName").val();
+			var pwd = $("#password").val();
+			if (userName == '' || pwd == '') {
+				if (userName == '') {
+					$("#loginMessage").append("*登录名不能为空<br/>");
+				}
+				if (pwd == '') {
+					$("#loginMessage").append("*密码不能为空");
+				}
+				return ;
+			}
+			
+			var actionurl=$('form').attr('action');//提交路径
+			var checkurl=$('form').attr('check');//验证路径
+			var formData = new Object();
+			var data=$(":input").each(function() {
+				 formData[this.name] =$("#"+this.name ).val();
+			});
+			
+			formData["geetest_challenge"] = validate.geetest_challenge;
+			formData["geetest_validate"] = validate.geetest_validate;
+			formData["geetest_seccode"] = validate.geetest_seccode;
+			$.ajax({
+				async : false,
+				cache : false,
+				type : 'POST',
+				url : checkurl,// 请求的action路径
+				data : formData,
+				error : function() {// 请求失败处理函数
+					
+				},
+				success : function(data) {
+					var d = $.parseJSON(data);
+					if (d.success) {
+						setCookie();
+						setTimeout("window.location.href='"+actionurl+"'", 1000);
+					} else {
+						$("#loginMessage").append(d.msg);
+					}
+				}
+			});
+		}
+		
 	});
+	
+	
+	
 </script>
 </head>
 

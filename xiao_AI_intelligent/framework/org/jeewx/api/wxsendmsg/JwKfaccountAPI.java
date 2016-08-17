@@ -45,8 +45,7 @@ public class JwKfaccountAPI {
 	 * @throws WexinReqException
 	 * 
 	 */
-	public static String addKfacount(String accessToken, String kf_account,
-			String nickname, String password) throws WexinReqException {
+	public static String addKfacount(String accessToken, String kf_account, String nickname, String password) throws WexinReqException {
 		KfaccountAdd kf = new KfaccountAdd();
 		kf.setAccess_token(accessToken);
 		kf.setKf_account(kf_account);
@@ -66,8 +65,7 @@ public class JwKfaccountAPI {
 	 * @return
 	 * @throws WexinReqException
 	 */
-	public static String modifyKfaccount(String accessToken, String kf_account,
-			String nickname, String password) throws WexinReqException{
+	public static String modifyKfaccount(String accessToken, String kf_account, String nickname, String password) throws WexinReqException{
 		KfaccountUpdate kfUp = new KfaccountUpdate();
 		kfUp.setAccess_token(accessToken);
 		kfUp.setKf_account(kf_account);
@@ -201,6 +199,5 @@ public class JwKfaccountAPI {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 }

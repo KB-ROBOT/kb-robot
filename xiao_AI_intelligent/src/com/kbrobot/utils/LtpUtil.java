@@ -16,7 +16,7 @@ import weixin.guanjia.core.util.WeixinUtil;
  *
  */
 public class LtpUtil{
-	public static final String LTP_API_KEY = ResourceUtil.getConfigByName("xunfeiApiKey");
+	public static final String LTP_API_KEY = ResourceUtil.getConfigByName("xunfei_ltp_api_key");
 	//调用方式为GET
 	public static final String URL = "http://ltpapi.voicecloud.cn/analysis/?api_key="+LTP_API_KEY+"&text=INPUT_TEXT&pattern=all&format=json";
 	/**

@@ -1,15 +1,13 @@
 package com.kbrobot.utils;
 
-import java.util.ResourceBundle;
+import org.jeecgframework.core.util.ResourceUtil;
 
-import com.iflytek.cloud.speech.Setting;
 import com.iflytek.cloud.speech.SpeechConstant;
 import com.iflytek.cloud.speech.SpeechSynthesizer;
-import com.iflytek.cloud.speech.SpeechUtility;
 import com.iflytek.cloud.speech.SynthesizeToUriListener;
 
 public class SpeechSynthesizerUtil {
-	public static final String APPID = "570b34df";
+	public static final String APPID = ResourceUtil.getConfigByName("xunfei_ltp_api_key");
 	
 	/**
 	 * 语音合成并存储音频文件
@@ -18,12 +16,9 @@ public class SpeechSynthesizerUtil {
 	 */
 	public static void speechSynthesize(String speakStr,SynthesizeToUriListener synthesizeToUriListener){
 		
-		ResourceBundle bundler = ResourceBundle.getBundle("sysConfig");
-		//
-		String xunfeiFilePath = bundler.getString("xunfeiFilePath");
+		String xunfeiFilePath = ResourceUtil.getConfigByName("xunfei_voice_file_path");
 		//生成不重复文件名
-		final String fileName = "voiceFile" + System.currentTimeMillis() ;
-		
+		String fileName = "voiceFile_" + System.currentTimeMillis() ;
 		SpeechSynthesizer speechSynthesizer = SpeechSynthesizer.createSynthesizer();
 		// 设置发音人
 		speechSynthesizer.setParameter(SpeechConstant.VOICE_NAME, "xiaoyan");

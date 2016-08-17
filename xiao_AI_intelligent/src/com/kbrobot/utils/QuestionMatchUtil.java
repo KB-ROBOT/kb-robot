@@ -25,13 +25,13 @@ public class QuestionMatchUtil {
 	private static ResourceBundle bundler = ResourceBundle.getBundle("sysConfig");
 
 	public static BaseMessageResp matchQuestion(List<RobotQuestionEntity> questionList,String content,String toUserName,String fromUserName) throws JSONException, IOException{
+		
 		double maxScore = 0;
 		RobotQuestionEntity goodMatchQuestion = null;
 		for(RobotQuestionEntity que : questionList){
 			//遍历每个问题并得出相似度
 			String title = que.getQuestionTitle();
 			double currentScore = TextCompareUtil.getSimilarScore(title, content);
-			System.out.println("============相似度：" + currentScore +"\n" + title);
 
 			//取得当前最大值
 			if(currentScore>maxScore){
@@ -46,10 +46,7 @@ public class QuestionMatchUtil {
 			List<RobotSimilarQuestionEntity> similarQueList = que.getSimilarQuestionList();
 			for(RobotSimilarQuestionEntity simliarQue : similarQueList){
 				String similarTile = simliarQue.getSimilarQuestionTitle();
-
 				currentScore = TextCompareUtil.getSimilarScore(similarTile, content);
-				System.out.println("=======相似问题比较=====相似度：" + currentScore +"\n" + title);
-
 				//取得当前最大值
 				if(currentScore>maxScore){
 					maxScore = currentScore;
@@ -60,8 +57,9 @@ public class QuestionMatchUtil {
 					}
 				}
 			}
-
 		}
+		
+		
 		//假如最大分数大于当前阈值，则视为找到答案
 		if(maxScore>=minScore){
 			String answerStr = goodMatchQuestion.getQuestionAnswer();
@@ -70,17 +68,18 @@ public class QuestionMatchUtil {
 				answerStr = answerStr.substring(3, answerStr.length()-4);
 			}
 			
-			if(answerStr.contains("<")||answerStr.contains(">")){ //图文形式
+			if(answerStr.contains("<")||answerStr.contains(">")||answerStr.length()>=1500){ //图文形式
 				Article article = new Article();
 				article.setTitle(goodMatchQuestion.getQuestionTitle());
 				article.setDescription("");
-				article.setUrl(bundler.getString("domain")+ "robotQuestionController.do?getQuestionAnswerContent&id=" + goodMatchQuestion.getId() );
-				article.setPicUrl("");
-
-				Matcher matcher = Pattern.compile("(http:|https:).*(jpg|jpeg|gif|png)").matcher(answerStr);  
-				
+				article.setUrl(bundler.getString("domain")+ "/robotQuestionController.do?getQuestionAnswerContent&id=" + goodMatchQuestion.getId() );
+				//设置图片
+				Matcher matcher = Pattern.compile("http://[^\\s|^\"]*").matcher(answerStr);  
 				if(matcher.find()){
 					article.setPicUrl(matcher.group());
+				}
+				else{
+					article.setPicUrl("");
 				}
 				
 				List<Article> articleList = new ArrayList<Article>();
@@ -95,7 +94,6 @@ public class QuestionMatchUtil {
 				newsResp.setArticles(articleList);
 				
 				return newsResp;
-				
 			}
 			else{//文本形式
 				TextMessageResp textMessageResp = new TextMessageResp();
@@ -108,7 +106,6 @@ public class QuestionMatchUtil {
 				
 				return textMessageResp;
 			}
-			
 		}
 		else{
 			return null;

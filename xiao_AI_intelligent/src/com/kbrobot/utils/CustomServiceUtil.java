@@ -17,7 +17,7 @@ import com.kbrobot.utils.WeixinMediaUtil.WeixinMediaType;
 
 public class CustomServiceUtil {
 
-	private static final String CUSTOM_SERVICE_API_URL = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=ACCESS_TOKEN";
+	//private static final String CUSTOM_SERVICE_API_URL = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=ACCESS_TOKEN";
 	/**
 	 * 发送客服消息
 	 * @param toUser
@@ -42,7 +42,7 @@ public class CustomServiceUtil {
 
 	public static void sendCustomServiceVoiceMessage(final String toUser,final String accessToken,String speakStr) throws JSONException{
 		//微信请求url
-		final String url = CUSTOM_SERVICE_API_URL.replaceAll("ACCESS_TOKEN", accessToken);
+		//final String url = CUSTOM_SERVICE_API_URL.replaceAll("ACCESS_TOKEN", accessToken);
 		
 		SynthesizeToUriListener synthesizeToUriListener = new SynthesizeToUriListener() {
 			@Override

@@ -34,10 +34,10 @@
 					//菜单选择
 					$("select[name^=menuText_]").html(innerHtml);
 				}
-				
+
 			},
 			error : function() {// 请求失败处理函数
-				
+
 			},
 		});
 		//关键字
@@ -137,7 +137,7 @@
 				dataType : "json",
 				data : {
 					"name" : menuName,
-					"fatherName":fatherName
+					"fatherName" : fatherName
 				},
 				success : function(data) {
 					$("input[name=fatherMenuId]").val("");
@@ -159,40 +159,38 @@
 		});
 		//菜单设置
 		$(".fans-content p.nav-define").on("click", function() {
-			
+
 			$(".fans-content p.nav-define").removeClass("on");
 			$(this).addClass("on");
-			
+
 			$(".menu_action_show .defines").children("div").hide();
-			
+
 			var menuType = $(this).data("menutype");
 			var childMenu = $(this).parent().find(".childMenu");
 			var menuId = $(this).data("menuid");
 			//如果有子菜单
 			if (childMenu.length > 0) {
 				$("#define_none_action").show();
-			}
-			else if(menuType!=undefined&&menuType!=''){
-				
+			} else if (menuType != undefined && menuType != '') {
+
 				var url = './menuManagerController.do?menuEnetityDetail';
 				$.ajax({
 					url : url,// 请求的action路径
 					type : 'post',
 					dataType : "json",
 					data : {
-						"id":menuId
+						"id" : menuId
 					},
 					success : function(data) {
-						if(data.success){
+						if (data.success) {
 							//data.obj;
-							
-							if(data.attributes.type=='click'){
+
+							if (data.attributes.type == 'click') {
 								$("#define_reday_action").append(data.attributes.templateObject.templateName);
-							}
-							else{
+							} else {
 								$("#define_reday_action").append(data.attributes.url);
 							}
-							
+
 							$("#define_reday_action").show();
 						}
 					},
@@ -200,8 +198,7 @@
 
 					},
 				});
-			}
-			else{
+			} else {
 				$("#define_set_action").show();
 			}
 			var innerHtml = '';
@@ -211,41 +208,39 @@
 			}
 			//菜单选择
 			$("select[name=menuText]").html(innerHtml);
-			
+
 			innerHtml = '';
 			for (var i = 0; i < newsTemplateList.length; i++) {
 				//菜单选择
 				innerHtml += '<option value="'+newsTemplateList[i].id+'">' + newsTemplateList[i].templateName + '</option>';
 			}
 			$("select[name=menuNews]").html(innerHtml);
-			
+
 		});
-		
+
 		//保存菜单设置
-		$(".menu_action_save").on("click",function(){
+		$(".menu_action_save").on("click", function() {
 			var type = $(this).data("type");
 			var selectMenuId = $(".fans-content .on").data("menuid");
-			var menuObject ={};
+			var menuObject = {};
 			menuObject.type = type;
 			menuObject.id = selectMenuId;
-			if("click" == type){
-				
+			if ("click" == type) {
+
 				var msgType = $(this).data("msgtype");
-				var templateId ;
-				if("text" == msgType){
+				var templateId;
+				if ("text" == msgType) {
 					templateId = $("select[name=menuText]").val();
-				}
-				else if("news" == msgType){
+				} else if ("news" == msgType) {
 					templateId = $("select[name=menuNews]").val();
 				}
 				menuObject.msgType = msgType;
 				menuObject.templateId = templateId;
-			}
-			else if("view" == type){
+			} else if ("view" == type) {
 				var url = $("input[name=menuUrl]").val();
 				menuObject.url = url;
 			}
-			
+
 			var url = './menuManagerController.do?su';
 			$.ajax({
 				url : url,// 请求的action路径
@@ -256,61 +251,63 @@
 					setTimeout("location.reload()", 100);
 				},
 				error : function() {// 请求失败处理函数
-					
+
 				},
 			});
-			
+
 		});
 		//菜单删除
-		$(".menu-delete").click(function(){
+		$(".menu-delete").click(function() {
 			var menuId = $(this).data("menuid");
 			dialog({
-				title:"警告",
-				content:"确认删除？",
-				ok:function(){
+				title : "警告",
+				content : "确认删除？",
+				ok : function() {
 					var url = './menuManagerController.do?del';
 					$.ajax({
 						url : url,// 请求的action路径
 						type : 'post',
 						dataType : "json",
-						data : {"id":menuId},
+						data : {
+							"id" : menuId
+						},
 						success : function(data) {
 							setTimeout("location.reload()", 100);
 						},
 						error : function() {// 请求失败处理函数
-							
+
 						},
 					});
 				},
-				cancle:function(){
+				cancle : function() {
 				}
-			})
-			.width(320)
-			.showModal();
+			}).width(320).showModal();
 		});
-		
+
 		//添加子菜单
-		$(".child-menu-add").click(function(){
+		$(".child-menu-add").click(function() {
 			var fatherMenuId = $(this).data("menuid");
-			
+
 			$("#myModal input[name=fatherMenuId]").val(fatherMenuId);
-			
+
 			$("#myModal").modal("show");
 		});
-		
+
 		//微信账户删除
-		$(".weixin-account-del").click(function(){
+		$(".weixin-account-del").click(function() {
 			var accountId = $(this).data("accountid");
 			dialog({
-				title:"警告",
-				content:"确认删除？",
-				ok:function(){
+				title : "警告",
+				content : "确认删除？<br/>已经添加的数据将会一并删除",
+				ok : function() {
 					var url = './weixinAccountController.do?doDel';
 					$.ajax({
 						url : url,// 请求的action路径
 						type : 'post',
 						dataType : "json",
-						data : {"id":accountId},
+						data : {
+							"id" : accountId
+						},
 						success : function(data) {
 							setTimeout("location.reload()", 100);
 						},
@@ -318,11 +315,29 @@
 						},
 					});
 				},
-				cancle:function(){
+				cancle : function() {
 				}
-			})
-			.width(320)
-			.showModal();
+			}).width(320).showModal();
+		});
+
+		$(".weixinMenuSubmit").click(function() {
+			var url = './menuManagerController.do?sameMenu';
+			$.ajax({
+				url : url,// 请求的action路径
+				type : 'post',
+				dataType : "json",
+				success : function(data) {
+					dialog({
+						title : "同步情况",
+						content : data.msg,
+						ok : function() {
+							setTimeout("location.reload()", 100);
+						}
+					}).width(320).showModal();
+				},
+				error : function() {// 请求失败处理函数
+				},
+			});
 		});
 
 	});
@@ -621,8 +636,8 @@
 										</c:forEach> --%>
 									</table>
 									<p style="padding-left: 20px;">发布之后才可以在微信里面显示</p>
-									<div class="col-lg-12 choose-btn">
-										<a href="">发布到微信</a>
+									<div class="col-lg-12 choose-btn weixinMenuSubmit">
+										<a href="javascript:;">发布到微信</a>
 									</div>
 								</div>
 							</div>

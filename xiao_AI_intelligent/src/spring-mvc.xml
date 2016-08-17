@@ -6,7 +6,7 @@
          http://www.springframework.org/schema/mvc
 		http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd ">
 	<!-- 自动扫描controller包下的所有类，使其认为spring mvc的控制器 -->
-	<!-- 加载controller的时候,不加载service,因为此时事物并未生效,若此时加载了service,那么事物无法对service进行拦截 -->
+	<!-- 加载controller的时候,不加载service,因为此时事物并未生效,若此时加载了service,那么事务无法对service进行拦截 -->
 	<context:component-scan base-package="org.jeecgframework.web.*,weixin.*,com.kbrobot.*">
 		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />
 	</context:component-scan>
@@ -132,12 +132,15 @@
 						<!-- 答案详情 -->
 						<value>robotQuestionController.do?getQuestionAnswerContent</value>
 						<value>robotQuestionController.do?getQuestionAnswerContent=</value>
+						<!-- 绑定结果 -->
+						<value>robotBindController.do?bindweixinsuccess</value>
+						<value>robotBindController.do?bindweixinerror</value>
 					</list>
 				</property>
 				<!-- 模糊匹配 -->
 				<property name="excludeContainUrls">
 					<list>
-						<value>rest/openwx</value>
+						<value>openwx/authorCallback</value>
 						<value>openDataController</value>
 						<value>event/authorize</value>
 						<value>callback</value>

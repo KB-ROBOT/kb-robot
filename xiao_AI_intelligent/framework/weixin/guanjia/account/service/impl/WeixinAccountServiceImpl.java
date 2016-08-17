@@ -12,6 +12,7 @@ import org.jeecgframework.core.common.model.json.LogAnnotation;
 import org.jeecgframework.core.common.service.impl.CommonServiceImpl;
 import org.jeecgframework.core.util.LogUtil;
 import org.jeecgframework.core.util.ResourceUtil;
+import org.jeecgframework.core.util.StringUtil;
 import org.jeecgframework.core.util.oConvertUtils;
 import org.jeecgframework.web.system.pojo.base.TSUser;
 import org.jeewx.api.core.exception.WexinReqException;
@@ -115,25 +116,26 @@ public class WeixinAccountServiceImpl extends CommonServiceImpl implements
 			} else {
 				return account.getAccountAccesstoken();
 			}
-		} else {
-			String requestUrl = WeixinUtil.access_token_url.replace("APPID",account.getAccountAppid()).replace("APPSECRET",
-					account.getAccountAppsecret());
-			JSONObject jsonObject = WeixinUtil.httpsRequest(requestUrl, "GET",
-					null);
-			if (null != jsonObject) {
-				try {
-					token = jsonObject.getString("access_token");
-					// 重置token
-					account.setAccountAccesstoken(token);
-					// 重置事件
-					account.setAddTokenTime(new Date());
-					this.saveOrUpdate(account);
-				} catch (Exception e) {
-					token = null;
-					// 获取token失败
-					String wrongMessage = "获取token失败 errcode:{} errmsg:{}"
-							+ jsonObject.getInt("errcode")
-							+ jsonObject.getString("errmsg");
+		}
+		else {
+			if(StringUtil.isNotEmpty(account.getAccountAppsecret())){
+				String requestUrl = WeixinUtil.access_token_url.replace("APPID",account.getAccountAppid()).replace("APPSECRET", account.getAccountAppsecret());
+				JSONObject jsonObject = WeixinUtil.httpsRequest(requestUrl, "GET", null);
+				if (null != jsonObject) {
+					try {
+						token = jsonObject.getString("access_token");
+						// 重置token
+						account.setAccountAccesstoken(token);
+						// 重置事件
+						account.setAddTokenTime(new Date());
+						this.saveOrUpdate(account);
+					} catch (Exception e) {
+						token = null;
+						// 获取token失败
+						String wrongMessage = "获取token失败 errcode:{} errmsg:{}"
+								+ jsonObject.getInt("errcode")
+								+ jsonObject.getString("errmsg");
+					}
 				}
 			}
 		}

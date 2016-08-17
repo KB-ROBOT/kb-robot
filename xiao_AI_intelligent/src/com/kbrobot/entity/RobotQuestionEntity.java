@@ -170,7 +170,7 @@ public class RobotQuestionEntity implements java.io.Serializable {
 	 * 相似问题
 	 * @return
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name="question_id")
 	public List<RobotSimilarQuestionEntity> getSimilarQuestionList() {
 		return similarQuestionList;

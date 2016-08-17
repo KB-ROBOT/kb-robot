@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.jeecgframework.core.util.LogUtil;
+import org.jeecgframework.core.util.ResourceUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,8 +16,8 @@ import weixin.guanjia.core.entity.message.resp.Article;
 import weixin.guanjia.core.util.WeixinUtil;
 
 public class TuLingUtil {
-	private static String API_KEY = "37c8bd4757c66bf58f4090a8eee2772d";
-	private static String API_URL = "http://www.tuling123.com/openapi/api";
+	private static String API_KEY = ResourceUtil.getConfigByName("tuling_api_key");
+	private static String API_URL = ResourceUtil.getConfigByName("tuling_api_url");
 
 	public enum ReturnCode {
 		TEXT("100000"),

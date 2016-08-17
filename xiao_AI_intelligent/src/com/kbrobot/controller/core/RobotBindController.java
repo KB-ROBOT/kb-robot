@@ -19,6 +19,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import weixin.guanjia.account.entity.WeixinAccountEntity;
 import weixin.guanjia.account.service.WeixinAccountServiceI;
@@ -161,11 +162,15 @@ public class RobotBindController extends BaseController  {
 		j.setSuccess(true);
 		
 		return j;
-		
-		
 	}
 	
+	@RequestMapping(params = "bindweixinsuccess")
+	public ModelAndView bindSuccess(){
+		return new ModelAndView("kbrobot/auth-success");
+	}
 	
-	
-	
+	@RequestMapping(params = "bindweixinerror")
+	public ModelAndView bindError(){
+		return new ModelAndView("kbrobot/auth-error");
+	}
 }
