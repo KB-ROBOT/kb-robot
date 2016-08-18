@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.StringUtils;
 import org.jeecgframework.core.util.LogUtil;
+import org.jeecgframework.core.util.StringUtil;
 import org.jeecgframework.web.rest.entity.WeixinOpenAccountEntity;
 import org.jeecgframework.web.system.service.SystemService;
 import org.jeewx.api.core.exception.WexinReqException;
@@ -95,6 +96,8 @@ public class WeixinThirdUtil {
 		Date end = new java.util.Date();
 		Date start = entity.getGetAccessTokenTime();
 		start = start==null?new Date():start;
+		
+		
 		/*
 		 * 判断当前componentAccessToken是否存在,并且判断是否超过2小时
 		 */
@@ -133,11 +136,13 @@ public class WeixinThirdUtil {
 	public String getAuthorizerAccessToken(String toUserName) throws WexinReqException{
 
 		WeixinAccountEntity  currentWeixinAccount =  weixinAccountService.findByToUsername(toUserName);
-		String authorizerAccessToken = "";
-		if(currentWeixinAccount!=null){
-			authorizerAccessToken = currentWeixinAccount.getAuthorizerAccessToken();
+		
+		//如果找不到这个微信账户 则返回""
+		if(currentWeixinAccount==null||StringUtil.isEmpty(currentWeixinAccount.getId())){
+			return "";
 		}
-
+		
+		String authorizerAccessToken =currentWeixinAccount.getAuthorizerAccessToken();
 		Date end = new java.util.Date();
 		Date start = currentWeixinAccount.getAuthorizerAccessTokenTime();
 		start = start==null?new Date():start;

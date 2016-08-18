@@ -419,7 +419,7 @@ public class OpenwxController {
 		else if("voice".equals(msgType)){
 			//Recognition 语音解析结果
 			String content = rootElt.elementText("Recognition");
-			if(content==null){
+			if(StringUtil.isEmpty(content)){
 				replyTextMessage(request,response,"没听懂你说的是什么？\n(检查公众号权限列表：[接收语音识别结果]是否打开)",toUserName,fromUserName);
 			}
 			else{
