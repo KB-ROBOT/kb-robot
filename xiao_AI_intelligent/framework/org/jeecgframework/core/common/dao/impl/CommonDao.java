@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
@@ -27,7 +28,8 @@ import org.jeecgframework.web.system.pojo.base.TSOperation;
 import org.jeecgframework.web.system.pojo.base.TSRoleFunction;
 import org.jeecgframework.web.system.pojo.base.TSRoleUser;
 import org.jeecgframework.web.system.pojo.base.TSUser;
-
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -85,7 +87,7 @@ public class CommonDao extends GenericBaseCommonDao implements ICommonDao, IGene
 		}
 		return null;
 	}
-	
+
 	/**
 	 * admin账户初始化
 	 */
@@ -100,9 +102,9 @@ public class CommonDao extends GenericBaseCommonDao implements ICommonDao, IGene
 			user.setPassword(pwd);
 			save(user);
 		}
-		
+
 	}
-	
+
 
 	public String getUserRole(TSUser user) {
 		String userRole = "";
@@ -118,17 +120,22 @@ public class CommonDao extends GenericBaseCommonDao implements ICommonDao, IGene
 	 * 文件上传
 	 * 
 	 * @param request
+	 * @throws IOException 
+	 * @throws FileUploadException 
 	 * @throws Exception
 	 */
+	public Object uploadFile(UploadFile uploadFile) throws IOException, FileUploadException{
+		return uploadFile(uploadFile,null);
+		
+	}
+
 	@SuppressWarnings("unchecked")
-	public Object uploadFile(UploadFile uploadFile) {
+	public Object uploadFile(UploadFile uploadFile,String[] allowFiles) throws IOException, FileUploadException {
 		Object object = uploadFile.getObject();
-		if(uploadFile.getFileKey()!=null)
-		{
+		if(uploadFile.getFileKey()!=null){
 			updateEntitie(object);
 		}
 		else {
-		try {
 			uploadFile.getMultipartRequest().setCharacterEncoding("UTF-8");
 			MultipartHttpServletRequest multipartRequest = uploadFile.getMultipartRequest();
 			ReflectHelper reflectHelper = new ReflectHelper(uploadFile.getObject());
@@ -176,18 +183,23 @@ public class CommonDao extends GenericBaseCommonDao implements ICommonDao, IGene
 				fileName = mf.getOriginalFilename();// 获取文件名
 				swfName = PinyinUtil.getPinYinHeadChar(oConvertUtils.replaceBlank(FileUtils.getFilePrefix(fileName)));// 取文件名首字母作为SWF文件名
 				String extend = FileUtils.getExtend(fileName);// 获取文件扩展名
+
+				if(ArrayUtils.isNotEmpty(allowFiles)){
+					if(FileUtils.isNotAllowFiles(extend,allowFiles)){
+						throw new FileUploadException("不允许的文件格式");
+					}
+				}
+
 				String myfilename="";
 				String noextfilename="";//不带扩展名
-				if(uploadFile.isRename())
-				{
-				   
-				   noextfilename=DataUtils.getDataString(DataUtils.yyyymmddhhmmss)+StringUtil.random(8);//自定义文件名称
-				   myfilename=noextfilename+"."+extend;//自定义文件名称
+				if(uploadFile.isRename()){
+					noextfilename=DataUtils.getDataString(DataUtils.yyyymmddhhmmss)+StringUtil.random(8);//自定义文件名称
+					myfilename=noextfilename+"."+extend;//自定义文件名称
 				}
 				else {
-				  myfilename=fileName;
+					myfilename=fileName;
 				}
-				
+
 				String savePath = realPath + myfilename;// 文件保存全路径
 				String fileprefixName = FileUtils.getFilePrefix(fileName);
 				if (uploadFile.getTitleField() != null) {
@@ -209,12 +221,12 @@ public class CommonDao extends GenericBaseCommonDao implements ICommonDao, IGene
 				saveOrUpdate(object);
 				// 文件拷贝到指定硬盘目录
 				FileCopyUtils.copy(mf.getBytes(), savefile);
-//				if (uploadFile.getSwfpath() != null) {
-//					// 转SWF
-//					reflectHelper.setMethodValue(uploadFile.getSwfpath(), path + swfName + ".swf");
-//					SwfToolsUtil.convert2SWF(savePath);
-//				}
-//				FileCopyUtils.copy(mf.getBytes(), savefile);
+				//				if (uploadFile.getSwfpath() != null) {
+				//					// 转SWF
+				//					reflectHelper.setMethodValue(uploadFile.getSwfpath(), path + swfName + ".swf");
+				//					SwfToolsUtil.convert2SWF(savePath);
+				//				}
+				//				FileCopyUtils.copy(mf.getBytes(), savefile);
 				if (uploadFile.getSwfpath() != null) {
 					// 转SWF
 					reflectHelper.setMethodValue(uploadFile.getSwfpath(), path + FileUtils.getFilePrefix(myfilename) + ".swf");
@@ -222,8 +234,6 @@ public class CommonDao extends GenericBaseCommonDao implements ICommonDao, IGene
 				}
 
 			}
-		} catch (Exception e1) {
-		}
 		}
 		return object;
 	}
@@ -494,7 +504,7 @@ public class CommonDao extends GenericBaseCommonDao implements ICommonDao, IGene
 				for (Object inobj : in) {
 					ReflectHelper reflectHelper2 = new ReflectHelper(inobj);
 					String inId = oConvertUtils.getString(reflectHelper2.getMethodValue(comboTreeModel.getIdField()));
-                    if (inId.equals(id)) {
+					if (inId.equals(id)) {
 						tree.setChecked(true);
 					}
 				}

@@ -1,4 +1,5 @@
 package org.jeecgframework.web.demo.controller.test;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +12,7 @@ import org.jeecgframework.web.demo.entity.test.TFinanceFilesEntity;
 import org.jeecgframework.web.demo.service.test.TFinanceServiceI;
 import org.jeecgframework.web.system.pojo.base.TSDocument;
 import org.jeecgframework.web.system.service.SystemService;
-
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jeecgframework.core.common.controller.BaseController;
@@ -121,12 +122,20 @@ public class TFinanceController extends BaseController {
 		uploadFile.setCusPath("files");
 		uploadFile.setSwfpath("swfpath");
 		uploadFile.setByteField(null);//不存二进制内容
-		financeFile = systemService.uploadFile(uploadFile);
-		attributes.put("fileKey", financeFile.getId());
-		attributes.put("viewhref", "commonController.do?objfileList&fileKey=" + financeFile.getId());
-		attributes.put("delurl", "commonController.do?delObjFile&fileKey=" + financeFile.getId());
-		j.setMsg("文件添加成功");
-		j.setAttributes(attributes);
+		try {
+			financeFile = systemService.uploadFile(uploadFile);
+			attributes.put("fileKey", financeFile.getId());
+			attributes.put("viewhref", "commonController.do?objfileList&fileKey=" + financeFile.getId());
+			attributes.put("delurl", "commonController.do?delObjFile&fileKey=" + financeFile.getId());
+			j.setMsg("文件添加成功");
+			j.setAttributes(attributes);
+		} catch (IOException | FileUploadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			j.setMsg(e.getMessage());
+			j.setSuccess(false);
+		}
+		
 
 		return j;
 	}

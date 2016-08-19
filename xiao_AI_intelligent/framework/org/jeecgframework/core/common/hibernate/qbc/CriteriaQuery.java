@@ -124,6 +124,7 @@ public class CriteriaQuery implements Serializable {
 		this.curPage = curPage;
 		this.detachedCriteria = DetachedCriteria.forClass(entityClass);
 		this.map = new HashMap<String, Object>();
+		this.ordermap = new HashMap<String, Object>();
 	}
 	public CriteriaQuery(Class entityClass,DataGrid dg) {
 		this.curPage = dg.getPage();

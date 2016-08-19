@@ -37,6 +37,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jeecgframework.core.util.ApplicationContextUtil;
 import org.jeecgframework.core.util.ContextHolderUtils;
+import org.jeecgframework.core.util.LogUtil;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecgframework.poi.excel.annotation.ExcelTarget;
 import org.jeecgframework.poi.excel.entity.ExcelCollectionParams;
@@ -61,11 +62,11 @@ public final class ExcelImportUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Collection<?> importExcel(File file, Class<?> pojoClass,
-			ImportParams params) {
+	public static Collection<?> importExcel(File file, Class<?> pojoClass,ImportParams params) {
 		FileInputStream in = null;
 		Collection<?> result = null;
 		try {
+			LogUtil.info("导入的文件路径：" + file.getAbsolutePath());
 			in = new FileInputStream(file);
 			result = importExcelByIs(in, pojoClass, params);
 		} catch (Exception e) {
@@ -87,8 +88,7 @@ public final class ExcelImportUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static  Collection<?> importExcelByIs(InputStream inputstream,
-			Class<?> pojoClass, ImportParams params) throws Exception {
+	public static  Collection<?> importExcelByIs(InputStream inputstream,Class<?> pojoClass, ImportParams params) throws Exception {
 		Collection<T> result = new ArrayList<T>();
 		Workbook book = null;
 		boolean isXSSFWorkbook = true;
@@ -101,17 +101,15 @@ public final class ExcelImportUtil {
 		}else if (POIXMLDocument.hasOOXMLHeader(inputstream)) {
 			book =  new XSSFWorkbook(OPCPackage.open(inputstream));
 		}
+		
 		Map<String,PictureData> pictures;
 		for (int i = 0; i < params.getSheetNum(); i++) {
 			if(isXSSFWorkbook){
-				pictures = ExcelPublicUtil.getSheetPictrues07(
-						(XSSFSheet)book.getSheetAt(i), (XSSFWorkbook)book);
+				pictures = ExcelPublicUtil.getSheetPictrues07((XSSFSheet)book.getSheetAt(i), (XSSFWorkbook)book);
 			}else{
-				pictures = ExcelPublicUtil.getSheetPictrues03(
-						(HSSFSheet)book.getSheetAt(i), (HSSFWorkbook)book);
+				pictures = ExcelPublicUtil.getSheetPictrues03((HSSFSheet)book.getSheetAt(i), (HSSFWorkbook)book);
 			}
-			result.addAll(importExcel(result, book.getSheetAt(i),
-					pojoClass, params,pictures));
+			result.addAll(importExcel(result, book.getSheetAt(i),pojoClass, params,pictures));
 		}
 		if(params.isNeedSave()){
 			saveThisExcel(params,pojoClass,isXSSFWorkbook,book);
@@ -119,8 +117,7 @@ public final class ExcelImportUtil {
 		return result;
 	}
 	
-	private static void saveThisExcel(ImportParams params,Class<?> pojoClass,
-			boolean isXSSFWorkbook, Workbook book) throws Exception {
+	private static void saveThisExcel(ImportParams params,Class<?> pojoClass,boolean isXSSFWorkbook, Workbook book) throws Exception {
 		String path = ContextHolderUtils.getRequest().getSession().getServletContext().getRealPath("\\")+getSaveExcelUrl(params,pojoClass);
 		path = path.replace("WEB-INF/classes/","");
 		path = path.replace("file:/","");
@@ -143,8 +140,7 @@ public final class ExcelImportUtil {
 	 * @return
 	 * @throws Exception 
 	 */
-	private static String getSaveExcelUrl(ImportParams params,
-			Class<?> pojoClass) throws Exception {
+	private static String getSaveExcelUrl(ImportParams params,Class<?> pojoClass) throws Exception {
 		String url = "";
 		if(params.getSaveUrl().equals("upload/excelUpload")){
 			url =  pojoClass.getName().split("\\.")[pojoClass.getName().split("\\.").length-1];
@@ -154,8 +150,7 @@ public final class ExcelImportUtil {
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static Collection<? extends T> importExcel(Collection<T> result, Sheet sheet,
-			Class<?> pojoClass, ImportParams params, Map<String, PictureData> pictures)  throws Exception {
+	private static Collection<? extends T> importExcel(Collection<T> result, Sheet sheet,Class<?> pojoClass, ImportParams params, Map<String, PictureData> pictures)  throws Exception {
 		Collection collection = new ArrayList();
 		Map<String, ExcelImportEntity> excelParams = new HashMap<String, ExcelImportEntity>();
 		List<ExcelCollectionParams> excelCollection = new ArrayList<ExcelCollectionParams>();
@@ -165,8 +160,7 @@ public final class ExcelImportUtil {
 		if (etarget != null) {
 			targetId = etarget.id();
 		}
-		getAllExcelField(targetId, fileds, excelParams, excelCollection,
-				pojoClass, null);
+		getAllExcelField(targetId, fileds, excelParams, excelCollection,pojoClass, null);
 		Iterator<Row> rows = sheet.rowIterator();
 		for (int j = 0; j < params.getTitleRows(); j++) {
 			rows.next();
@@ -477,10 +471,12 @@ public final class ExcelImportUtil {
 	 * @param filed
 	 * @throws Exception
 	 */
-	private static void getAllExcelField(String targetId, Field[] fields,
-			Map<String, ExcelImportEntity> excelParams,
-			List<ExcelCollectionParams> excelCollection, Class<?> pojoClass,
-			List<Method> getMethods) throws Exception {
+	private static void getAllExcelField(String targetId, 
+											Field[] fields,
+											Map<String, ExcelImportEntity> excelParams,
+											List<ExcelCollectionParams> excelCollection, 
+											Class<?> pojoClass,
+											List<Method> getMethods) throws Exception {
 		ExcelImportEntity excelEntity = null;
 		for (int i = 0; i < fields.length; i++) {
 			Field field = fields[i];

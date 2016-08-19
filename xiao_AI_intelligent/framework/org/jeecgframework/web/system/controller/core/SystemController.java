@@ -1,5 +1,6 @@
 package org.jeecgframework.web.system.controller.core;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,7 +24,7 @@ import org.jeecgframework.web.system.pojo.base.TSTypegroup;
 import org.jeecgframework.web.system.pojo.base.TSVersion;
 import org.jeecgframework.web.system.service.SystemService;
 import org.jeecgframework.web.system.service.UserService;
-
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.log4j.Logger;
 import org.jeecgframework.core.common.controller.BaseController;
 import org.jeecgframework.core.common.hibernate.qbc.CriteriaQuery;
@@ -955,14 +956,22 @@ public class SystemController extends BaseController {
 		UploadFile uploadFile = new UploadFile(request, document);
 		uploadFile.setCusPath("files");
 		uploadFile.setSwfpath("swfpath");
-		document = systemService.uploadFile(uploadFile);
-		attributes.put("url", document.getRealpath());
-		attributes.put("fileKey", document.getId());
-		attributes.put("name", document.getAttachmenttitle());
-		attributes.put("viewhref", "commonController.do?objfileList&fileKey=" + document.getId());
-		attributes.put("delurl", "commonController.do?delObjFile&fileKey=" + document.getId());
-		j.setMsg("文件添加成功");
-		j.setAttributes(attributes);
+		try {
+			document = systemService.uploadFile(uploadFile);
+			attributes.put("url", document.getRealpath());
+			attributes.put("fileKey", document.getId());
+			attributes.put("name", document.getAttachmenttitle());
+			attributes.put("viewhref", "commonController.do?objfileList&fileKey=" + document.getId());
+			attributes.put("delurl", "commonController.do?delObjFile&fileKey=" + document.getId());
+			j.setMsg("文件添加成功");
+			j.setAttributes(attributes);
+		} catch (IOException | FileUploadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			j.setMsg(e.getMessage());
+			j.setSuccess(false);
+		}
+		
 		return j;
 	}
 	

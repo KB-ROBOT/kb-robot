@@ -2,6 +2,7 @@ package weixin.cms.controller;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.jeecgframework.core.common.controller.BaseController;
@@ -414,7 +416,7 @@ public class WeixinCmsSiteController extends BaseController {
 	@RequestMapping(params = "upload", method = RequestMethod.POST)
 	@ResponseBody
 	public AjaxJson upload(MultipartHttpServletRequest request,
-			HttpServletResponse response) {
+			HttpServletResponse response) throws UnsupportedEncodingException, IOException, FileUploadException {
 		AjaxJson j = new AjaxJson();
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		TSTypegroup tsTypegroup = systemService

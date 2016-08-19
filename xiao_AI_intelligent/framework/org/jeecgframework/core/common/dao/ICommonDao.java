@@ -1,6 +1,8 @@
 package org.jeecgframework.core.common.dao;
 
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -8,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jeecgframework.web.system.pojo.base.TSDepart;
 import org.jeecgframework.web.system.pojo.base.TSUser;
-
+import org.apache.commons.fileupload.FileUploadException;
 import org.jeecgframework.core.common.model.common.UploadFile;
 import org.jeecgframework.core.common.model.json.ComboTree;
 import org.jeecgframework.core.common.model.json.ImportFile;
@@ -33,8 +35,14 @@ public interface ICommonDao extends IGenericBaseCommonDao{
 	/**
 	 * 文件上传
 	 * @param request
+	 * @throws UnsupportedEncodingException 
+	 * @throws IOException 
+	 * @throws FileUploadException 
 	 */
-	public <T> T  uploadFile(UploadFile uploadFile);
+	public <T> T  uploadFile(UploadFile uploadFile) throws UnsupportedEncodingException, IOException, FileUploadException;
+	
+	public <T> T  uploadFile(UploadFile uploadFile,String[] allowFiles) throws UnsupportedEncodingException, IOException, FileUploadException;
+	
 	/**
 	 * 文件上传或预览
 	 * @param uploadFile

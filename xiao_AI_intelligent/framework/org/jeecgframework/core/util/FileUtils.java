@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
@@ -168,5 +170,34 @@ public class FileUtils {
 
 		org.jeecgframework.core.util.LogUtil.info("--------成功删除文件---------"+strFileName);
 		return fileDelete.delete();
+	}
+	
+	
+	/**
+	 * 文件类型判断
+	 * @author 刘维
+	 * @time 2016 08 19 10:21
+	 * @param fileName
+	 * @return
+	 */
+	public static boolean isAllowFiles(String fileName,String[] allowFiles) {
+		Iterator<String> type = Arrays.asList(allowFiles).iterator();
+		while (type.hasNext()) {
+			String ext = type.next();
+			if (fileName.toLowerCase().endsWith(ext)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	/**
+	 * 文件类型判断
+	 * @author 刘维
+	 * @time 2016 08 19 10:21
+	 * @param fileName
+	 * @return
+	 */
+	public static boolean isNotAllowFiles(String fileName,String[] allowFiles) {
+		return !isAllowFiles(fileName,allowFiles);
 	}
 }

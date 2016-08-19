@@ -31,7 +31,7 @@
 					if (data.success) {
 
 						$("#editqueModal input[name=questionTitle]").val(data.obj.questionTitle);
-						globalEditor.setContent(data.obj.questionAnswer);
+						globalEditor.setContent((data.obj.questionAnswer==null||data.obj.questionAnswer==undefined)?"":data.obj.questionAnswer);
 
 						//显示模态框
 						$("#editqueModal").modal("show");
@@ -53,6 +53,25 @@
 			$("#editqueTitleBtn").click(function(){
 				var questionTitle = $("#editqueModal input[name=questionTitle]").val();
 				var questionAnswer = globalEditor.getContent();
+				
+				if(!globalEditor.hasContents()){
+					dialog({
+						title : "出错了",
+						content : "答案不能为空",
+						ok : function() {
+						}
+					}).width(320).showModal();
+					return;
+				}
+				if(questionTitle==undefined||questionTitle==''){
+					dialog({
+						title : "出错了",
+						content : "请填写问题",
+						ok : function() {
+						}
+					}).width(320).showModal();
+					return;
+				}
 				
 				var url = "./robotQuestionController.do?saveOrUpdate";
 				$.ajax({
@@ -198,7 +217,72 @@
 				});
 			});
 		});
+		
+		
+		$(".importQuestion").click(function(){
+			$("#importQuestionModal").modal("show");
+		});
 	});
+	
+	//文件上传
+	function questionFileUpload() {
+		$("#questionImport").fileupload({
+			url:"./robotQuestionController.do?uploadImportQuestion",
+			dataType : 'json',
+			acceptFileTypes : /(\.|\/)(csv|xlsx|xls)$/i,
+			maxFileSize : 15000000, // 15 MB
+			done : function(e, data) {
+				if(data.result.success){
+					
+					if(!$("#importQuestionModal .modal-body .importInfo").length>0){
+						$("#importQuestionModal .modal-body").append("<p class=\"control-label importInfo\">"+data.result.msg+"</p>");
+					}
+					else{
+						$("#importQuestionModal .modal-body .importInfo").text(data.result.msg);
+					}
+					
+					if(!$("#importQuestionModal .modal-footer .importQuestion").length>0){
+						$("#importQuestionModal .modal-footer").append("<button type=\"button\" class=\"btn btn-info readyImport\">确认导入</button>");
+					}
+					
+				
+					$(".readyImport").on("click",function(){
+						var url = 'robotQuestionController.do?importQuestion';
+						$.ajax({
+							url : url,// 请求的action路径
+							type : 'post',
+							dataType : "json",
+							data : {
+								"importFilePath":data.result.attributes.filePath
+							},
+							success : function(data) {
+								$("#progress .progress-bar").css('width','0%');
+								setTimeout("location.reload()", 100);
+							},
+							error : function() {// 请求失败处理函数
+							},
+						});
+					});
+				}
+				else{
+					dialog({
+						title:'上传出错',
+						content:data.result.msg,
+						ok:function(){
+							
+						}
+					}).width(320).showModal();
+					$("#progress .progress-bar").css('width','0%');
+				}
+			},
+			progressall : function(e, data) {
+				var progress = parseInt(data.loaded / data.total * 100, 10);
+				$("#progress .progress-bar").css('width', progress + '%');
+			}
+		    ,
+			dropZone : $('#dropzone')//拖拽区域
+		});
+	}
 </script>
 </head>
 
@@ -215,7 +299,6 @@
 
 			<div class="section row">
 
-
 				<div class="panel col-sm-12">
 					<div class="panel-cont">
 						<h4 class="title">问答总览</h4>
@@ -228,7 +311,7 @@
 												<span class="fa fa-plus-square"></span>
 												添加问题
 											</a>
-											<a href="import-question.html" class="btn btn-success" style="margin-left: 10px;">
+											<a href="javscript:;" class="btn btn-success importQuestion" style="margin-left: 10px;">
 												<span class="fa fa-files-o"></span>
 												批量导入
 											</a>
@@ -340,7 +423,7 @@
 																	<span>
 																		<a href="javascript:;" data-id="${similarQuestion.id}" data-questiontitle="${similarQuestion.similarQuestionTitle}" class="similar-question-edit">编辑</a>
 																		&nbsp;&nbsp;|&nbsp;&nbsp;
-																		<a href="javascript:;" data-similarid=${similarQuestion.id} class="similar-question-del">删除</a>
+																		<a href="javascript:;" data-similarid=${similarQuestion.id } class="similar-question-del">删除</a>
 																	</span>
 																</dd>
 															</c:forEach>
@@ -348,8 +431,7 @@
 														</dl>
 														<form style="height: 100%;">
 															<div class="input-group" style="clear: both;">
-																<input type="hidden" name="questionId" value="${question.id}" />
-																<input type="text" name="similarQuestion" class="form-control" maxlength="200" style="width: 300px;">&nbsp;
+																<input type="hidden" name="questionId" value="${question.id}" /> <input type="text" name="similarQuestion" class="form-control" maxlength="200" style="width: 300px;">&nbsp;
 																<button type="button" onClick="" class="btn btn-white btn-sm add_que_similar" style="margin-top: -3px;">添加相似问法</button>
 															</div>
 														</form>
@@ -416,8 +498,7 @@
 				<div class="modal-body">
 					<form id="editSimiForm">
 						<div class="form-group">
-							<label class="control-label">问题</label>
-							<input type="text" class="form-control" name="similarQuestion">
+							<label class="control-label">问题</label> <input type="text" class="form-control" name="similarQuestion">
 						</div>
 						<input type="hidden" name="qid"> <input type="hidden" name="solutionId">
 					</form>
@@ -427,6 +508,38 @@
 					<input type="hidden" name="id">
 					<button type="button" class="btn btn-info" id="editsimiliar_Btn">修改</button>
 					<button type="button" class="btn btn-white" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 编辑相似问法-->
+	<div class="modal fade" id="importQuestionModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">问题导入</h4>
+				</div>
+
+				<div class="modal-body">
+					<p class="control-label">1.一次性导入的问题不能超过300个。</p>
+					<p class="control-label">2.导入仅支持xlsx、xls。</p>
+					<p class="control-label">
+						3.导入要按照模板规格填写，否则导入失败。下载连接 →<a href="./downloadFile/导入模板.xls">点击下载模板</a>
+					</p>
+					<p class="control-label">
+						<input id="questionImport" type="file" name="file" value="" onClick="questionFileUpload()">
+						<div id="progress" class="progress">
+							<div class="progress-bar progress-bar-success" style="width: 0%;"></div>
+						</div>
+					</p>
+
+				</div>
+
+				<div class="modal-footer">
+					<input type="hidden" name="id">
+					<button type="button" class="btn btn-white" data-dismiss="modal">取消导入</button>
 				</div>
 			</div>
 		</div>

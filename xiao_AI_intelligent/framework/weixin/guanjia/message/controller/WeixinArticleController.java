@@ -1,4 +1,6 @@
 package weixin.guanjia.message.controller;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,6 +11,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.log4j.Logger;
 import org.jeecgframework.core.common.controller.BaseController;
 import org.jeecgframework.core.common.exception.BusinessException;
@@ -81,10 +84,13 @@ public class WeixinArticleController extends BaseController {
      * @param request
      * @param response
      * @return
+	 * @throws FileUploadException 
+	 * @throws IOException 
+	 * @throws UnsupportedEncodingException 
      */
     @RequestMapping(params = "upload", method = RequestMethod.POST)
     @ResponseBody
-    public  AjaxJson upload(MultipartHttpServletRequest request, HttpServletResponse response) {
+    public  AjaxJson upload(MultipartHttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException, IOException, FileUploadException {
     	AjaxJson j = new AjaxJson();
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		TSTypegroup tsTypegroup=systemService.getTypeGroup("fieltype","文档分类");

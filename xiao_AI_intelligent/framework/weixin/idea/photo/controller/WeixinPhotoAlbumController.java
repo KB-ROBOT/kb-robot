@@ -1,4 +1,6 @@
 package weixin.idea.photo.controller;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -6,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.log4j.Logger;
 import org.jeecgframework.core.common.controller.BaseController;
 import org.jeecgframework.core.common.hibernate.qbc.CriteriaQuery;
@@ -261,11 +264,14 @@ public class WeixinPhotoAlbumController extends BaseController {
 	 * 
 	 * @param ids
 	 * @return
+	 * @throws FileUploadException 
+	 * @throws IOException 
+	 * @throws UnsupportedEncodingException 
 	 * @throws Exception
 	 */
 	@RequestMapping(params = "saveFiles", method = RequestMethod.POST)
 	@ResponseBody
-	public AjaxJson saveFiles(HttpServletRequest request, HttpServletResponse response, WeixinPhotoEntity photo) {
+	public AjaxJson saveFiles(HttpServletRequest request, HttpServletResponse response, WeixinPhotoEntity photo) throws UnsupportedEncodingException, IOException, FileUploadException {
 		AjaxJson j = new AjaxJson();
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		String fileKey = oConvertUtils.getString(request.getParameter("fileKey"));// 文件ID

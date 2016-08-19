@@ -1,5 +1,7 @@
 package org.jeecgframework.web.cgform.controller.upload;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,7 +12,7 @@ import org.jeecgframework.web.cgform.entity.upload.CgUploadEntity;
 import org.jeecgframework.web.cgform.service.upload.CgUploadServiceI;
 import org.jeecgframework.web.system.pojo.base.TSAttachment;
 import org.jeecgframework.web.system.service.SystemService;
-
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.log4j.Logger;
 import org.jeecgframework.core.common.controller.BaseController;
 import org.jeecgframework.core.common.model.common.UploadFile;
@@ -84,16 +86,25 @@ public class CgUploadController extends BaseController {
 		uploadFile.setCusPath("files");
 		uploadFile.setSwfpath("swfpath");
 		uploadFile.setByteField(null);//不存二进制内容
-		cgUploadEntity = systemService.uploadFile(uploadFile);
-		cgUploadService.writeBack(id, tableName, cgField, fileKey, cgUploadEntity.getRealpath());
-		attributes.put("fileKey", cgUploadEntity.getId());
-		attributes.put("viewhref", "commonController.do?objfileList&fileKey=" + cgUploadEntity.getId());
-		attributes.put("delurl", "commonController.do?delObjFile&fileKey=" + cgUploadEntity.getId());
-		j.setMsg("操作成功");
-		j.setAttributes(attributes);
+
+		try {
+			cgUploadEntity = systemService.uploadFile(uploadFile);
+			cgUploadService.writeBack(id, tableName, cgField, fileKey, cgUploadEntity.getRealpath());
+			attributes.put("fileKey", cgUploadEntity.getId());
+			attributes.put("viewhref", "commonController.do?objfileList&fileKey=" + cgUploadEntity.getId());
+			attributes.put("delurl", "commonController.do?delObjFile&fileKey=" + cgUploadEntity.getId());
+			j.setMsg("操作成功");
+			j.setAttributes(attributes);
+		} catch (IOException | FileUploadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			j.setSuccess(false);
+			j.setMsg(e.getMessage());
+		}
+
 		return j;
 	}
-	
+
 	/**
 	 * 删除文件
 	 * @param request

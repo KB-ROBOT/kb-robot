@@ -1,6 +1,7 @@
 package org.jeecgframework.web.system.controller.core;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jeecgframework.core.common.hibernate.qbc.CriteriaQuery;
@@ -739,11 +741,14 @@ public class UserController {
 	 * @param user
 	 * @param req
 	 * @return
+	 * @throws FileUploadException 
+	 * @throws IOException 
+	 * @throws UnsupportedEncodingException 
 	 */
 
 	@RequestMapping(params = "savesign", method = RequestMethod.POST)
 	@ResponseBody
-	public AjaxJson savesign(HttpServletRequest req) {
+	public AjaxJson savesign(HttpServletRequest req) throws UnsupportedEncodingException, IOException, FileUploadException {
 		UploadFile uploadFile = new UploadFile(req);
 		String id = uploadFile.get("id");
 		TSUser user = systemService.getEntity(TSUser.class, id);

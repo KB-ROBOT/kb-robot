@@ -1,12 +1,15 @@
 package org.jeecgframework.core.common.service;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileUploadException;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.jeecgframework.core.common.hibernate.qbc.CriteriaQuery;
@@ -225,8 +228,20 @@ public interface CommonService {
 	 * 文件上传
 	 * 
 	 * @param request
+	 * @throws IOException 
+	 * @throws UnsupportedEncodingException 
+	 * @throws FileUploadException 
 	 */
-	public <T> T uploadFile(UploadFile uploadFile);
+	public <T> T uploadFile(UploadFile uploadFile) throws UnsupportedEncodingException, IOException, FileUploadException;
+	/**
+	 * 文件上传
+	 * 
+	 * @param request
+	 * @throws IOException 
+	 * @throws UnsupportedEncodingException 
+	 * @throws FileUploadException 
+	 */
+	public <T> T uploadFile(UploadFile uploadFile,String[] allowFiles) throws UnsupportedEncodingException, IOException, FileUploadException;
 
 	public HttpServletResponse viewOrDownloadFile(UploadFile uploadFile);
 

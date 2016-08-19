@@ -15,6 +15,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import org.jeecgframework.poi.excel.annotation.Excel;
+import org.jeecgframework.poi.excel.annotation.ExcelTarget;
 
 /**   
  * @Title: Entity
@@ -29,12 +31,15 @@ import org.hibernate.annotations.GenericGenerator;
 @DynamicUpdate(true)
 @DynamicInsert(true)
 @SuppressWarnings("serial")
+@ExcelTarget(id="robotQuestionEntity")
 public class RobotQuestionEntity implements java.io.Serializable {
 	/**id*/
 	private java.lang.String id;
 	/**questionTitle*/
+	@Excel(exportName="questionTitle",orderNum="1")
 	private java.lang.String questionTitle;
 	/**questionAnswer*/
+	@Excel(exportName="questionAnswer",orderNum="1")
 	private java.lang.String questionAnswer;
 	/**accoundId*/
 	private java.lang.String accoundId;

@@ -464,7 +464,7 @@ public class OpenwxController {
 			
 
 			if(msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)){
-				CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizer_access_token, "语音解析结果：" + content);
+				CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizer_access_token, "语音解析结果：" + new String(content));
 			}
 			
 			WeixinAccountEntity  currentWeixinAccount =  weixinAccountService.findByToUsername(toUserName);

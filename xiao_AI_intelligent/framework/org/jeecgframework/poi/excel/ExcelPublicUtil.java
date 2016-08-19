@@ -254,8 +254,7 @@ public class ExcelPublicUtil {
      * @param workbook 工作簿对象 
      * @return Map key:图片单元格索引（1_1）String，value:图片流PictureData 
      */  
-    public static Map<String, PictureData> getSheetPictrues07(  
-            XSSFSheet sheet, XSSFWorkbook workbook) {  
+    public static Map<String, PictureData> getSheetPictrues07(XSSFSheet sheet, XSSFWorkbook workbook) {  
         Map<String, PictureData> sheetIndexPicMap = new HashMap<String, PictureData>();  
         for (POIXMLDocumentPart dr : sheet.getRelations()) {  
             if (dr instanceof XSSFDrawing) {  
