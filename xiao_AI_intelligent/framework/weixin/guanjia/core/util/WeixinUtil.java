@@ -9,8 +9,6 @@ import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -18,11 +16,6 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
 import net.sf.json.JSONObject;
-
-import org.jeecgframework.web.system.service.SystemService;
-
-import weixin.guanjia.core.entity.common.AccessToken;
-import weixin.guanjia.core.entity.model.AccessTokenYw;
 
 /**
  * 公众平台通用接口工具类
@@ -50,7 +43,7 @@ public class WeixinUtil {
 	 * @return JSONObject(通过JSONObject.get(key)的方式获取json对象的属性值)
 	 */
 	public static JSONObject httpsRequest(String requestUrl, String requestMethod, String outputStr) {
-		JSONObject jsonObject = null;
+		JSONObject jsonObject = JSONObject.fromObject("{}");
 		StringBuffer buffer = new StringBuffer();
 		try {
 			// 创建SSLContext对象，并使用我们指定的信任管理器初始化
@@ -163,8 +156,8 @@ public class WeixinUtil {
 			inputStream = null;
 			httpUrlConn.disconnect();
 
-			String result = buffer.toString().replaceAll("\n", "").replaceAll("(\\[(\\s)*\\[(\\s)*\\[)", "{\"root\":[");
-			result = result.replaceAll("\n", "").replaceAll("(\\](\\s)*\\](\\s)*\\])", "]}");
+			String result = buffer.toString().replaceAll("\n", "").replaceAll("\\[(\\s)*\\[", "{\"root\":[");
+			result = result.replaceAll("\n", "").replaceAll("\\](\\s)*\\](\\s)*\\]", "]]}");
 			
 			jsonObject = JSONObject.fromObject(result);
 

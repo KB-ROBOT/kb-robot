@@ -2,6 +2,8 @@ package com.kbrobot.utils;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jeecgframework.core.util.ResourceUtil;
 import org.json.JSONArray;
@@ -38,11 +40,15 @@ public class LtpUtil{
 	public static String[] getWordList(JSONObject json) throws JSONException{
 
 		JSONArray jsonArray = json.getJSONArray("root");
-		String[] resultArray = new String[jsonArray.length()];
+		String[] resultArray = new String[]{};
+		List<String> resultList = new ArrayList<String>();
 		for(int i=0;i<jsonArray.length();i++){
-			resultArray[i] = jsonArray.getJSONObject(i).optString("cont");
+			JSONArray contArray = jsonArray.getJSONArray(i);
+			for(int j=0;j<contArray.length();j++){
+				resultList.add(contArray.getJSONObject(j).optString("cont"));
+			}
 		}
-		return resultArray;
+		return resultList.toArray(resultArray);
 	}
 	/**
 	 * 直接通过字符串获得分词list

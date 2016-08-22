@@ -255,6 +255,7 @@ public class LoginController extends BaseController{
 				Globals.Log_Type_EXIT, Globals.Log_Leavel_INFO);
 		ClientManager.getInstance().removeClinet(session.getId());
 		session.removeAttribute(Globals.USER_SESSION);
+		session.removeAttribute(WeiXinConstants.WEIXIN_ACCOUNT);
 		ModelAndView modelAndView = new ModelAndView(new RedirectView("loginController.do?login"));
 		return modelAndView;
 	}

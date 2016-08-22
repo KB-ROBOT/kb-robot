@@ -23,6 +23,8 @@ public class QuestionMatchUtil {
 	
 	public static double minScore = 0.75;
 	private static ResourceBundle bundler = ResourceBundle.getBundle("sysConfig");
+	
+	private static String emptyAnswer = "此答案为空";
 
 	public static BaseMessageResp matchQuestion(List<RobotQuestionEntity> questionList,String content,String toUserName,String fromUserName) throws JSONException, IOException{
 		
@@ -30,7 +32,7 @@ public class QuestionMatchUtil {
 		RobotQuestionEntity goodMatchQuestion = null;
 		for(RobotQuestionEntity que : questionList){
 			//遍历每个问题并得出相似度
-			String title = que.getQuestionTitle();
+			String title = que.getQuestionTitle()==null?"":que.getQuestionTitle();
 			double currentScore = TextCompareUtil.getSimilarScore(title, content);
 
 			//取得当前最大值
@@ -45,7 +47,7 @@ public class QuestionMatchUtil {
 			//遍历相似问题进行比较
 			List<RobotSimilarQuestionEntity> similarQueList = que.getSimilarQuestionList();
 			for(RobotSimilarQuestionEntity simliarQue : similarQueList){
-				String similarTile = simliarQue.getSimilarQuestionTitle();
+				String similarTile = simliarQue.getSimilarQuestionTitle()==null?"":simliarQue.getSimilarQuestionTitle();
 				currentScore = TextCompareUtil.getSimilarScore(similarTile, content);
 				//取得当前最大值
 				if(currentScore>maxScore){
@@ -62,8 +64,8 @@ public class QuestionMatchUtil {
 		
 		//假如最大分数大于当前阈值，则视为找到答案
 		if(maxScore>=minScore){
-			String answerStr = goodMatchQuestion.getQuestionAnswer();
-			
+			String answerStr = goodMatchQuestion.getQuestionAnswer()==null?emptyAnswer:goodMatchQuestion.getQuestionAnswer();
+
 			if(answerStr.indexOf("<p>")==0&&answerStr.lastIndexOf("</p>")==(answerStr.length()-4)&&answerStr.length()>7){
 				answerStr = answerStr.substring(3, answerStr.length()-4);
 			}
@@ -74,7 +76,7 @@ public class QuestionMatchUtil {
 				article.setDescription("");
 				article.setUrl(bundler.getString("domain")+ "/robotQuestionController.do?getQuestionAnswerContent&id=" + goodMatchQuestion.getId() );
 				//设置图片
-				Matcher matcher = Pattern.compile("http://[^\\s|^\"]*").matcher(answerStr);  
+				Matcher matcher = Pattern.compile("(http://|https://)[^\\s|^\"]*(.jpg|.png|.jpeg|.bmp|.gif)").matcher(answerStr);
 				if(matcher.find()){
 					article.setPicUrl(matcher.group());
 				}

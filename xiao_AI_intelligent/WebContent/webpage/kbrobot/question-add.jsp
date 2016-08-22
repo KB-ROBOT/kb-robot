@@ -65,6 +65,7 @@
 			$.ajax({
 				url : url,// 请求的action路径
 				dataType : "json",
+				type:"post",
 				data : questionObject,
 				success : function(data) {
 					if (data.success) {

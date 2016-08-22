@@ -5,7 +5,7 @@
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>${newsItem.title}</title>
+<title>${question.questionTitle}</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -72,14 +72,14 @@ ol, ul {
 				</p>
 			</div>
 		</div>
-		<div id="js_pc_qr_code" class="pc_code" style="display: block;">
+		<!-- <div id="js_pc_qr_code" class="pc_code" style="display: block;">
 			<div class="inner_pc_code">
 				<img width="102" id="js_pc_qr_code_img" src="plug-in/weixin/core/wx-article/logo.jpg" target="_blank">
 				<p>
 					微信扫一扫 <br> 获得更多内容
 				</p>
 			</div>
-		</div>
+		</div> -->
 	</div>
 </body>
 
