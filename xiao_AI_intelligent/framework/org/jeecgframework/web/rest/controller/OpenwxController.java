@@ -22,6 +22,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.jeecgframework.core.common.hibernate.qbc.CriteriaQuery;
 import org.jeecgframework.core.util.DataUtils;
 import org.jeecgframework.core.util.LogUtil;
 import org.jeecgframework.core.util.ResourceUtil;
@@ -49,6 +50,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import com.kbrobot.entity.RobotQuestionEntity;
 import com.kbrobot.service.RobotQuestionServiceI;
 import com.kbrobot.utils.CustomServiceUtil;
+import com.kbrobot.utils.LtpUtil;
 import com.kbrobot.utils.QuestionMatchUtil;
 import com.kbrobot.utils.TuLingUtil;
 import com.kbrobot.utils.TuLingUtil.ResultKey;
@@ -467,11 +469,33 @@ public class OpenwxController {
 				CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizer_access_token, "语音解析结果：" + new String(content));
 			}
 			
+			
 			WeixinAccountEntity  currentWeixinAccount =  weixinAccountService.findByToUsername(toUserName);
-			List<RobotQuestionEntity> questionList = robotQuestionService.findByProperty(RobotQuestionEntity.class, "accoundId", currentWeixinAccount.getId());
+			//List<RobotQuestionEntity> questionList = robotQuestionService.findByProperty(RobotQuestionEntity.class, "accoundId", currentWeixinAccount.getId());
+			//关键词提取
+			String[] likeStringList =  LtpUtil.getKeyWordArray(content);
+			if(likeStringList==null){
+				likeStringList = new String[]{};
+			}
 			
+			System.out.println("关键词长度：" + likeStringList.length);
+			
+			//问题过滤（太多会造成超时）
+			CriteriaQuery cq = new CriteriaQuery(RobotQuestionEntity.class);
+			cq.eq("accoundId", currentWeixinAccount.getId());
+			//添加关键词like条件
+			for(String keyWord: likeStringList){
+				cq.like("questionTitle", keyWord);
+				LogUtil.info("提取出来的keyWord:" + keyWord);
+			}
+			cq.add();
+			List<RobotQuestionEntity> questionList = robotQuestionService.getListByCriteriaQuery(cq, false);
+			LogUtil.info("查询到的条数:" + questionList==null?0:questionList.size());
 			String resultText = "";//文本回复
-			
+			//截断list 超过25个就会超时
+			if(questionList.size()>=25){
+				questionList.subList(0, 25);
+			}
 			BaseMessageResp baseMsgResp = QuestionMatchUtil.matchQuestion(questionList, content,toUserName,fromUserName);
 			
 			if(baseMsgResp!=null){

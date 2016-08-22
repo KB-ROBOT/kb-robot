@@ -27,14 +27,14 @@ public class QuestionMatchUtil {
 	private static String emptyAnswer = "此答案为空";
 
 	public static BaseMessageResp matchQuestion(List<RobotQuestionEntity> questionList,String content,String toUserName,String fromUserName) throws JSONException, IOException{
-		
 		double maxScore = 0;
 		RobotQuestionEntity goodMatchQuestion = null;
 		for(RobotQuestionEntity que : questionList){
 			//遍历每个问题并得出相似度
 			String title = que.getQuestionTitle()==null?"":que.getQuestionTitle();
+			
 			double currentScore = TextCompareUtil.getSimilarScore(title, content);
-
+			
 			//取得当前最大值
 			if(currentScore>maxScore){
 				maxScore = currentScore;
@@ -60,7 +60,6 @@ public class QuestionMatchUtil {
 				}
 			}
 		}
-		
 		
 		//假如最大分数大于当前阈值，则视为找到答案
 		if(maxScore>=minScore){

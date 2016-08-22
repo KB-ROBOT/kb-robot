@@ -1,6 +1,7 @@
 package com.kbrobot.utils;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,50 @@ public class LtpUtil{
 	public static String[] getWordList(String text) throws JSONException, IOException{
 		//
 		return getWordList(getLTPResultByStr(URLEncoder.encode(text, "utf-8")));
+	}
+	
+	/**
+	 * 关键词提取 SBV
+	 * @param json
+	 * @return
+	 * @throws IOException 
+	 * @throws UnsupportedEncodingException 
+	 * @throws JSONException
+	 */
+	
+	public static String[] getKeyWordArray(String text) throws UnsupportedEncodingException, JSONException, IOException{
+		return getKeyWordArray(getLTPResultByStr(URLEncoder.encode(text, "utf-8")));
+	}
+	public static String[] getKeyWordArray(JSONObject json) throws JSONException{
+		JSONArray jsonArray = json.getJSONArray("root");
+		String[] resultArray = new String[]{};
+		List<String> resultList = new ArrayList<String>();
+		//提取关键词 
+		for(int i=0;i<jsonArray.length();i++){
+			JSONArray sendArray = jsonArray.getJSONArray(i);//每一句
+			for(int j=0;j<sendArray.length();j++){
+				String wordrelate =  sendArray.getJSONObject(j).optString("relate");
+				if("SBV".equals(wordrelate)){
+					resultList.add(sendArray.getJSONObject(j).optString("cont"));
+					System.out.println("SBV" + sendArray.getJSONObject(j).optString("cont"));
+				}
+			}
+		}
+		
+		if(resultList.isEmpty()){
+			for(int i=0;i<jsonArray.length();i++){
+				JSONArray sendArray = jsonArray.getJSONArray(i);//每一句
+				for(int j=0;j<sendArray.length();j++){
+					String wordrelate =  sendArray.getJSONObject(j).optString("relate");
+					if("HED".equals(wordrelate)){
+						resultList.add(sendArray.getJSONObject(j).optString("cont"));
+						System.out.println("HED" + sendArray.getJSONObject(j).optString("cont"));
+					}
+				}
+			}
+		}
+		
+		return resultList.toArray(resultArray);
 	}
 
 }
