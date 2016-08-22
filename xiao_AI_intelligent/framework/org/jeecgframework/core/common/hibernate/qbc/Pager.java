@@ -104,7 +104,7 @@ public class Pager {
 		} else {
 			temp = "&";
 		}
-		String str = "<div class=\"col-sm-6\">";
+		String str = "<div class=\"col-sm-3\" style=\"line-height:68px;\">";
 		str += "";
 		
 		/**
@@ -133,7 +133,7 @@ public class Pager {
 		 */
 		str += "共&nbsp;<b>"+pageCount+"</b>&nbsp;页&nbsp;第&nbsp;<b>"+curPageNO+"</b>&nbsp;页";
 		str += "</div>";
-		str += "<div class=\"col-sm-6\">";
+		str += "<div class=\"col-sm-9\">";
 		str += "	<ul class=\"pagination fr\">";
 		
 		//上一页
