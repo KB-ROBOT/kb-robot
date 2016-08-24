@@ -494,7 +494,7 @@ public class OpenwxController {
 			String resultText = "";//文本回复
 			//截断list 超过25个就会超时
 			if(questionList.size()>=25){
-				questionList.subList(0, 25);
+				questionList = questionList.subList(0, 25);
 			}
 			BaseMessageResp baseMsgResp = QuestionMatchUtil.matchQuestion(questionList, content,toUserName,fromUserName);
 			

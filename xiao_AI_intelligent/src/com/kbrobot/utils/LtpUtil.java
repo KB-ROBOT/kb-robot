@@ -92,7 +92,7 @@ public class LtpUtil{
 			}
 		}
 		
-		if(resultList.isEmpty()){
+		if(resultList.size()<=1){
 			for(int i=0;i<jsonArray.length();i++){
 				JSONArray sendArray = jsonArray.getJSONArray(i);//每一句
 				for(int j=0;j<sendArray.length();j++){
@@ -100,6 +100,18 @@ public class LtpUtil{
 					if("HED".equals(wordrelate)){
 						resultList.add(sendArray.getJSONObject(j).optString("cont"));
 						System.out.println("HED" + sendArray.getJSONObject(j).optString("cont"));
+					}
+				}
+			}
+		}
+		if(resultList.size()<=1){
+			for(int i=0;i<jsonArray.length();i++){
+				JSONArray sendArray = jsonArray.getJSONArray(i);//每一句
+				for(int j=0;j<sendArray.length();j++){
+					String wordrelate =  sendArray.getJSONObject(j).optString("relate");
+					if("ATT".equals(wordrelate)){
+						resultList.add(sendArray.getJSONObject(j).optString("cont"));
+						System.out.println("ATT" + sendArray.getJSONObject(j).optString("cont"));
 					}
 				}
 			}

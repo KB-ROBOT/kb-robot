@@ -131,7 +131,7 @@ public class Pager {
 								</ul>
 							</div>
 		 */
-		str += "共&nbsp;<b>"+pageCount+"</b>&nbsp;页&nbsp;第&nbsp;<b>"+curPageNO+"</b>&nbsp;页";
+		str += "共&nbsp;<b>"+pageCount+"</b>&nbsp;页&nbsp;第&nbsp;<b>"+curPageNO+"</b>&nbsp;页  共&nbsp;<b>"+rowsCount+"</b>&nbsp;条";
 		str += "</div>";
 		str += "<div class=\"col-sm-9\">";
 		str += "	<ul class=\"pagination fr\">";

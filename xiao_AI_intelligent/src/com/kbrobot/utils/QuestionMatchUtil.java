@@ -69,7 +69,7 @@ public class QuestionMatchUtil {
 				answerStr = answerStr.substring(3, answerStr.length()-4);
 			}
 			
-			if(answerStr.contains("<")||answerStr.contains(">")||answerStr.length()>=1500){ //图文形式
+			if(answerStr.contains("<")||answerStr.contains(">")||answerStr.length()>=200){ //图文形式
 				Article article = new Article();
 				article.setTitle(goodMatchQuestion.getQuestionTitle());
 				article.setDescription("");
