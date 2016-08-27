@@ -400,6 +400,7 @@
 										<th>认证情况</th>
 										<th>公众号类型</th>
 										<th>原始ID</th>
+										<th>状态</th>
 										<th>操作</th>
 									</tr>
 									<c:if test="${weixinAccountList.size()==0}">
@@ -421,6 +422,15 @@
 												<robot:dict fieldValue="${weixinAccount.accountType}" dictionary="weixintype"></robot:dict>
 											</td>
 											<td>${weixinAccount.weixinAccountId}</td>
+											<td align="center">
+												<c:if test="${weixinAccount.accountAuthorizeType=='2'}">
+													已取消授权<br/>
+													<a href="openwx/goAuthor.do" target="_blank" class="choose-btn">点击重新授权</a>
+												</c:if>
+												<c:if test="${weixinAccount.accountAuthorizeType!='2'}">
+													已经授权
+												</c:if>
+											</td>
 											<td align="center">
 												<a href="javascript:void(0);" data-accountid="${weixinAccount.id}" class="fa fa-trash-o weixin-account-del"></a>
 											</td>
