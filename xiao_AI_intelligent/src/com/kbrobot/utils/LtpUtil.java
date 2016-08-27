@@ -64,6 +64,30 @@ public class LtpUtil{
 		return getWordList(getLTPResultByStr(URLEncoder.encode(text, "utf-8")));
 	}
 	
+	
+	/**
+	 * 获取分词结果
+	 * @param json
+	 * @return
+	 * @throws JSONException
+	 */
+	public static String getWordSplit(JSONObject json) throws JSONException{
+		
+		JSONArray jsonArray = json.getJSONArray("root");
+		String result = "";
+		for(int i=0;i<jsonArray.length();i++){
+			JSONArray contArray = jsonArray.getJSONArray(i);
+			for(int j=0;j<contArray.length();j++){
+				result += contArray.getJSONObject(j).optString("cont").trim() + ",";
+			}
+		}
+		return result;
+	}
+	
+	public static String getWordSplit(String text) throws JSONException, UnsupportedEncodingException, IOException{
+		return getWordSplit(getLTPResultByStr(URLEncoder.encode(text, "utf-8")));
+	}
+	
 	/**
 	 * 关键词提取 SBV
 	 * @param json
@@ -80,7 +104,7 @@ public class LtpUtil{
 		JSONArray jsonArray = json.getJSONArray("root");
 		String[] resultArray = new String[]{};
 		List<String> resultList = new ArrayList<String>();
-		//提取关键词 
+
 		for(int i=0;i<jsonArray.length();i++){
 			JSONArray sendArray = jsonArray.getJSONArray(i);//每一句
 			for(int j=0;j<sendArray.length();j++){
@@ -97,26 +121,14 @@ public class LtpUtil{
 				JSONArray sendArray = jsonArray.getJSONArray(i);//每一句
 				for(int j=0;j<sendArray.length();j++){
 					String wordrelate =  sendArray.getJSONObject(j).optString("relate");
-					if("HED".equals(wordrelate)){
+					if("HED".equals(wordrelate)){//
 						resultList.add(sendArray.getJSONObject(j).optString("cont"));
 						System.out.println("HED" + sendArray.getJSONObject(j).optString("cont"));
+						continue;
 					}
 				}
 			}
 		}
-		if(resultList.size()<=1){
-			for(int i=0;i<jsonArray.length();i++){
-				JSONArray sendArray = jsonArray.getJSONArray(i);//每一句
-				for(int j=0;j<sendArray.length();j++){
-					String wordrelate =  sendArray.getJSONObject(j).optString("relate");
-					if("ATT".equals(wordrelate)){
-						resultList.add(sendArray.getJSONObject(j).optString("cont"));
-						System.out.println("ATT" + sendArray.getJSONObject(j).optString("cont"));
-					}
-				}
-			}
-		}
-		
 		return resultList.toArray(resultArray);
 	}
 

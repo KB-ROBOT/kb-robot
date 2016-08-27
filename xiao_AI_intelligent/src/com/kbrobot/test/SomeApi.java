@@ -8,9 +8,15 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONException;
+
 import com.kbrobot.entity.RobotQuestionEntity;
 import com.kbrobot.entity.RobotSimilarQuestionEntity;
+import com.kbrobot.utils.LtpUtil;
 import com.kbrobot.utils.QuestionMatchUtil;
+import com.kbrobot.utils.TextCompareUtil;
+
+import weixin.guanjia.core.entity.message.resp.BaseMessageResp;
 
 public class SomeApi {
 	public void Test(){
@@ -25,23 +31,24 @@ public class SomeApi {
 		//String[] heh = LtpUtil.getWordList("纳税人于2016年5月1日以后取得的不动产，适用进项税额分期抵扣时的“第二年”怎么理解？是否指自然年度？");
 		//System.out.println(heh); 
 		
-		List<RobotQuestionEntity> questionList = getList();
-		
-		questionList = questionList.subList(0, 32);
-		
 		Long start = System.currentTimeMillis();
-		
-		QuestionMatchUtil.matchQuestion(questionList, "你好", "to", "from");
-		
+		List<RobotQuestionEntity> questionList = getList();
 		Long end = System.currentTimeMillis();
+		System.out.println("获取list用时：" + (end - start )/1000.0  +"秒");
 		
-		System.out.println("用时：" + (end - start )/1000.0  +"秒");
+		
+		start = System.currentTimeMillis();
+		BaseMessageResp result =  QuestionMatchUtil.matchQuestion(questionList, "关于铁路运输企业机车车辆大修理支出税前扣除问题的通知", "to", "from");
+		end = System.currentTimeMillis();
+		
+		System.out.println("获取结果用时：" + (end - start )/1000.0  +"秒");
+		
+		System.out.println(result);
 		
 	}
 	
-	public static List<RobotQuestionEntity> getList() throws IOException{
+	public static List<RobotQuestionEntity> getList() throws IOException, JSONException{
 		List<RobotQuestionEntity> questionList = new ArrayList<RobotQuestionEntity>();
-		
 		
 		File file = new File("./questionList.txt");
 		
@@ -51,11 +58,14 @@ public class SomeApi {
 			RobotQuestionEntity entity = new RobotQuestionEntity();
 			entity.setQuestionTitle(reader.readLine());
 			entity.setSimilarQuestionList(new ArrayList<RobotSimilarQuestionEntity>());
+			
+			entity.setWordSplit(LtpUtil.getWordSplit(entity.getQuestionTitle()));
+			
 			questionList.add(entity);
 		}
 		
 		reader.close();
-		
+		System.out.println(questionList.size() + "个问题测试");
 		return questionList;
 		
 		//System.out.println(fil.getAbsolutePath());

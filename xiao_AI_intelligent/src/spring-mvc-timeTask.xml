@@ -16,11 +16,10 @@
 	<context:component-scan base-package="org.jeecgframework.core.timer" />
 	<task:executor id="executor" pool-size="5" />
 	<task:scheduler id="scheduler" pool-size="10" />
-	<task:annotation-driven executor="executor"
-		scheduler="scheduler" />
+	<task:annotation-driven executor="executor" scheduler="scheduler" />
+	
 	<!-- 定时任务配置 quartz 可配置到管理界面 -->
-	<bean id="taskDemoServiceTaskJob"
-		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	<!-- <bean id="taskDemoServiceTaskJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject" ref="taskDemoService" />
 		<property name="targetMethod" value="work" />
 		<property name="concurrent" value="true" />
@@ -29,28 +28,28 @@
 	<bean id="taskDemoServiceTaskCronTrigger" class="org.jeecgframework.core.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="taskDemoServiceTaskJob" />
 		<property name="cronExpression" value="0 0/1 * * * ?" />
-	</bean>
+	</bean> -->
 	
-	<!-- 自动重置微信Token -->
-	<bean id="autoResetWeixinTokenJob"
-		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-		<property name="targetObject" ref="weixinAccountTokenTask" />
-		<property name="targetMethod" value="autoResetToken" />
+	
+	
+	 <!-- 知识库分词任务 -->
+	<bean id="questionWordSplitTaskJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="questionWordSplitTask" />
+		<property name="targetMethod" value="questionWordSplit" />
 		<property name="concurrent" value="false" />
 	</bean>
 
-	<bean id="autoResetWeixinTokenCronTrigger" class="org.jeecgframework.core.timer.DataBaseCronTriggerBean">
-		<property name="jobDetail" ref="autoResetWeixinTokenJob" />
-		<property name="cronExpression" value="0 0/1 * * * ?" />
+	<bean id="questionWordSplitTaskCronTrigger" class="org.jeecgframework.core.timer.DataBaseCronTriggerBean">
+		<property name="jobDetail" ref="questionWordSplitTaskJob" />
+		<!-- 每天凌晨三点执行 0 0 3 * * ?-->
+		<property name="cronExpression" value="0 0 3 * * ?" />
 	</bean>
 
 	<!-- 定时任务调度器 -->
-	<bean id="schedulerFactory" lazy-init="false" autowire="no"
-		class="org.jeecgframework.core.timer.DataBaseSchedulerFactoryBean">
+	<bean id="schedulerFactory" lazy-init="false" autowire="no" class="org.jeecgframework.core.timer.DataBaseSchedulerFactoryBean">
 		<property name="triggers">
 			<list>
-				 <!-- 重置Token -->
-				 <ref bean="autoResetWeixinTokenCronTrigger" />
+				 <ref bean="questionWordSplitTaskCronTrigger" />
 			</list>
 		</property>
 	</bean>

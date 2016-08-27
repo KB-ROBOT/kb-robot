@@ -36,6 +36,8 @@ public interface IGenericBaseCommonDao {
 	public <T> Serializable save(T entity);
 
 	public <T> void batchSave(List<T> entitys);
+	
+	public <T> void batchUpdate(List<T> entitys);
 
 	public <T> void saveOrUpdate(T entity);
 

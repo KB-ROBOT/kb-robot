@@ -43,6 +43,9 @@ public class RobotQuestionEntity implements java.io.Serializable {
 	private java.lang.String questionAnswer;
 	/**accoundId*/
 	private java.lang.String accoundId;
+	/**wordSplit*/
+	private String wordSplit;
+	
 	/**
 	 * 相似问题
 	 */
@@ -184,6 +187,11 @@ public class RobotQuestionEntity implements java.io.Serializable {
 		this.similarQuestionList = similarQuestionList;
 	}
 	
-	
-	
+	@Column(name ="WORD_SPLIT",nullable=true,length=1500)
+	public String getWordSplit() {
+		return wordSplit;
+	}
+	public void setWordSplit(String wordSplit) {
+		this.wordSplit = wordSplit;
+	}
 }

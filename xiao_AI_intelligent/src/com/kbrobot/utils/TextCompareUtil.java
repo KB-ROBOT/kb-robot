@@ -32,9 +32,15 @@ public class TextCompareUtil {
 	 * @throws JSONException 
 	 */
 	public static double getSimilarScore(String text1,String text2) throws JSONException, IOException{
-
-		Map<String, Integer> tfMap1 = getTFMap(text1);
-		Map<String, Integer> tfMap2 = getTFMap(text2);
+		String[] textArray1 = LtpUtil.getWordList(text1==null?"":text1);
+		String[] textArray2 = LtpUtil.getWordList(text2==null?"":text2);
+		
+		return getSimilarScore(textArray1,textArray2);
+	}
+	
+	public static double getSimilarScore(String[] textArray1,String[] textArray2) throws JSONException, IOException{
+		Map<String, Integer> tfMap1 = getTFMap(textArray1);
+		Map<String, Integer> tfMap2 = getTFMap(textArray2);
 
 		Map<String, MutablePair<Integer, Integer>> tfsForward = new HashMap<String, MutablePair<Integer, Integer>>();
 		//计算第二遍
@@ -85,9 +91,13 @@ public class TextCompareUtil {
 	 * @throws IOException
 	 * @throws JSONException 
 	 */
-	private static Map<String, Integer> getTFMap(String text) throws IOException, JSONException {  
-		Map<String, Integer> map = new HashMap<String, Integer>();  
-		String[] wordList = LtpUtil.getWordList(text);
+	private static Map<String, Integer> getTFMap(String[] wordList) throws IOException, JSONException {  
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		
+		if(wordList==null){
+			wordList = new String[]{};
+		}
+		
 		for(String word:wordList){
 			//得出当前词是否所占词频
 			Integer count = map.get(word);

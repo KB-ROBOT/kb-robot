@@ -35,4 +35,5 @@ public class LtpController extends BaseController {
 		return "kbrobot/ltp";
 	}
 	
+	
 }

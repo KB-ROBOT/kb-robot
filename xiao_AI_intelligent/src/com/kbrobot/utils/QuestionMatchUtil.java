@@ -28,12 +28,13 @@ public class QuestionMatchUtil {
 
 	public static BaseMessageResp matchQuestion(List<RobotQuestionEntity> questionList,String content,String toUserName,String fromUserName) throws JSONException, IOException{
 		double maxScore = 0;
+		
+		String[] contentWordSplit = LtpUtil.getWordList(content);
+		
 		RobotQuestionEntity goodMatchQuestion = null;
 		for(RobotQuestionEntity que : questionList){
-			//遍历每个问题并得出相似度
-			String title = que.getQuestionTitle()==null?"":que.getQuestionTitle();
-			
-			double currentScore = TextCompareUtil.getSimilarScore(title, content);
+			//遍历每个问题并得出相似度 getWordSplit是已经分好的词
+			double currentScore = TextCompareUtil.getSimilarScore(que.getWordSplit().split(","), contentWordSplit);
 			
 			//取得当前最大值
 			if(currentScore>maxScore){
@@ -44,11 +45,10 @@ public class QuestionMatchUtil {
 					break;
 				}
 			}
-			//遍历相似问题进行比较
+			//遍历相似问题进行比较 getWordSplit是已经分好的词
 			List<RobotSimilarQuestionEntity> similarQueList = que.getSimilarQuestionList();
 			for(RobotSimilarQuestionEntity simliarQue : similarQueList){
-				String similarTile = simliarQue.getSimilarQuestionTitle()==null?"":simliarQue.getSimilarQuestionTitle();
-				currentScore = TextCompareUtil.getSimilarScore(similarTile, content);
+				currentScore = TextCompareUtil.getSimilarScore(simliarQue.getWordSplit().split(","), contentWordSplit);
 				//取得当前最大值
 				if(currentScore>maxScore){
 					maxScore = currentScore;

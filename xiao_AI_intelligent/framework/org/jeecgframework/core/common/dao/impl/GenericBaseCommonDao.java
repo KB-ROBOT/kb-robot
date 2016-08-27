@@ -207,6 +207,24 @@ public abstract class GenericBaseCommonDao<T, PK extends Serializable>
 		getSession().flush();
 		getSession().clear();
 	}
+	
+	/**
+	 * 批量更新
+	 * 
+	 */
+	public <T> void batchUpdate(List<T> entitys) {
+		for (int i = 0; i < entitys.size(); i++) {
+			getSession().saveOrUpdate(entitys.get(i));
+			if (i % 20 == 0) {
+				// 20个对象后才清理缓存，写入数据库
+				getSession().flush();
+				getSession().clear();
+			}
+		}
+		// 最后清理一下----防止大于20小于40的不保存
+		getSession().flush();
+		getSession().clear();
+	}
 
 	/**
 	 * 根据传入的实体添加或更新对象

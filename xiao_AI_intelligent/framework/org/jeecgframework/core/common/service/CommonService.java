@@ -45,6 +45,8 @@ public interface CommonService {
 	public <T> void delete(T entity);
 
 	public <T> void batchSave(List<T> entitys);
+	
+	public <T> void batchUpdate(List<T> entitys);
 
 	/**
 	 * 根据实体名称和主键获取实体

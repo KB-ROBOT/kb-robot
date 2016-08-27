@@ -65,7 +65,7 @@ public class WeixinAccountEntity implements java.io.Serializable {
 	private java.lang.String authorizerRefreshToken;
 	/**授权方接口调用凭据获取时间*/
 	private java.util.Date authorizerAccessTokenTime;
-	/**接入类型 0：扫一扫接入。1：配置方式接入*/
+	/**接入类型 0：扫一扫接入。1：配置方式接入。-1：未接入*/
 	private java.lang.String accountAuthorizeType;
 	/**授权方认证类型，，
 	 * 0代表微信认证，

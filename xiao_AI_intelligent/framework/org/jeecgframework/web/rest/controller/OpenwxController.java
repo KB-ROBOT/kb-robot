@@ -469,7 +469,6 @@ public class OpenwxController {
 				CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizer_access_token, "语音解析结果：" + new String(content));
 			}
 			
-			
 			WeixinAccountEntity  currentWeixinAccount =  weixinAccountService.findByToUsername(toUserName);
 			//List<RobotQuestionEntity> questionList = robotQuestionService.findByProperty(RobotQuestionEntity.class, "accoundId", currentWeixinAccount.getId());
 			//关键词提取
@@ -490,12 +489,9 @@ public class OpenwxController {
 			}
 			cq.add();
 			List<RobotQuestionEntity> questionList = robotQuestionService.getListByCriteriaQuery(cq, false);
-			LogUtil.info("查询到的条数:" + questionList==null?0:questionList.size());
+			LogUtil.info("查询到的条数:" + (questionList==null?0:questionList.size()));
 			String resultText = "";//文本回复
-			//截断list 超过25个就会超时
-			if(questionList.size()>=25){
-				questionList = questionList.subList(0, 25);
-			}
+
 			BaseMessageResp baseMsgResp = QuestionMatchUtil.matchQuestion(questionList, content,toUserName,fromUserName);
 			
 			if(baseMsgResp!=null){

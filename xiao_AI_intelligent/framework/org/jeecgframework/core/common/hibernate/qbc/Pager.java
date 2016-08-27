@@ -12,7 +12,7 @@ public class Pager {
 	private int rowsCount; // 记录行数
 	private int pageCount; // 页数
 	private Map<String, Object> map;// 封装查询条件
-	
+
 	private String url;//请求地址
 
 	/**
@@ -88,8 +88,8 @@ public class Pager {
 	public String toString() {
 		return "Pager的值为 " + " curPageNO = " + curPageNO + " limit = " + pageSize + " rowsCount = " + rowsCount + " pageCount = " + pageCount;
 	}
-	
-	
+
+
 	public String getToolsBarByUrl(){
 		String temp = "";
 		String conditions = "";
@@ -106,7 +106,7 @@ public class Pager {
 		}
 		String str = "<div class=\"col-sm-3\" style=\"line-height:68px;\">";
 		str += "";
-		
+
 		/**
 		 * <div class="col-sm-6">
 								共&nbsp;<b>${questionPageList.pager.pageCount}</b>&nbsp;页&nbsp;第&nbsp;<b>${questionPageList.pager.curPageNO}</b>&nbsp;页
@@ -135,51 +135,56 @@ public class Pager {
 		str += "</div>";
 		str += "<div class=\"col-sm-9\">";
 		str += "	<ul class=\"pagination fr\">";
-		
+
 		//上一页
 		if (isFirst()){
+			str += "<li class=\"disabled\"> <a href=\"#\">首页</a> </li>";
 			str += "<li class=\"disabled\"> <a href=\"#\">上一页</a> </li>";
 		}
 		else {
 			/*str += "第" + curPageNO + "页&nbsp;共" + pageCount + "页&nbsp;<a href='" + url + temp + "curPageNO=1" + conditions + "'>首页</a>&nbsp;";
 			str += "<a href='" + url + temp + "curPageNO=" + previous() + conditions + "' onMouseMove=\"style.cursor='hand'\" alt=\"上一页\">上一页</a>&nbsp;";*/
+			str += "<li> <a href=\""+ url + temp + "curPageNO=1" + conditions +"\">首页</a> </li>";
 			str += "<li> <a href=\""+ url + temp + "curPageNO=" + previous() + conditions +"\">上一页</a> </li>";
 		}
-		
+
 		//跳转页
 		int begin = (curPageNO > 10) ? curPageNO - 10 : 1;
 		int end = (pageCount - curPageNO > 10) ? curPageNO + 10 : pageCount;
 		for (int i = begin; i <= end; i++) {
 			if (i == curPageNO){
 				//str += "<option value='" + i + "' selected>第" + i + "页</option>"; 
-				
+
 				str += "<li><a href=\""+url + temp + "curPageNO="+i+ conditions +"\" class=\"active\">"+i+"</a></li>";
 			}
 			else{
 				str += "<li><a href=\""+url + temp + "curPageNO="+i+ conditions +"\">"+i+"</a></li>";
 			}
 		}
-		
+
 		//下一页
-		if (isLast() || rowsCount == 0)
+		if (isLast() || rowsCount == 0){
 			str += "<li class=\"disabled\"> <a href=\"#\">下一页</a> </li>";
+			str += "<li class=\"disabled\"> <a href=\"#\">末页</a> </li>"; 
+		}
 		else {
 			/*str += "<a href='" + url + temp + "curPageNO=" + next() + conditions + "' onMouseMove=\"style.cursor='hand'\" >下一页</a>&nbsp;";
 			str += "<a href='" + url + temp + "curPageNO=" + pageCount + conditions + "'>尾页</a>&nbsp;";*/
 			str += "<li> <a href=\""+url + temp + "curPageNO=" + next() + conditions+"\">下一页</a> </li>";
+			str += "<li> <a href=\""+url + temp + "curPageNO=" + pageCount + conditions+"\">末页</a> </li>"; 
 		}
 		/*str += "&nbsp;共" + rowsCount + "条记录&nbsp;";
-		
+
 		str += "&nbsp;转到<select name='page' onChange=\"location='" + url + temp + "curPageNO='+this.options[this.selectedIndex].value\">";*/
-		
-		
+
+
 		str += "</ul> "
-		+ "</div>";
-		
+				+ "</div>";
+
 		return str;
 	}
-	
-	
+
+
 	/**
 	 * 获取工具条 不用图片的，用下拉框
 	 * 
@@ -215,9 +220,9 @@ public class Pager {
 			str += "<a href='" + url + temp + "curPageNO=" + pageCount + conditions + "'>尾页</a>&nbsp;";
 		}
 		str += "&nbsp;共" + rowsCount + "条记录&nbsp;";
-		
+
 		str += "&nbsp;转到<select name='page' onChange=\"location='" + url + temp + "curPageNO='+this.options[this.selectedIndex].value\">";
-		
+
 		int begin = (curPageNO > 10) ? curPageNO - 10 : 1; int end = (pageCount - curPageNO > 10) ? curPageNO + 10 : pageCount;
 		for (int i = begin; i <= end; i++) {
 			if (i == curPageNO)
@@ -226,7 +231,7 @@ public class Pager {
 				str += "<option value='" + i + "'>第" + i + "页</option>"; 
 		}
 		str += "</select>";
-		
+
 		return str;
 	}
 
@@ -277,27 +282,27 @@ public class Pager {
 	public int getCurPageNO() {
 		return curPageNO;
 	}
-	
+
 	public void setCurPageNO(int curPageNO) {
 		this.curPageNO = curPageNO;
 	}
-	
+
 	public String getUrl() {
 		return url;
 	}
-	
+
 	public void setUrl(String url) {
 		this.url = url;
 	}
-	
+
 	public void setPageSize(int pageSize) {
 		this.pageSize = pageSize;
 	}
-	
+
 	public void setPageCount(int pageCount) {
 		this.pageCount = pageCount;
 	}
-	
-	
-	
+
+
+
 }

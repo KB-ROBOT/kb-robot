@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.formula.functions.T;
 import org.jeecgframework.core.common.controller.BaseController;
 import org.jeecgframework.core.common.hibernate.qbc.CriteriaQuery;
 import org.jeecgframework.core.common.hibernate.qbc.PageList;
@@ -40,6 +39,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.kbrobot.entity.RobotQuestionEntity;
 import com.kbrobot.service.RobotQuestionServiceI;
+import com.kbrobot.task.QuestionWordSplitTask;
 
 import weixin.util.DateUtils;
 
@@ -64,8 +64,11 @@ public class RobotQuestionController extends BaseController {
 	private RobotQuestionServiceI robotQuestionService;
 	@Autowired
 	private SystemService systemService;
+	@Autowired
+	private QuestionWordSplitTask questionWordSplitTask;
+
 	private String message;
-	
+
 	public String getMessage() {
 		return message;
 	}
@@ -73,7 +76,7 @@ public class RobotQuestionController extends BaseController {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	
+
 	/**
 	 * 分页
 	 * @param request
@@ -81,7 +84,7 @@ public class RobotQuestionController extends BaseController {
 	 */
 	@RequestMapping(params = "questionList")
 	public ModelAndView questionList(HttpServletRequest request){
-		
+
 		//获取当前微信账户id
 		String accountId = ResourceUtil.getWeiXinAccountId();
 		//当前页码
@@ -89,7 +92,7 @@ public class RobotQuestionController extends BaseController {
 		if(StringUtil.isEmpty(curPageNO)){
 			curPageNO = "1";
 		}
-		
+
 		CriteriaQuery cq = new CriteriaQuery(RobotQuestionEntity.class, Integer.valueOf(curPageNO));
 		//搜索参数
 		String searchKey = request.getParameter("searchKey");
@@ -113,21 +116,21 @@ public class RobotQuestionController extends BaseController {
 				request.setAttribute("searchKey", "questionAnswer");
 			}
 		}
-		
-		
+
+
 		cq.eq("accoundId", accountId);
 		cq.setPageSize(3);
 		cq.setMyAction("./robotQuestionController.do?questionList");
 		cq.addOrder("createTime", SortDirection.desc);//根据时间顺寻排序
 		cq.add();//加载条件
 		PageList questionPageList = systemService.getPageList(cq, true);
-		
+
 		request.setAttribute("questionPageList", questionPageList);
-		
-		
+
+
 		return new ModelAndView("kbrobot/overview-Q&A");
 	}
-	
+
 	/**
 	 * 查看某条知识库的内容
 	 * @param robotQuestion
@@ -138,7 +141,7 @@ public class RobotQuestionController extends BaseController {
 	@ResponseBody
 	public AjaxJson getQuestionDetail(RobotQuestionEntity robotQuestion, HttpServletRequest request){
 		AjaxJson j = new AjaxJson();
-		
+
 		if(StringUtil.isNotEmpty(robotQuestion.getId())){
 			RobotQuestionEntity entiry = robotQuestionService.get(RobotQuestionEntity.class, robotQuestion.getId());
 			if(entiry!=null){
@@ -150,14 +153,14 @@ public class RobotQuestionController extends BaseController {
 				j.setMsg(message);
 				j.setSuccess(false);
 			}
-			
+
 		}
 		else{
 			this.message = "参数有误";
 			j.setMsg(message);
 			j.setSuccess(false);
 		}
-		
+
 		return j;
 	}
 
@@ -185,7 +188,7 @@ public class RobotQuestionController extends BaseController {
 		message = "知识库删除成功";
 		robotQuestionService.delete(robotQuestion);
 		systemService.addLog(message, Globals.Log_Type_DEL, Globals.Log_Leavel_INFO);
-		
+
 		j.setMsg(message);
 		return j;
 	}
@@ -218,13 +221,24 @@ public class RobotQuestionController extends BaseController {
 			//获取当前微信账户id
 			String accountId = ResourceUtil.getWeiXinAccountId();
 			robotQuestion.setAccoundId(accountId);
+			robotQuestion.setCreateTime(new Date());
+			robotQuestion.setUpdateTime(new Date());
 			robotQuestionService.save(robotQuestion);
 			systemService.addLog(message, Globals.Log_Type_INSERT, Globals.Log_Leavel_INFO);
 		}
+		//添加或更新完成之后立即执行分词定时任务
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				questionWordSplitTask.questionWordSplit();
+			}
+		}).start();
+
 		j.setMsg(message);
 		return j;
 	}
-	
+
 	/**
 	 * 知识库添加
 	 * @return
@@ -233,7 +247,7 @@ public class RobotQuestionController extends BaseController {
 	public ModelAndView goQuestionAdd(){
 		return new ModelAndView("kbrobot/question-add");
 	}
-	
+
 	/**
 	 * 取得答案的主体内容
 	 * @return
@@ -242,9 +256,9 @@ public class RobotQuestionController extends BaseController {
 	public ModelAndView getQuestionAnswerContent(RobotQuestionEntity robotQuestion,HttpServletRequest request){
 		RobotQuestionEntity entity = robotQuestionService.get(RobotQuestionEntity.class, robotQuestion.getId());
 		request.setAttribute("question", entity);
-		
+
 		return new ModelAndView("kbrobot/questionAnswerContent");
-		
+
 	}
 	/**
 	 * 
@@ -252,13 +266,12 @@ public class RobotQuestionController extends BaseController {
 	 * @param response
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	@RequestMapping(params = "uploadImportQuestion")
 	@ResponseBody
 	public AjaxJson uploadImportQuestion(MultipartHttpServletRequest request, HttpServletResponse response){
 		AjaxJson j = new AjaxJson();
 		Map<String, Object> attributes = new HashMap<String, Object>();
-		
+
 		TSTypegroup tsTypegroup=systemService.getTypeGroup("fieltype","文档分类");
 		TSType tsType = systemService.getType("files","附件", tsTypegroup);
 		String fileKey = oConvertUtils.getString(request.getParameter("fileKey"));// 文件ID
@@ -272,7 +285,7 @@ public class RobotQuestionController extends BaseController {
 		document.setSubclassname(MyClassLoader.getPackPath(document));
 		document.setCreatedate(DateUtils.gettimestamp());
 		document.setTSType(tsType);
-		
+
 		UploadFile uploadFile = new UploadFile(request, document);
 		uploadFile.setCusPath("temp");
 		uploadFile.setByteField(null);
@@ -285,12 +298,12 @@ public class RobotQuestionController extends BaseController {
 				ImportParams importParams = new ImportParams();
 				importList = ExcelImportUtil.importExcel(new File(request.getServletContext().getRealPath("/") + document.getRealpath()),RobotQuestionEntity.class, importParams);
 				//importList = (List<RobotQuestionEntity>)importList;
-				
+
 				if(importList.size()>300){
 					throw new Exception("导入条数超出最大限制");
 				}
 			}
-			
+
 			attributes.put("filePath", document.getRealpath());
 			attributes.put("fileKey", document.getId());
 			attributes.put("name", document.getAttachmenttitle());
@@ -308,31 +321,40 @@ public class RobotQuestionController extends BaseController {
 
 		return j;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@RequestMapping(params = "importQuestion")
 	@ResponseBody
 	public AjaxJson importQuestion(HttpServletRequest request, HttpServletResponse response){
 		AjaxJson j = new AjaxJson();
-		
+
 		String importFilePath = request.getParameter("importFilePath");
 		String fileAbsolutePath = request.getServletContext().getRealPath("/") + importFilePath;
 		Collection<?> importList = new ArrayList<RobotQuestionEntity>();
 		ImportParams importParams = new ImportParams();
 		importList = ExcelImportUtil.importExcel(new File(fileAbsolutePath),RobotQuestionEntity.class, importParams);
-		
+
 		//获取当前微信账户id
 		String accountId = ResourceUtil.getWeiXinAccountId();
-		
+
 		for(Object question : importList){
 			((RobotQuestionEntity)question).setAccoundId(accountId);
 			((RobotQuestionEntity)question).setCreateTime(new Date());
 			((RobotQuestionEntity)question).setUpdateTime(new Date());
 		}
-		
+
 		robotQuestionService.batchSave((List<RobotQuestionEntity>)importList);
-		
+
+		//导入完成之后立即执行分词定时任务
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				questionWordSplitTask.questionWordSplit();
+			}
+		}).start();
+
 		return j;
 	}
-	
+
 }
