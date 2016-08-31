@@ -31,6 +31,19 @@
 	</bean> -->
 	
 	
+	<!-- 微信client检查任务 -->
+	<bean id="weixinClientCheckTaskJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="weixinClientCheckTask" />
+		<property name="targetMethod" value="ClientCheck" />
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<bean id="weixinClientCheckTaskCronTrigger" class="org.jeecgframework.core.timer.DataBaseCronTriggerBean">
+		<property name="jobDetail" ref="weixinClientCheckTaskJob" />
+		<!-- 每5秒执行一次 5 * * * * ?-->
+		<property name="cronExpression" value="0/10 * * * * ?" />
+	</bean>
+	
 	
 	 <!-- 知识库分词任务 -->
 	<bean id="questionWordSplitTaskJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
@@ -50,6 +63,7 @@
 		<property name="triggers">
 			<list>
 				 <ref bean="questionWordSplitTaskCronTrigger" />
+				 <ref bean="weixinClientCheckTaskCronTrigger" />
 			</list>
 		</property>
 	</bean>

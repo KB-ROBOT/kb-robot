@@ -1,19 +1,5 @@
 package com.kbrobot.utils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.jeecgframework.core.util.LogUtil;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 public class UrlUtil {
 	/**
 	 * 获得url参数
@@ -22,12 +8,9 @@ public class UrlUtil {
 	 * @return
 	 */
 	public static String getParam(String key,String url){
-		Pattern pat = Pattern.compile("("+ key+"=)([^&]*)");
-		Matcher marcher = pat.matcher(url);
-		if(marcher.find()){
-			return marcher.group(0).split("=")[1];
-		}
-		return null;
+		String reg = "((\\?|&)"+key+"=|&)";
+		System.out.println("reg：" + reg);
+		return url.split(reg).length>1?url.split(reg)[1]:null;
 	}
 	/**
 	 * 设置url参数
