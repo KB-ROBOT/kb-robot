@@ -1,11 +1,12 @@
 package org.jeecgframework.web.system.listener;
 
+import java.io.File;
+
 import javax.servlet.ServletContextEvent;
 
+import org.jeecgframework.core.util.ResourceUtil;
 import org.jeecgframework.web.system.service.MenuInitService;
 import org.jeecgframework.web.system.service.SystemService;
-import org.jeecgframework.core.util.LogUtil;
-import org.jeecgframework.core.util.ResourceUtil;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -50,6 +51,8 @@ public class InitListener  implements javax.servlet.ServletContextListener {
 		 * 
 		 */
 		Setting.setShowLog(false);
+		String path = System.getProperty("user.dir");
+		System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + path);
 		SpeechUtility.createUtility("appid=" + SpeechSynthesizerUtil.APPID);
 	}
 

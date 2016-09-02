@@ -367,5 +367,57 @@ public class WeixinThirdUtil {
 
 
 	}
+	
+	/**
+	 * 判断是否能转化数字Integer
+	 * @param str
+	 * @return
+	 */
+	public Integer convertString2Number(String str){
+		
+		str = str.replaceAll("，|。|？|、", "");
+		str = str.replaceAll(",|[.]|[?]", "");
+		
+		try{
+			return Integer.valueOf(str);
+		}
+		catch(Exception e){
+			
+			if(str.equals("一")){
+				return 1;
+			}
+			else if(str.equals("二")){
+				return 2;
+			}
+			else if(str.equals("三")){
+				return 3;
+			}
+			else if(str.equals("四")){
+				return 4;
+			}
+			else if(str.equals("五")){
+				return 5;
+			}
+			else if(str.equals("六")){
+				return 6;
+			}
+			else if(str.equals("七")){
+				return 7;
+			}
+			else if(str.equals("八")){
+				return 8;
+			}
+			else if(str.equals("九")){
+				return 9;
+			}
+			else if(str.equals("零")){
+				return 0;
+			}
+			else{
+				return -1;
+			}
+			
+		}
+	}
 
 }

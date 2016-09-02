@@ -40,8 +40,8 @@
 
 	<bean id="weixinClientCheckTaskCronTrigger" class="org.jeecgframework.core.timer.DataBaseCronTriggerBean">
 		<property name="jobDetail" ref="weixinClientCheckTaskJob" />
-		<!-- 每5秒执行一次 5 * * * * ?-->
-		<property name="cronExpression" value="0/10 * * * * ?" />
+		<!-- 每分钟的第30秒执行一次 30 * * * * ?-->
+		<property name="cronExpression" value="30 * * * * ?" />
 	</bean>
 	
 	
