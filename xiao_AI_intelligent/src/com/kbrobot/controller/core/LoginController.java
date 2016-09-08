@@ -8,12 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jeecgframework.core.common.controller.BaseController;
 import org.jeecgframework.core.common.model.json.AjaxJson;
@@ -194,6 +192,7 @@ public class LoginController extends BaseController{
 	 * @param request
 	 * @return
 	 */
+	@SuppressWarnings("deprecation")
 	@RequestMapping(params = "login")
 	public String login(ModelMap modelMap,HttpServletRequest request) {
 		DataSourceContextHolder.setDataSourceType(DataSourceType.dataSource_jeecg);
@@ -201,8 +200,9 @@ public class LoginController extends BaseController{
 		String roles = "";
 		if (user != null) {
 			//首先判断session是否有当前微信账号
-			if(request.getSession().getAttribute(WeiXinConstants.WEIXIN_ACCOUNT)==null){
-				WeixinAccountEntity  weixinAccountEntity = weixinAccountService.findLoginWeixinAccount();
+			WeixinAccountEntity  weixinAccountEntity = (WeixinAccountEntity) request.getSession().getAttribute(WeiXinConstants.WEIXIN_ACCOUNT);
+			if(weixinAccountEntity==null){
+				weixinAccountEntity = weixinAccountService.findLoginWeixinAccount();
 				if(weixinAccountEntity==null||weixinAccountEntity.getId().equals("-1")){
 					//把当前微信账号信息放在session里面
 					weixinAccountEntity.setAccountName("[未绑定公众号]");
@@ -232,6 +232,59 @@ public class LoginController extends BaseController{
 			if(user.getUserName().equals("admin")){
 				return "main/main";
 			}
+			
+			//访问数据统计
+			String sql = "";
+			/**
+			 * 昨天总访问次数
+			 */
+			sql = "SELECT COUNT(*) FROM weixin_conversation_client";
+			sql += " WHERE ";
+			sql += "weixin_account_Id = '"+weixinAccountEntity.getWeixinAccountId()+"'";
+			sql += " AND ";
+			sql += "add_date > DATE(CURDATE()-1)";
+			sql += " AND ";
+			sql += "add_date < CURDATE()";
+			
+			Long lastDayVisitNum =  systemService.getCountForJdbcParam(sql, null);
+			
+			
+			/**
+			 * 昨日机器人咨询数量
+			 */
+			sql = "SELECT COUNT(*) FROM weixin_conversation_client";
+			sql += " WHERE ";
+			sql += "weixin_account_Id = '"+weixinAccountEntity.getWeixinAccountId()+"'";
+			sql += " AND ";
+			sql += "add_date > DATE(CURDATE()-1)";
+			sql += " AND ";
+			sql += "add_date < CURDATE()";
+			Long lastDayRobotAskNum =  systemService.getCountForJdbcParam(sql, null);
+			
+			/**
+			 * 昨日人工客服咨询量
+			 */
+			Long lastDayArtificialVisitNum =  lastDayVisitNum - lastDayRobotAskNum;
+			
+			/**
+			 * 昨日新增知识数量
+			 */
+			sql = "SELECT COUNT(*) FROM robot_question";
+			sql += " WHERE ";
+			sql += "ACCOUND_ID = '"+weixinAccountEntity.getId()+"'";
+			sql += " AND ";
+			sql += "CREATE_TIME > DATE(CURDATE()-1)";
+			sql += " AND ";
+			sql += "CREATE_TIME < CURDATE()";
+			
+			Long lastDayAddQuestionNum =  systemService.getCountForJdbcParam(sql, null);
+			
+			
+			modelMap.put("lastDayVisitNum", lastDayVisitNum);
+			modelMap.put("lastDayRobotAskNum", lastDayRobotAskNum);
+			modelMap.put("lastDayArtificialVisitNum", lastDayArtificialVisitNum);
+			modelMap.put("lastDayAddQuestionNum", lastDayAddQuestionNum);
+			
 			
 			return "kbrobot/home";
 

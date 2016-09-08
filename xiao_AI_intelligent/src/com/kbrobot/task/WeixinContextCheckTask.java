@@ -1,12 +1,16 @@
 package com.kbrobot.task;
 
+import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import org.jeecgframework.core.util.LogUtil;
+import org.jeecgframework.web.system.service.SystemService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kbrobot.entity.system.WeixinClient;
+import com.kbrobot.entity.system.WeixinConversationClient;
 import com.kbrobot.manager.WeixinClientManager;
 import com.kbrobot.utils.CustomServiceUtil;
 import com.kbrobot.utils.WeixinThirdUtil;
@@ -15,21 +19,27 @@ import com.kbrobot.utils.WeixinThirdUtil;
 public class WeixinContextCheckTask {
 	
 	private Integer timeout = 5;//分钟
+	@Autowired
+	private SystemService systemService;
 	
 	public void ClientCheck(){
-		Map<String,WeixinClient> allWeixinClient = WeixinClientManager.instance.getAllWeixinClient();
-		LogUtil.info("当前客户端个数：" + (allWeixinClient.size()));
-		Set<String> keySet =  allWeixinClient.keySet();
+		Map<String,WeixinConversationClient> allWeixinConversationClient = WeixinClientManager.instance.getAllWeixinConversationClient();
+		LogUtil.info("当前客户端个数：" + (allWeixinConversationClient.size()));
+		Set<String> keySet =  allWeixinConversationClient.keySet();
+		
+		Iterator<String> keyItreator =  keySet.iterator();
+		
 		//遍历
-		for(String key:keySet){
-			WeixinClient client = allWeixinClient.get(key);
-			Long addTime =  client.getAddDateTime().getTime();
+		while(keyItreator.hasNext()){
+			String currentKey = keyItreator.next();
+			WeixinConversationClient checkClient = allWeixinConversationClient.get(currentKey);
+			Long addTime =  checkClient.getAddDate().getTime();
 			Long nowTime = System.currentTimeMillis();
-			String fromUserName = key.split(":")[0];
+			String fromUserName = checkClient.getOpenId();
 			if((nowTime - addTime)>= timeout*60*1000 ){
 				String authorizer_access_token;
 				try {
-					authorizer_access_token = WeixinThirdUtil.getInstance().getAuthorizerAccessToken(key.split(":")[1]);
+					authorizer_access_token = WeixinThirdUtil.getInstance().getAuthorizerAccessToken(checkClient.getWeixinAccountId());
 					CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizer_access_token, "您好，我已经5分钟没有收到您的消息了。不打扰您了，再见。");
 					
 				} catch (Exception e) {
@@ -37,7 +47,13 @@ public class WeixinContextCheckTask {
 					continue;
 				}
 				finally {
-					WeixinClientManager.instance.removeWeixinClinet(key);
+					
+					checkClient.setEndDate(new Date());
+					//保存当前会话
+					systemService.save(checkClient);
+					//移除超时会话端
+					WeixinClientManager.instance.removeWeixinConversationClient(currentKey);
+					//keyItreator.remove();
 				}
 			}
 		}

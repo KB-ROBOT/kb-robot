@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +41,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.kbrobot.entity.RobotQuestionEntity;
-import com.kbrobot.entity.system.WeixinClient;
+import com.kbrobot.entity.system.WeixinConversationClient;
+import com.kbrobot.entity.system.WeixinConversationContent;
 import com.kbrobot.manager.WeixinClientManager;
 import com.kbrobot.service.RobotQuestionServiceI;
 import com.kbrobot.utils.CustomServiceUtil;
@@ -56,12 +56,10 @@ import com.kbrobot.utils.WeixinThirdUtil;
 import net.sf.json.JSONObject;
 import weixin.guanjia.account.entity.WeixinAccountEntity;
 import weixin.guanjia.account.service.WeixinAccountServiceI;
-import weixin.guanjia.core.entity.message.resp.Article;
 import weixin.guanjia.core.entity.message.resp.BaseMessageResp;
+import weixin.guanjia.core.entity.message.resp.TextMessageResp;
 import weixin.guanjia.core.util.MessageUtil;
-import weixin.guanjia.message.entity.ReceiveText;
 import weixin.guanjia.message.service.ReceiveTextServiceI;
-import weixin.util.DateUtils;
 
 /**
  * 微信公众账号第三方平台全网发布源码（java）
@@ -97,15 +95,17 @@ public class OpenwxController {
 	@Autowired
 	private WeixinAccountServiceI weixinAccountService;
 	@Autowired
-	private ReceiveTextServiceI receiveTextService;
-	@Autowired
 	private RobotQuestionServiceI robotQuestionService;
+
+	WeixinThirdUtil weixinThirdUtilInstance = WeixinThirdUtil.getInstance();
 
 	ResourceBundle bundler = ResourceBundle.getBundle("sysConfig");
 
 	long startTime = System.currentTimeMillis();
 
 	long endTime = System.currentTimeMillis();
+
+
 
 
 
@@ -129,7 +129,7 @@ public class OpenwxController {
 		 * 这种系统事件推送通知（现在包括推送component_verify_ticket协议和推送取消授权通知），
 		 * 服务开发者收到后也需进行解密，接收到后只需直接返回字符串“success”
 		 */
-		WeixinThirdUtil.getInstance().output(response, "success");
+		weixinThirdUtilInstance.output(response, "success");
 	}
 
 	/**
@@ -200,7 +200,7 @@ public class OpenwxController {
 	@RequestMapping(value = "/goAuthor")
 	public void goAuthor(HttpServletRequest request, HttpServletResponse response) throws IOException, AesException, DocumentException {
 		try {
-			String component_access_token = WeixinThirdUtil.getInstance().getComponentAccessToken();
+			String component_access_token = weixinThirdUtilInstance.getComponentAccessToken();
 			//预授权码
 			String preAuthCode = JwThirdAPI.getPreAuthCode(WeixinThirdUtil.COMPONENT_APPID, component_access_token);
 			String url = "https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid="+WeixinThirdUtil.COMPONENT_APPID+"&pre_auth_code="+preAuthCode+"&redirect_uri="+ResourceUtil.getConfigByName("domain")+"/openwx/authorCallback.do?sysUserName="+ResourceUtil.getSessionUserName().getUserName();
@@ -208,7 +208,7 @@ public class OpenwxController {
 		}
 		catch (WexinReqException e) {
 			e.printStackTrace();
-			WeixinThirdUtil.getInstance().output(response, "访问出错，请10分钟后再试！");
+			weixinThirdUtilInstance.output(response, "访问出错，请10分钟后再试！");
 		}
 	}
 
@@ -228,7 +228,7 @@ public class OpenwxController {
 			String authorization_code = request.getParameter("auth_code");
 			//String expires_in = request.getParameter("expires_in");//authorization_code的过期时间
 			String sysUserName = request.getParameter("sysUserName");
-			String component_access_token = WeixinThirdUtil.getInstance().getComponentAccessToken();
+			String component_access_token = weixinThirdUtilInstance.getComponentAccessToken();
 			/*
 			 * 使用授权码换取公众号的接口调用凭据和授权信息
 			 */
@@ -324,13 +324,14 @@ public class OpenwxController {
 
 	}
 
-	//公众号消息与事件接收URL
+	/**
+	 * 公众号消息与事件接收URL
+	 */
 	@RequestMapping(value = "{appid}/callback")
 	public void acceptMessageAndEvent(HttpServletRequest request, HttpServletResponse response) throws IOException, AesException, DocumentException, WexinReqException, JSONException {
 		startTime = System.currentTimeMillis();
 
 		String msgSignature = request.getParameter("msg_signature");
-		//LogUtil.info("第三方平台全网发布-------------{appid}/callback-----------验证开始。。。。msg_signature="+msgSignature);
 		if (!StringUtils.isNotBlank(msgSignature))
 			return;// 微信推送给第三方开放平台的消息一定是加过密的，无消息加密无法解密消息
 
@@ -349,9 +350,9 @@ public class OpenwxController {
 
 
 		//获取 authorizer_access_token
-		String authorizer_access_token = WeixinThirdUtil.getInstance().getAuthorizerAccessToken(toUserName);
+		String authorizer_access_token = weixinThirdUtilInstance.getAuthorizerAccessToken(toUserName);
 
-		LogUtil.info("全网发布接入检测消息反馈开始---------------APPID="+ WeixinThirdUtil.APPID +"------------------------toUserName="+toUserName);
+		LogUtil.info("消息反馈---------------APPID="+ WeixinThirdUtil.APPID +"------------------------toUserName="+toUserName);
 		checkWeixinAllNetworkCheck(request,response,xml,authorizer_access_token);
 	}
 
@@ -360,7 +361,7 @@ public class OpenwxController {
 	 * @param componentVerifyTicket
 	 */
 	void saveComponentVerifyTicket(String componentVerifyTicket){
-		WeixinOpenAccountEntity  entity = WeixinThirdUtil.getInstance().getWeixinOpenAccount();
+		WeixinOpenAccountEntity  entity = weixinThirdUtilInstance.getWeixinOpenAccount();
 		entity = entity==null?new WeixinOpenAccountEntity():entity;
 		entity.setComponentVerifyTicket(componentVerifyTicket);
 		entity.setAppid(WeixinThirdUtil.APPID);
@@ -392,7 +393,7 @@ public class OpenwxController {
 		String timestamp = request.getParameter("timestamp");
 		String msgSignature = request.getParameter("msg_signature");
 
-		xml = WeixinThirdUtil.getInstance().getWeixinMsgCrypt().decryptMsg(msgSignature, timestamp, nonce, xml);
+		xml = weixinThirdUtilInstance.getWeixinMsgCrypt().decryptMsg(msgSignature, timestamp, nonce, xml);
 
 		Document doc = DocumentHelper.parseText(xml);
 		Element rootElt = doc.getRootElement();
@@ -401,99 +402,116 @@ public class OpenwxController {
 		String fromUserName = rootElt.elementText("FromUserName");
 
 
-		LogUtil.info("---全网发布接入检测--step.1-----------msgType="+msgType+"-----------------toUserName="+toUserName+"-----------------fromUserName="+fromUserName);
-		LogUtil.info("---全网发布接入检测--step.2-----------xml="+xml);
+
+		String content = null;
+		String msgId = null;
+
+		//如果不是event消息，则获取msgId	
+		if(!"event".equals(msgType)){
+			msgId = rootElt.elementText("MsgId");
+
+		}
+
+		//LogUtil.info("---全网发布接入检测--step.1-----------msgType="+msgType+"-----------------toUserName="+toUserName+"-----------------fromUserName="+fromUserName);
+		//LogUtil.info("---全网发布接入检测--step.2-----------xml="+xml);
 		if("event".equals(msgType)){
-			LogUtil.info("---全网发布接入检测--step.3-----------事件消息--------");
+			//LogUtil.info("---全网发布接入检测--step.3-----------事件消息--------");
 			String eventType = rootElt.elementText("Event");
-			WeixinThirdUtil.getInstance().replyEventMessage(request,response,eventType,toUserName,fromUserName,authorizer_access_token);
+			weixinThirdUtilInstance.replyEventMessage(request,response,eventType,toUserName,fromUserName,authorizer_access_token);
 		}else if("text".equals(msgType)){
-			LogUtil.info("---全网发布接入检测--step.3-----------文本消息--------");
-			String content = rootElt.elementText("Content");
-			processTextMessage(request,response,content,toUserName,fromUserName,rootElt.elementText("MsgId"),msgType,authorizer_access_token);
+			//LogUtil.info("---全网发布接入检测--step.3-----------文本消息--------");
+			content = rootElt.elementText("Content");
+			processTextMessage(request,response,content,toUserName,fromUserName,msgType,msgId,Long.valueOf(timestamp),authorizer_access_token);
 		}
 		else if("voice".equals(msgType)){
 			//Recognition 语音解析结果
-			String content = rootElt.elementText("Recognition");
+			content = rootElt.elementText("Recognition");
 			if(StringUtil.isEmpty(content)){
-				WeixinThirdUtil.getInstance().replyTextMessage(request,response,"没听懂你说的是什么？\n(检查公众号权限列表：[接收语音识别结果]是否打开)",toUserName,fromUserName);
+				weixinThirdUtilInstance.replyTextMessage(request,response,"没听懂你说的是什么？\n(检查公众号权限列表：[接收语音识别结果]是否打开)",toUserName,fromUserName);
 			}
 			else{
-				processTextMessage(request,response,content,toUserName,fromUserName,rootElt.elementText("MsgId"),msgType,authorizer_access_token);
+				processTextMessage(request,response,content,toUserName,fromUserName,msgType,msgId,Long.valueOf(timestamp),authorizer_access_token);
 			}
 		}
 	}
 
-	
 
-	public void processTextMessage(HttpServletRequest request, HttpServletResponse response,String content,String toUserName, String fromUserName,String msgId,String msgType,String authorizer_access_token) throws IOException, DocumentException, JSONException, WexinReqException, AesException{
-		/*if("TESTCOMPONENT_MSG_TYPE_TEXT".equals(content)){
-			String returnContent = content+"_callback";
-			replyTextMessage(request,response,returnContent,toUserName,fromUserName);
-		}else if(StringUtils.startsWithIgnoreCase(content, "QUERY_AUTH_CODE")){
-			output(response, "");
-			//接下来客服API再回复一次消息
-			replyApiTextMessage(request,response,content.split(":")[1],toUserName ,fromUserName);
-		}
+	/**
+	 * 处理用户发来的信息
+	 * @param request
+	 * @param response
+	 * @param content
+	 * @param toUserName
+	 * @param fromUserName
+	 * @param msgType
+	 * @param msgId
+	 * @param authorizer_access_token
+	 * @throws IOException
+	 * @throws DocumentException
+	 * @throws JSONException
+	 * @throws WexinReqException
+	 * @throws AesException
+	 */
+	public void processTextMessage(HttpServletRequest request, 
+			HttpServletResponse response,
+			String content,
+			String toUserName, 
+			String fromUserName,
+			String msgType,
+			String msgId,
+			Long timestamp,
+			String authorizer_access_token) throws IOException, DocumentException, JSONException, WexinReqException, AesException{
 
-		//非全网发布逻辑
-		else{
 
-
-		}*/
-
-		// 保存接收到的信息
-		ReceiveText receiveText = new ReceiveText();
-		receiveText.setContent(content);
-		Timestamp temp = Timestamp.valueOf(DateUtils.getDate("yyyy-MM-dd HH:mm:ss"));
-		receiveText.setCreateTime(temp);
-		receiveText.setFromUserName(fromUserName);
-		receiveText.setToUserName(toUserName);
-		receiveText.setMsgId(msgId);
-		receiveText.setMsgType(msgType);
-		receiveText.setResponse("0");
-		receiveText.setAccountId(toUserName);
-		this.receiveTextService.save(receiveText);
-
-		if(msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)){
-			CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizer_access_token, "语音解析结果：" + new String(content));
-		}
+		//保存接受到的信息，并保存会话实例（如果是新会话）
+		WeixinConversationContent weixinConversationContent = new WeixinConversationContent();
+		weixinConversationContent.setMsgContent(content);
+		//Timestamp temp = Timestamp.valueOf(DateUtils.getDate("yyyy-MM-dd HH:mm:ss"));
+		weixinConversationContent.setReceiveTime(new Date());
+		weixinConversationContent.setFromUsername(fromUserName);
+		weixinConversationContent.setToUsername(toUserName);
+		weixinConversationContent.setMsgId(msgId);
+		weixinConversationContent.setMsgType(msgType);
+		
+		String receivedMsgId = this.systemService.save(weixinConversationContent).toString();
 
 		//获取微信客户队列实例
 		WeixinClientManager weixinClientManager =  WeixinClientManager.instance;
 		//获取到当前微信客户的上下文 key为：用户openid + 公众号原始id
-		WeixinClient currentClient =  weixinClientManager.getWeixinClient(fromUserName+":"+toUserName);
+		WeixinConversationClient currentClient =  weixinClientManager.getWeixinConversationClient(fromUserName+":"+toUserName);
 		//如果不存在 添加进入当前微信客户队列
 		if(currentClient==null){
-			currentClient = new WeixinClient();
-			currentClient.setAddDateTime(new Date());
+			currentClient = new WeixinConversationClient();
+			currentClient.setAddDate(new Date());
 			currentClient.setOpenId(fromUserName);
-			weixinClientManager.addWeixinClinet(fromUserName+":"+toUserName, currentClient);
+			currentClient.setWeixinAccountId(toUserName);
+			currentClient.setStartMessageId(receivedMsgId);
+			weixinClientManager.addWeixinConversationClient(fromUserName+":"+toUserName, currentClient);
 		}
-		currentClient.updateAddTime();
+		currentClient.setEndMessageId(receivedMsgId);
+		currentClient.updateAddDate();
+
+
+		if(msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)){
+			CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizer_access_token, "听到你说：" + new String(content));
+		}
 		
-		
+		WeixinConversationContent returnConversationContent = null;
+
 		//如果正在会话中（正在回答问题列表）
-		if(currentClient.questionListIsNotEmpty()){
-			
-			try{
-				//找出对应的问题
-				int questionIndex = Integer.valueOf(content) - 1;
-				RobotQuestionEntity selectQuestion =  currentClient.getLastQuestionList().get(questionIndex);
-				//根据找到的问题 转换成  MessageResp
-				BaseMessageResp baseMsgResp = QuestionMatchUtil.matchResultConvert(selectQuestion, toUserName,fromUserName);
-				//回复
-				WeixinThirdUtil.getInstance().replyMatchResult(baseMsgResp, request, response);
-				
-			}
-			catch(Exception e){
-				//异常回复
-				WeixinThirdUtil.getInstance().replyTextMessage(request, response, "不好意思，这个问题已经超出了我的认知范围。", toUserName, fromUserName);
-			}
-			finally {
-				//清空问题列表
-				currentClient.clearAllQuestion();
-			}
+		int questionIndex = -1;
+		if(currentClient.questionListIsNotEmpty()&&( questionIndex = weixinThirdUtilInstance.convertString2Number(content.trim() ))!=-1){
+
+			//找出对应的问题
+			//int questionIndex = Integer.valueOf(content) - 1;
+			RobotQuestionEntity selectQuestion =  currentClient.getLastQuestionList().get(questionIndex - 1);
+			//根据找到的问题 转换成  MessageResp
+			BaseMessageResp baseMsgResp = QuestionMatchUtil.matchResultConvert(selectQuestion, toUserName,fromUserName);
+			returnConversationContent = weixinThirdUtilInstance.replyMatchResult(baseMsgResp, request, response);
+
+			//清空问题列表
+			currentClient.clearAllQuestion();
+
 		}
 		//否则正常逻辑处理消息
 		else{
@@ -517,7 +535,6 @@ public class OpenwxController {
 			cq.add();
 			List<RobotQuestionEntity> filterQuestionList = robotQuestionService.getListByCriteriaQuery(cq, false);
 			LogUtil.info("查询到的条数:" + (filterQuestionList==null?0:filterQuestionList.size()));
-			String resultText = "";//文本回复
 
 			//匹配知识库
 			List<RobotQuestionEntity> matchResult = QuestionMatchUtil.matchQuestion(filterQuestionList, content);
@@ -525,20 +542,38 @@ public class OpenwxController {
 			if(!filterQuestionList.isEmpty()){
 				if(matchResult==null||matchResult.isEmpty()){
 					//根据找到的问题 转换成  MessageResp
-					matchResult = filterQuestionList.subList(0, filterQuestionList.size()>=3?3:filterQuestionList.size());
+					matchResult = filterQuestionList.subList(0, filterQuestionList.size()>=5?5:filterQuestionList.size());
 				}
 				BaseMessageResp baseMsgResp = QuestionMatchUtil.matchResultConvert(matchResult, toUserName,fromUserName);
-				WeixinThirdUtil.getInstance().replyMatchResult(baseMsgResp, request, response);
-				
+				returnConversationContent = weixinThirdUtilInstance.replyMatchResult(baseMsgResp, request, response);
+
 			}
 			//若为空则调用图灵api
 			else{
-
+				TextMessageResp textMessageResp = new TextMessageResp();
 				Map<ResultKey,Object> tulingResult = TuLingUtil.getResultBySpeakStr(content,fromUserName);//把询问人的id作为会话ID
 				if(tulingResult.get(ResultKey.resultType)==ReturnCode.TEXT){//文本
-					resultText = tulingResult.get(ResultKey.text).toString();
+					String resultText = tulingResult.get(ResultKey.text).toString();//文本回复
+					textMessageResp.setCreateTime(new Date().getTime());
+					textMessageResp.setFromUserName(toUserName);
+					textMessageResp.setToUserName(fromUserName);
+					textMessageResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
+					textMessageResp.setContent(resultText);
 				}
-				else if(tulingResult.get(ResultKey.resultType)==ReturnCode.LINK){//链接类型
+				
+				//图灵 如果是语音 则返回语音
+				if(msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)){
+					CustomServiceUtil.sendCustomServiceVoiceMessage(fromUserName, authorizer_access_token, textMessageResp.getContent());
+					
+					returnConversationContent = new WeixinConversationContent();
+					returnConversationContent.setResponseContent(textMessageResp.getContent());
+					returnConversationContent.setResponseType(MessageUtil.REQ_MESSAGE_TYPE_VOICE);
+				}
+				else{
+					//weixinThirdUtilInstance.replyTextMessage(request, response, resultText,toUserName,fromUserName);
+					returnConversationContent = weixinThirdUtilInstance.replyMatchResult(textMessageResp, request, response);
+				}
+				/*else if(tulingResult.get(ResultKey.resultType)==ReturnCode.LINK){//链接类型
 					String link = "<a href='"+tulingResult.get(ResultKey.url).toString()+"'>"+tulingResult.get(ResultKey.text).toString()+"</a>";
 					resultText = link;
 				}
@@ -546,59 +581,26 @@ public class OpenwxController {
 					@SuppressWarnings("unchecked")
 					List<Article> articleList = (List<Article>) tulingResult.get(ResultKey.list);
 					//图文回复
-					WeixinThirdUtil.getInstance().replyNewsMessage(request, response, articleList,toUserName,fromUserName);
+					weixinThirdUtilInstance.replyNewsMessage(request, response, articleList,toUserName,fromUserName);
 					resultText = "";
 				}
 				else if(tulingResult.get(ResultKey.resultType)==ReturnCode.ERROR){
 					resultText = tulingResult.get(ResultKey.text).toString();
-				}
+				}*/
 				//如果返回消息不为空则返回文本
-				if(StringUtil.isNotEmpty(resultText)){
-					//图灵 如果是语音 则返回语音
-					if(msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)){
-						CustomServiceUtil.sendCustomServiceVoiceMessage(fromUserName, authorizer_access_token, resultText);
-					}
-					else{
-						WeixinThirdUtil.getInstance().replyTextMessage(request, response, resultText,toUserName,fromUserName);
-					}
-				}
+				/*if(StringUtil.isNotEmpty(resultText)){
+					
+				}*/
 			}
 		}
+		
+		weixinConversationContent.setResponseContent(returnConversationContent.getResponseContent());
+		weixinConversationContent.setResponseType(returnConversationContent.getResponseType());
+		weixinConversationContent.setReplyTime(new Date());
+		this.systemService.saveOrUpdate(weixinConversationContent);
 
 	}
-	/*
-	 * 全网发布检测
-	 */
-	/*public void replyApiTextMessage(HttpServletRequest request, HttpServletResponse response, String auth_code,String toUserName, String fromUserName) throws DocumentException, IOException {
-		String authorization_code = auth_code;
-		// 得到微信授权成功的消息后，应该立刻进行处理！！相关信息只会在首次授权的时候推送过来
-		System.out.println("------step.1----使用客服消息接口回复粉丝----逻辑开始-------------------------");
-		try {
-			String component_access_token = WeixinThirdUtil.getInstance().getComponentAccessToken();
 
-			System.out.println("------step.2----使用客服消息接口回复粉丝------- component_access_token = "+component_access_token + "---------authorization_code = "+authorization_code);
-			net.sf.json.JSONObject authorizationInfoJson = JwThirdAPI.getApiQueryAuthInfo(WeixinThirdUtil.COMPONENT_APPID, authorization_code, component_access_token);
-			System.out.println("------step.3----使用客服消息接口回复粉丝-------------- 获取authorizationInfoJson = "+authorizationInfoJson);
-			net.sf.json.JSONObject infoJson = authorizationInfoJson.getJSONObject("authorization_info");
-			String authorizer_access_token = infoJson.getString("authorizer_access_token");
-			//String authorizer_access_token = WeixinThirdUtil.getInstance().getAuthorizerAccessToken(toUserName); 
-
-			Map<String,Object> obj = new HashMap<String,Object>();
-			Map<String,Object> msgMap = new HashMap<String,Object>();
-			String msg = auth_code + "_from_api";
-			msgMap.put("content", msg);
-			obj.put("touser", fromUserName);
-			obj.put("msgtype", "text");
-			obj.put("text", msgMap);
-			JwThirdAPI.sendMessage(obj, authorizer_access_token);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}*/
-
-
-	
-	
 
 	/**
 	 * 判断是否加密

@@ -27,8 +27,8 @@
 							<div class="dashboard-stat2">
 								<div class="dashboard-cont">
 									<div class="fl">
-										<h3>0</h3>
-										<p>昨日访问量</p>
+										<h3>${lastDayVisitNum }</h3>
+										<p>昨日总访问量</p>
 									</div>
 									<span class="fr">
 										<i class="fa fa-eye"></i>
@@ -43,8 +43,8 @@
 							<div class="dashboard-stat2">
 								<div class="dashboard-cont">
 									<div class="fl">
-										<h3>0</h3>
-										<p>昨日聊天数量</p>
+										<h3>${lastDayRobotAskNum }</h3>
+										<p>昨日机器人咨询数量</p>
 									</div>
 									<span class="fr">
 										<i class="fa fa-comment-o"></i>
@@ -59,8 +59,8 @@
 							<div class="dashboard-stat2">
 								<div class="dashboard-cont">
 									<div class="fl">
-										<h3>0</h3>
-										<p>昨日未知问题数量</p>
+										<h3>${lastDayArtificialVisitNum }</h3>
+										<p>昨日人工客服咨询量</p>
 									</div>
 									<span class="fr">
 										<i class="fa fa-info"></i>
@@ -75,7 +75,7 @@
 							<div class="dashboard-stat2">
 								<div class="dashboard-cont">
 									<div class="fl">
-										<h3>0</h3>
+										<h3>${lastDayAddQuestionNum }</h3>
 										<p>昨日新增知识数量</p>
 									</div>
 									<span class="fr">

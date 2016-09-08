@@ -43,7 +43,7 @@ public class DateUtils extends PropertyEditorSupport {
 	private static final long MINUTE_IN_MILLIS = 60 * 1000;
 	private static final long SECOND_IN_MILLIS = 1000;
 	// 指定模式的时间格式
-	private static SimpleDateFormat getSDFormat(String pattern) {
+	public static SimpleDateFormat getSDFormat(String pattern) {
 		return new SimpleDateFormat(pattern);
 	}
 

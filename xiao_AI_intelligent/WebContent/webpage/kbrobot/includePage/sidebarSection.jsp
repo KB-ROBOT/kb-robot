@@ -81,19 +81,19 @@
 				</a>
 				<ul>
 					<li>
-						<a href="visit-data.html">访客次数统计</a>
+						<a href="dataReportController.do?report-visit-data">访客统计</a>
 					</li>
 					<li>
-						<a href="knowledge-count.html">知识库统计</a>
+						<a href="dataReportController.do?report-question-data">问题热度统计</a>
 					</li>
 					<li>
-						<a href="question-count.html">问题明细统计</a>
+						<a href="dataReportController.do?report-martch-data">匹配率统计</a>
 					</li>
-					<li>
+					<%-- <li>
 						<a href="knowledge-radar.html">知识雷达</a>
-					</li>
+					</li> --%>
 					<li>
-						<a href="visit-log.html">访客日志</a>
+						<a href="dataReportController.do?report-visit-log">访客日志</a>
 					</li>
 				</ul>
 			</li>

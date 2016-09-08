@@ -42,6 +42,8 @@
 <!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
 <script type="text/javascript" charset="utf-8" src="plug-in/ueditor/lang/zh-cn/zh-cn.js"></script>
 
+<!-- 百度echarts -->
+<script type="text/javascript" charset="utf-8" src="plug-in/echarts/echarts.js"></script>
 
 <!-- 自定义js -->
 <script type="text/javascript" src="plug-in/kbrobot/js/style.js"></script>

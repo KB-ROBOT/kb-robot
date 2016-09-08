@@ -29,6 +29,10 @@ import org.jeewx.api.third.model.ApiComponentToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import com.kbrobot.entity.RobotQuestionEntity;
+import com.kbrobot.entity.system.WeixinConversationContent;
+import com.kbrobot.service.RobotQuestionServiceI;
+
 import weixin.guanjia.account.entity.WeixinAccountEntity;
 import weixin.guanjia.account.service.WeixinAccountServiceI;
 import weixin.guanjia.base.entity.Subscribe;
@@ -47,6 +51,9 @@ public class WeixinThirdUtil {
 	private WeixinAccountServiceI weixinAccountService;
 	@Autowired
 	private SystemService systemService;
+	@Autowired
+	private RobotQuestionServiceI robotQuestionService;
+	
 
 	public final static String APPID = "wx520d1bc0926617f0";
 
@@ -78,6 +85,7 @@ public class WeixinThirdUtil {
 		// 初使化时将已静态化的Service实例化
 		instance.weixinAccountService = this.weixinAccountService;
 		instance.systemService = this.systemService;
+		instance.robotQuestionService = this.robotQuestionService;
 	}
 
 	public static WeixinThirdUtil getInstance(){
@@ -298,22 +306,38 @@ public class WeixinThirdUtil {
 	 * @param response
 	 * @throws AesException
 	 */
-	public void replyMatchResult(BaseMessageResp baseMsgResp,HttpServletRequest request, HttpServletResponse response) throws AesException{
+	public WeixinConversationContent replyMatchResult(BaseMessageResp baseMsgResp,HttpServletRequest request, HttpServletResponse response) throws AesException{
 		String matchMsgType = baseMsgResp.getMsgType();
+		WeixinConversationContent resultConversation = new WeixinConversationContent();
+		resultConversation.setResponseType(matchMsgType);
 		if(MessageUtil.RESP_MESSAGE_TYPE_TEXT.equals(matchMsgType)){
 			TextMessageResp textMessageResp = ((TextMessageResp)baseMsgResp);
 			/*
 			 * 回复文本消息
 			 */
-			replyTextMessage(request, response, ((TextMessageResp)baseMsgResp).getContent(),textMessageResp.getFromUserName(),textMessageResp.getToUserName());
+			replyTextMessage(request, response, textMessageResp.getContent(),textMessageResp.getFromUserName(),textMessageResp.getToUserName());
+		
+			resultConversation.setResponseContent(textMessageResp.getContent());
 		}
 		else if(MessageUtil.RESP_MESSAGE_TYPE_NEWS.equals(matchMsgType)){
 			NewsMessageResp newsMessageResp = ((NewsMessageResp)baseMsgResp);
+			List<Article> articleList = newsMessageResp.getArticles();
 			/*
 			 * 回复图文消息
 			 */
-			replyNewsMessage(request, response,newsMessageResp.getArticles(),newsMessageResp.getFromUserName(),newsMessageResp.getToUserName());
+			replyNewsMessage(request, response,articleList,newsMessageResp.getFromUserName(),newsMessageResp.getToUserName());
+			
+			if(!articleList.isEmpty()){
+				resultConversation.setResponseContent(articleList.get(0).getUrl());
+			}
+			else{
+				resultConversation.setResponseContent("图文消息为空。");
+			}
+			
 		}
+		
+		
+		return resultConversation;
 	}
 
 	public void replyEventMessage(HttpServletRequest request, HttpServletResponse response, String eventType, String toUserName, String fromUserName,String authorizer_access_token) throws DocumentException, IOException, AesException {
@@ -418,6 +442,10 @@ public class WeixinThirdUtil {
 			}
 			
 		}
+	}
+	
+	public void updateQuestionMatchTimes(RobotQuestionEntity entity){
+		robotQuestionService.updateRobotQuestionMatchTimes(entity.getId());
 	}
 
 }

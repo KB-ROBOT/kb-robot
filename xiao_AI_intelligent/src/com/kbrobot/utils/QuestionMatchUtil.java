@@ -12,7 +12,7 @@ import org.json.JSONException;
 
 import com.kbrobot.entity.RobotQuestionEntity;
 import com.kbrobot.entity.RobotSimilarQuestionEntity;
-import com.kbrobot.entity.system.WeixinClient;
+import com.kbrobot.entity.system.WeixinConversationClient;
 import com.kbrobot.manager.WeixinClientManager;
 
 import weixin.guanjia.core.entity.message.resp.Article;
@@ -42,6 +42,7 @@ public class QuestionMatchUtil {
 	 * 空答案
 	 */
 	private static String emptyAnswer = "此答案为空";
+	
 
 	/**
 	 * 
@@ -137,9 +138,10 @@ public class QuestionMatchUtil {
 
 		if(matchResult.size()>1){
 			//获取对应的微信client 
-			WeixinClient currentClient =  weixinClientManager.getWeixinClient(fromUserName+":"+toUserName);
+			WeixinConversationClient currentClient =  weixinClientManager.getWeixinConversationClient(fromUserName+":"+toUserName);
 			//设置问题列表
 			currentClient.setLastQuestionList(matchResult);
+			
 			answerContent += "您是否在关心下列问题:\n【请回复序号查看】\n";
 			for(int i=0;i<matchResult.size();i++){
 				String questionTitle = matchResult.get(i).getQuestionTitle();
@@ -157,6 +159,8 @@ public class QuestionMatchUtil {
 		else{
 			selectQueston = matchResult.get(0);
 			answerContent = selectQueston.getQuestionAnswer();
+			//更新问题匹配次数
+			WeixinThirdUtil.getInstance().updateQuestionMatchTimes(selectQueston);
 		}
 
 		answerContent = answerContent==null||answerContent.equals("")?emptyAnswer:answerContent;

@@ -3,21 +3,21 @@ package com.kbrobot.manager;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.kbrobot.entity.system.WeixinClient;
+import com.kbrobot.entity.system.WeixinConversationClient;
 
 public class WeixinClientManager {
 	
 	public static WeixinClientManager instance = new WeixinClientManager();
 	
-	private Map<String,WeixinClient> map = new HashMap<String, WeixinClient>();
+	private Map<String,WeixinConversationClient> map = new HashMap<String, WeixinConversationClient>();
 	
-	public void addWeixinClinet(String openId,WeixinClient client){
+	public void addWeixinConversationClient(String openId,WeixinConversationClient client){
 		map.put(openId, client);
 	}
 	/**
 	 * sessionId
 	 */
-	public void removeWeixinClinet(String openId){
+	public void removeWeixinConversationClient(String openId){
 		map.remove(openId);
 	}
 	/**
@@ -25,7 +25,7 @@ public class WeixinClientManager {
 	 * @param sessionId
 	 * @return
 	 */
-	public WeixinClient getWeixinClient(String openid){
+	public WeixinConversationClient getWeixinConversationClient(String openid){
 		return map.get(openid);
 	}
 
@@ -33,7 +33,7 @@ public class WeixinClientManager {
 	 * 
 	 * @return
 	 */
-	public Map<String,WeixinClient> getAllWeixinClient(){
+	public Map<String,WeixinConversationClient> getAllWeixinConversationClient(){
 		return map;
 	}
 	
