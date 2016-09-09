@@ -135,6 +135,9 @@
 						<!-- 绑定结果 -->
 						<value>robotBindController.do?bindweixinsuccess</value>
 						<value>robotBindController.do?bindweixinerror</value>
+						<!-- 查看该公众号的热点问题 -->
+						<value>commonWeixinController.do?hotQuestionList</value>
+						<value>commonWeixinController.do?hotQuestionList=</value>
 					</list>
 				</property>
 				<!-- 模糊匹配 -->
