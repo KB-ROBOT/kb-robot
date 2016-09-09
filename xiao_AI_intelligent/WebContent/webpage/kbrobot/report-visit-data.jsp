@@ -85,6 +85,8 @@
 							yAxis : {
 								type : 'value',
 								boundaryGap : false,
+								minInterval: 1
+								
 							},
 							dataZoom : [ { // 这个dataZoom组件，默认控制x轴。
 								type : 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
@@ -96,6 +98,26 @@
 								name : '访客次数',
 								type : 'line',
 								data : data.attributes.seriesData,
+								markLine: {
+					                silent: true,
+					                data: [{
+					                    yAxis: 5
+					                }, {
+					                    yAxis: 10
+					                }, {
+					                    yAxis: 30
+					                }, {
+					                    yAxis: 100
+					                }, {
+					                    yAxis: 200
+					                }, {
+					                    yAxis: 500
+					                }, {
+					                    yAxis: 1000
+					                }, {
+					                    yAxis: 1800
+					                }]
+					            },
 								itemStyle : {
 									normal : {
 										color : "#35a2d8"

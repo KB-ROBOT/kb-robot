@@ -126,29 +126,6 @@
 			});
 		});
 
-		//菜单添加
-		$(".menuAddSubmit").on("click", function() {
-			var menuName = $("input[name=menuName]").val();
-			var fatherName = $("input[name=fatherMenuId]").val();
-			var url = './menuManagerController.do?su';
-			$.ajax({
-				url : url,// 请求的action路径
-				type : 'post',
-				dataType : "json",
-				data : {
-					"name" : menuName,
-					"fatherName" : fatherName
-				},
-				success : function(data) {
-					$("input[name=fatherMenuId]").val("");
-					setTimeout("location.reload()", 100);
-				},
-				error : function() {// 请求失败处理函数
-
-				},
-			});
-		});
-
 		//菜单编辑
 		$('.news span').click(function() {
 			$('.news span').removeClass('curre');
@@ -184,8 +161,9 @@
 					success : function(data) {
 						if (data.success) {
 							//data.obj;
-
+							$("#define_reday_action").text("");
 							if (data.attributes.type == 'click') {
+
 								$("#define_reday_action").append(data.attributes.templateObject.templateName);
 							} else {
 								$("#define_reday_action").append(data.attributes.url);
@@ -293,6 +271,29 @@
 			$("#myModal").modal("show");
 		});
 
+		//菜单添加
+		$(".menuAddSubmit").on("click", function() {
+			var menuName = $("input[name=menuName]").val();
+			var fatherName = $("input[name=fatherMenuId]").val();
+			var url = './menuManagerController.do?su';
+			$.ajax({
+				url : url,// 请求的action路径
+				type : 'post',
+				dataType : "json",
+				data : {
+					"name" : menuName,
+					"fatherName" : fatherName
+				},
+				success : function(data) {
+					$("input[name=fatherMenuId]").val("");
+					setTimeout("location.reload()", 100);
+				},
+				error : function() {// 请求失败处理函数
+
+				},
+			});
+		});
+
 		//微信账户删除
 		$(".weixin-account-del").click(function() {
 			var accountId = $(this).data("accountid");
@@ -320,6 +321,7 @@
 			}).width(320).showModal();
 		});
 
+		//菜单同步
 		$(".weixinMenuSubmit").click(function() {
 			var url = './menuManagerController.do?sameMenu';
 			$.ajax({
@@ -424,7 +426,7 @@
 											<td>${weixinAccount.weixinAccountId}</td>
 											<td align="center">
 												<c:if test="${weixinAccount.accountAuthorizeType=='2'}">
-													已取消授权<br/>
+													已取消授权<br />
 													<a href="openwx/goAuthor.do" target="_blank" class="choose-btn">点击重新授权</a>
 												</c:if>
 												<c:if test="${weixinAccount.accountAuthorizeType!='2'}">
@@ -616,38 +618,10 @@
 												</c:if>
 											</tr>
 										</c:forEach>
-										<%-- <c:forEach items="${fatherMenuList}" var="fatherMenu" begin="1"  varStatus="status">
-											<tr>
-												<td valign="top" style="width: 30%;">
-
-													<p data-seq="${status.index}" data-menuid="${fatherMenu.id}" data-menutype="${fatherMenu.type}"   class="nav-define">
-														<b>${fatherMenu.name}</b>
-														<span class="fr">
-															<a href="javascript:void(0);" data-menuid="${fatherMenu.id}" class="fa fa-plus-square show-click child-menu-add" title="添加子菜单"></a>
-															<a href="javascript:void(0);" class="fa fa-pencil" title="编辑"></a>
-															<a href="javascript:void(0);" data-menuid="${fatherMenu.id}" class="fa fa-trash-o menu-delete" title="删除"></a>
-														</span>
-													</p>
-													<c:forEach items="${menuList}" var="menu" varStatus="statusChild">
-														<c:if test="${fatherMenu.id==menu.menuEntity.id&&menu.menuEntity!=null }">
-															<div class="sub-menu childMenu">
-																<p data-menuid="${menu.id}" data-menutype="${menu.type}"  class="nav-define">
-																		${menu.name }
-																	<span class="fr">
-																		<a href="javascript:void(0);" class="fa fa-pencil" title="编辑"></a>
-																		<a href="javascript:void(0);" data-menuid="${fatherMenu.id}" class="fa fa-trash-o menu-delete" title="删除"></a>
-																	</span>
-																</p>
-															</div>
-														</c:if>
-													</c:forEach>
-												</td>
-											</tr>
-										</c:forEach> --%>
 									</table>
 									<p style="padding-left: 20px;">发布之后才可以在微信里面显示</p>
-									<div class="col-lg-12 choose-btn weixinMenuSubmit">
-										<a href="javascript:;">发布到微信</a>
+									<div class="col-lg-12 choose-btn">
+										<a class="weixinMenuSubmit" href="javascript:;">发布到微信</a>
 									</div>
 								</div>
 							</div>

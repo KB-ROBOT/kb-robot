@@ -68,18 +68,10 @@ ol, ul {
 			<div id="img-content">
 				<div class="text" id="js_content">${question.questionAnswer}</div>
 				<p class="page-toolbar" id="js_toobar">
-					<a href="http://www.jeewx.com" class="page-imform"> 凯博团队 </a>
+					<a href="http://www.kb-robot.com" class="page-imform"> 凯博团队 </a>
 				</p>
 			</div>
 		</div>
-		<!-- <div id="js_pc_qr_code" class="pc_code" style="display: block;">
-			<div class="inner_pc_code">
-				<img width="102" id="js_pc_qr_code_img" src="plug-in/weixin/core/wx-article/logo.jpg" target="_blank">
-				<p>
-					微信扫一扫 <br> 获得更多内容
-				</p>
-			</div>
-		</div> -->
 	</div>
 </body>
 

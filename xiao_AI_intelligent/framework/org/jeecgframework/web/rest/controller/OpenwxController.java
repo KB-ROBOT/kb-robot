@@ -56,10 +56,11 @@ import com.kbrobot.utils.WeixinThirdUtil;
 import net.sf.json.JSONObject;
 import weixin.guanjia.account.entity.WeixinAccountEntity;
 import weixin.guanjia.account.service.WeixinAccountServiceI;
+import weixin.guanjia.base.entity.Subscribe;
 import weixin.guanjia.core.entity.message.resp.BaseMessageResp;
 import weixin.guanjia.core.entity.message.resp.TextMessageResp;
 import weixin.guanjia.core.util.MessageUtil;
-import weixin.guanjia.message.service.ReceiveTextServiceI;
+import weixin.guanjia.menu.entity.MenuEntity;
 
 /**
  * 微信公众账号第三方平台全网发布源码（java）
@@ -409,17 +410,16 @@ public class OpenwxController {
 		//如果不是event消息，则获取msgId	
 		if(!"event".equals(msgType)){
 			msgId = rootElt.elementText("MsgId");
-
 		}
 
 		//LogUtil.info("---全网发布接入检测--step.1-----------msgType="+msgType+"-----------------toUserName="+toUserName+"-----------------fromUserName="+fromUserName);
-		//LogUtil.info("---全网发布接入检测--step.2-----------xml="+xml);
+		LogUtil.info("---微信消息或事件推送-----------xml=\n"+xml);
 		if("event".equals(msgType)){
-			//LogUtil.info("---全网发布接入检测--step.3-----------事件消息--------");
-			String eventType = rootElt.elementText("Event");
-			weixinThirdUtilInstance.replyEventMessage(request,response,eventType,toUserName,fromUserName,authorizer_access_token);
-		}else if("text".equals(msgType)){
-			//LogUtil.info("---全网发布接入检测--step.3-----------文本消息--------");
+			LogUtil.info("--- ----------事件消息--------");
+			processEventMessage(request,response,rootElt,toUserName,fromUserName,authorizer_access_token);
+		}
+		else if("text".equals(msgType)){
+			LogUtil.info("--- ----------文本消息--------");
 			content = rootElt.elementText("Content");
 			processTextMessage(request,response,content,toUserName,fromUserName,msgType,msgId,Long.valueOf(timestamp),authorizer_access_token);
 		}
@@ -427,7 +427,7 @@ public class OpenwxController {
 			//Recognition 语音解析结果
 			content = rootElt.elementText("Recognition");
 			if(StringUtil.isEmpty(content)){
-				weixinThirdUtilInstance.replyTextMessage(request,response,"没听懂你说的是什么？\n(检查公众号权限列表：[接收语音识别结果]是否打开)",toUserName,fromUserName);
+				weixinThirdUtilInstance.replyTextMessage(request,response,"网络有点不好哦~\n试试打字吧",toUserName,fromUserName);
 			}
 			else{
 				processTextMessage(request,response,content,toUserName,fromUserName,msgType,msgId,Long.valueOf(timestamp),authorizer_access_token);
@@ -435,6 +435,68 @@ public class OpenwxController {
 		}
 	}
 
+	/**
+	 * 处理事件消息
+	 * @param request
+	 * @param response
+	 * @param rootElt
+	 * @param toUserName
+	 * @param fromUserName
+	 * @param authorizer_access_token
+	 * @throws AesException
+	 */
+	public void processEventMessage(HttpServletRequest request, HttpServletResponse response,Element rootElt,String toUserName, String fromUserName,String authorizer_access_token) throws AesException{
+		String eventType = rootElt.elementText("Event");
+
+		WeixinAccountEntity  currentWeixinAccount =  weixinAccountService.findByToUsername(toUserName);
+		/*
+		 *  订阅
+		 */
+		if (eventType.equals(MessageUtil.EVENT_TYPE_SUBSCRIBE)) {
+			Subscribe subscribe = systemService.findUniqueByProperty(Subscribe.class, "accountid", currentWeixinAccount.getId());
+			if(subscribe!=null){
+				String type = subscribe.getMsgType();
+				String templateId = subscribe.getTemplateId();
+				weixinThirdUtilInstance.replyEventMessage(request,response,toUserName,fromUserName,type,templateId);
+			}
+		}
+		/*
+		 *  取消订阅
+		 */
+		else if (eventType.equals(MessageUtil.EVENT_TYPE_UNSUBSCRIBE)) {
+			//取消订阅后用户再收不到公众号发送的消息，因此不需要回复消息
+			LogUtil.info("又有人取消订阅了。 公众号：" + currentWeixinAccount.getAccountName());
+		}
+		/*
+		 *  菜单 click类型
+		 */
+		else if (eventType.equals(MessageUtil.EVENT_TYPE_CLICK)) {
+			String eventKey = rootElt.elementText("EventKey");
+
+			//事件KEY值，与自定义菜单接口中KEY值对应
+			MenuEntity clickMenu = this.systemService.findUniqueByProperty(MenuEntity.class, "menuKey", eventKey);
+
+			String templateId = clickMenu.getTemplateId();
+			String msgType = clickMenu.getMsgType();
+
+			weixinThirdUtilInstance.replyEventMessage(request,response,toUserName,fromUserName,msgType,templateId);
+		}
+		/*
+		 *  获取地理位置
+		 */
+		else if(eventType.equals(MessageUtil.REQ_MESSAGE_TYPE_LOCATION)){
+			//地理位置纬度
+			String latitude =  rootElt.elementText("Latitude");
+			//地理位置经度
+			String longitude = rootElt.elementText("Longitude");
+			//地理位置精度
+			String Precision = rootElt.elementText("Precision");
+			
+			LogUtil.info("经度：" + longitude + "\n纬度：" + latitude + "\n精确度" + Precision);
+			
+			weixinThirdUtilInstance.output(response, "success");
+		}
+	}
 
 	/**
 	 * 处理用户发来的信息
@@ -472,7 +534,7 @@ public class OpenwxController {
 		weixinConversationContent.setToUsername(toUserName);
 		weixinConversationContent.setMsgId(msgId);
 		weixinConversationContent.setMsgType(msgType);
-		
+
 		String receivedMsgId = this.systemService.save(weixinConversationContent).toString();
 
 		//获取微信客户队列实例
@@ -495,7 +557,7 @@ public class OpenwxController {
 		if(msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)){
 			CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizer_access_token, "听到你说：" + new String(content));
 		}
-		
+
 		WeixinConversationContent returnConversationContent = null;
 
 		//如果正在会话中（正在回答问题列表）
@@ -560,11 +622,11 @@ public class OpenwxController {
 					textMessageResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
 					textMessageResp.setContent(resultText);
 				}
-				
+
 				//图灵 如果是语音 则返回语音
 				if(msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)){
 					CustomServiceUtil.sendCustomServiceVoiceMessage(fromUserName, authorizer_access_token, textMessageResp.getContent());
-					
+
 					returnConversationContent = new WeixinConversationContent();
 					returnConversationContent.setResponseContent(textMessageResp.getContent());
 					returnConversationContent.setResponseType(MessageUtil.REQ_MESSAGE_TYPE_VOICE);
@@ -589,11 +651,11 @@ public class OpenwxController {
 				}*/
 				//如果返回消息不为空则返回文本
 				/*if(StringUtil.isNotEmpty(resultText)){
-					
+
 				}*/
 			}
 		}
-		
+
 		weixinConversationContent.setResponseContent(returnConversationContent.getResponseContent());
 		weixinConversationContent.setResponseType(returnConversationContent.getResponseType());
 		weixinConversationContent.setReplyTime(new Date());

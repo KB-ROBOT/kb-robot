@@ -35,7 +35,6 @@ import com.kbrobot.service.RobotQuestionServiceI;
 
 import weixin.guanjia.account.entity.WeixinAccountEntity;
 import weixin.guanjia.account.service.WeixinAccountServiceI;
-import weixin.guanjia.base.entity.Subscribe;
 import weixin.guanjia.core.entity.message.resp.Article;
 import weixin.guanjia.core.entity.message.resp.BaseMessageResp;
 import weixin.guanjia.core.entity.message.resp.NewsMessageResp;
@@ -339,56 +338,46 @@ public class WeixinThirdUtil {
 		
 		return resultConversation;
 	}
+	
+	/**
+	 * 回复事件消息
+	 * @param request
+	 * @param response
+	 * @param toUserName
+	 * @param fromUserName
+	 * @param msgType
+	 * @param templateId
+	 * @throws AesException
+	 */
+	public void replyEventMessage(HttpServletRequest request, HttpServletResponse response,String toUserName, String fromUserName,String msgType,String templateId) throws AesException{
+		
+		if (MessageUtil.REQ_MESSAGE_TYPE_TEXT.equals(msgType)) {//文本消息
+			TextTemplate textTemplate = this.systemService.getEntity(TextTemplate.class, templateId);
+			String content = textTemplate.getContent();
 
-	public void replyEventMessage(HttpServletRequest request, HttpServletResponse response, String eventType, String toUserName, String fromUserName,String authorizer_access_token) throws DocumentException, IOException, AesException {
-		/*String content = event + "from_callback";
-		LogUtil.info("---全网发布接入检测------step.4-------事件回复消息  content="+content + "   toUserName="+toUserName+"   fromUserName="+fromUserName);
-		replyTextMessage(request,response,content,toUserName,fromUserName);*/
-		WeixinAccountEntity  currentWeixinAccount =  weixinAccountService.findByToUsername(toUserName);
-		// 订阅
-		if (eventType.equals(MessageUtil.EVENT_TYPE_SUBSCRIBE)) {
-			Subscribe subscribe = systemService.findUniqueByProperty(Subscribe.class, "accountid", currentWeixinAccount.getId());
-			if(subscribe!=null){
-				String type = subscribe.getMsgType();
-				if (MessageUtil.REQ_MESSAGE_TYPE_TEXT.equals(type)) {//文本消息
-					TextTemplate textTemplate = this.systemService.getEntity(TextTemplate.class, subscribe.getTemplateId());
-					String content = textTemplate.getContent();
+			replyTextMessage(request, response, content,toUserName,fromUserName);
 
-					replyTextMessage(request, response, content,toUserName,fromUserName);
-
-				} else if (MessageUtil.RESP_MESSAGE_TYPE_NEWS.equals(type)) {//图文消息
-					List<NewsItem> newsList = this.systemService.findByProperty(NewsItem.class,"newsTemplate.id", subscribe.getTemplateId());
-					List<Article> articleList = new ArrayList<Article>();
-					for (NewsItem news : newsList) {
-						Article article = new Article();
-						article.setTitle(news.getTitle());
-						article.setPicUrl(bundler.getString("domain")+ "/" + news.getImagePath());
-						String url = "";
-						if (oConvertUtils.isEmpty(news.getUrl())) {
-							url = bundler.getString("domain")+ "/robotQuestionController.do?getQuestionAnswerContent&id=" + news.getId();
-						}
-						else {
-							url = news.getUrl();
-						}
-						article.setUrl(url);
-						article.setDescription(news.getDescription());
-						articleList.add(article);
-					}
-
-					replyNewsMessage(request, response,articleList,toUserName,fromUserName);
+		} else if (MessageUtil.RESP_MESSAGE_TYPE_NEWS.equals(msgType)) {//图文消息
+			List<NewsItem> newsList = this.systemService.findByProperty(NewsItem.class,"newsTemplate.id", templateId);
+			List<Article> articleList = new ArrayList<Article>();
+			for (NewsItem news : newsList) {
+				Article article = new Article();
+				article.setTitle(news.getTitle());
+				article.setPicUrl(bundler.getString("domain")+ "/" + news.getImagePath());
+				String url = "";
+				if (oConvertUtils.isEmpty(news.getUrl())) {
+					url = bundler.getString("domain")+ "/newsItemController.do?goContent&id=" + news.getId();
 				}
+				else {
+					url = news.getUrl();
+				}
+				article.setUrl(url);
+				article.setDescription(news.getDescription());
+				articleList.add(article);
 			}
-		}
-		// 取消订阅
-		else if (eventType.equals(MessageUtil.EVENT_TYPE_UNSUBSCRIBE)) {
-			// TODO 取消订阅后用户再收不到公众号发送的消息，因此不需要回复消息
-			LogUtil.info("又有人取消订阅了。");
-		}
-		// 自定义菜单点击事件
-		else if (eventType.equals(MessageUtil.EVENT_TYPE_CLICK)) {
 
+			replyNewsMessage(request, response,articleList,toUserName,fromUserName);
 		}
-
 
 	}
 	

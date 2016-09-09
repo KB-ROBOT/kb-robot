@@ -60,7 +60,7 @@ ol, ul {
 					<span id="post-date" class="activity-meta no-extra">
 						<fmt:formatDate value='${newsItem.createDate}' type="date" pattern="yyyy-MM-dd" />
 					</span>
-					<span class="activity-meta"> jeecg社区 </span>
+					<span class="activity-meta"> 凯博智能机器人 </span>
 					<a href="javascript:viewProfile();" id="post-user" class="activity-meta">
 						<span class="text-ellipsis"> ${newsItem.author} </span>
 						<i class="icon_link_arrow"> </i>
@@ -75,18 +75,11 @@ ol, ul {
 				</div>
 				<div class="text" id="js_content">${newsItem.content}</div>
 				<p class="page-toolbar" id="js_toobar">
-					<a href="http://www.jeewx.com" class="page-imform"> 捷微团队 </a>
+					<a href="http://www.jeewx.com" class="page-imform"> 凯博团队 </a>
 				</p>
 			</div>
 		</div>
-		<div id="js_pc_qr_code" class="pc_code" style="display: block;">
-			<div class="inner_pc_code">
-				<img width="102" id="js_pc_qr_code_img" src="plug-in/weixin/core/wx-article/logo.jpg" target="_blank">
-				<p>
-					微信扫一扫 <br> 获得更多内容
-				</p>
-			</div>
-		</div>
+
 	</div>
 </body>
 

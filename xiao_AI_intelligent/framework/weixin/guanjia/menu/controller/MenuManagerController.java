@@ -3,7 +3,6 @@ package weixin.guanjia.menu.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +10,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.jeecgframework.core.common.hibernate.qbc.CriteriaQuery;
 import org.jeecgframework.core.common.model.json.AjaxJson;
 import org.jeecgframework.core.common.model.json.ComboTree;
@@ -24,13 +22,8 @@ import org.jeecgframework.core.util.ResourceUtil;
 import org.jeecgframework.core.util.StringUtil;
 import org.jeecgframework.tag.vo.datatable.SortDirection;
 import org.jeecgframework.tag.vo.easyui.TreeGridModel;
-import org.jeecgframework.web.rest.entity.WeixinOpenAccountEntity;
 import org.jeecgframework.web.system.service.SystemService;
 import org.jeewx.api.core.exception.WexinReqException;
-import org.jeewx.api.third.JwThirdAPI;
-import org.jeewx.api.third.model.ApiAuthorizerToken;
-import org.jeewx.api.third.model.ApiAuthorizerTokenRet;
-import org.jeewx.api.third.model.ApiComponentToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -112,7 +105,11 @@ public class MenuManagerController {
 			}
 			String accountId = ResourceUtil.getWeiXinAccountId();
 			if (!"-1".equals(accountId)) {
-				this.weixinMenuService.save(menuEntity);
+				String menuId = this.weixinMenuService.save(menuEntity).toString();
+				menuEntity.setId(menuId);
+				menuEntity.setMenuKey(menuId);
+				this.weixinMenuService.saveOrUpdate(menuEntity);
+				
 				this.message = "添加" + menuEntity.getName() + "的信息成功！";
 				
 				j.setSuccess(true);
@@ -140,15 +137,15 @@ public class MenuManagerController {
 				menuMap.put("fatherName", menuEntity.getMenuEntity().getName());
 			}
 			
+			String type = menuEntity.getType();
+			
 			menuMap.put("name", menuEntity.getName());
-			menuMap.put("type", menuEntity.getType());
+			menuMap.put("type", type);
 			menuMap.put("menuKey", menuEntity.getMenuKey());
 			menuMap.put("url", menuEntity.getUrl());
 			menuMap.put("orders", menuEntity.getOrders());
 			menuMap.put("templateId", menuEntity.getTemplateId());
 			menuMap.put("msgType", menuEntity.getMsgType());
-			
-			String type = menuEntity.getType();
 			
 			if("click".equals(type)){
 				if("text".equals(menuEntity.getMsgType())){
@@ -197,14 +194,6 @@ public class MenuManagerController {
 		j.setMsg(this.message);
 		return j;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	@RequestMapping(params = "list")
 	public ModelAndView list() {
