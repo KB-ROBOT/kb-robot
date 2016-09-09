@@ -537,7 +537,7 @@
 																	${menu.name }
 																	<span class="fr">
 																		<a href="javascript:void(0);" class="fa fa-pencil" title="编辑"></a>
-																		<a href="javascript:void(0);" data-menuid="${fatherMenu.id}" class="fa fa-trash-o menu-delete" title="删除"></a>
+																		<a href="javascript:void(0);" data-menuid="${menu.id}" class="fa fa-trash-o menu-delete" title="删除"></a>
 																	</span>
 																</p>
 															</div>
