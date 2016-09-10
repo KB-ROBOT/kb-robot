@@ -67,9 +67,6 @@ ol, ul {
 		<div id="page-content" class="page-content" lang="en">
 			<div id="img-content">
 				<div class="text" id="js_content">${question.questionAnswer}</div>
-				<p class="page-toolbar" id="js_toobar">
-					<a href="http://www.kb-robot.com" class="page-imform"> 凯博团队 </a>
-				</p>
 			</div>
 		</div>
 	</div>

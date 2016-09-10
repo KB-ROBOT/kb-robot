@@ -5,11 +5,13 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
-<title>热点问题排行榜</title>
+<title>历史热点问题排行榜</title>
 <jsp:include page="./includePage/linkSource.jsp"></jsp:include>
 
 <style type="text/css">
-body{font-size:32px;}
+body {
+	font-size: 32px;
+}
 
 #hot_modal .modal-header .close {
 	margin-top: -19px;
@@ -19,14 +21,18 @@ body{font-size:32px;}
 	text-indent: 2em;
 }
 
-.table tr td {
+table,th,td{border:1px solid #dedede;padding:10px;}
+th{text-align:center;}
+/* table tr td {
 	font-size: 0.32rem;
 }
 
-.table tr th {
+table tr th {
 	font-size: 0.32rem;
 	text-align: center;
-} 
+}
+table tr th,.table tr td{border-right:1px solid #dedede;} */
+
 </style>
 <script type="text/javascript">
 	$(document).ready(function() {
@@ -38,44 +44,40 @@ body{font-size:32px;}
 
 			$("#hot_modal").modal("show");
 		});
-
 	});
 </script>
 </head>
 <body>
 	<div class="page-container">
-
-		<div class="main-content">
-
-			<div class="container">
-				<table>
+		<table>
+			<tr>
+				<th width="10%">序号</th>
+				<th>问题</th>
+				<th width="20%">被问次数</th>
+			</tr>
+			<c:if test="${topQuestionList.size()==0}">
+				<tr>
+					<td colspan="3" style="text-align: center;">暂时还没有热点问题，快去公众号问问题吧~~</td>
+				</tr>
+			</c:if>
+			<c:if test="${topQuestionList.size()!=0}">
+				<c:forEach items="${topQuestionList}" var="topQuestion" varStatus="status">
 					<tr>
-						<th>问题</th>
-						<th width="20%">被问次数</th>
-					</tr>
-					<c:if test="${topQuestionList.size()==0}">
-						<tr>
-							<td colspan="2" style="text-align: center;">暂时还没有热点问题，快去公众号问问题吧~~</td>
-						</tr>
-					</c:if>
-					<c:if test="${topQuestionList.size()!=0}">
-						<c:forEach items="${topQuestionList}" var="topQuestion" varStatus="status">
-							<tr>
-								<td>
-									<a href="javascript:;" class="questionTile">
-										${topQuestion.questionTitle }
-										<div style="display: none;">${topQuestion.questionAnswer }</div>
-									</a>
-								</td>
-								<td style="text-align: center;">${topQuestion.matchTimes }</td>
+						<td style="text-align: center;">${status.index+1 }</td>
+						<td>
+							<a href="javascript:;" class="questionTile">
+								${topQuestion.questionTitle }
+								<div style="display: none;">&nbsp;&nbsp;&nbsp;&nbsp;${topQuestion.questionAnswer }</div>
+							</a>
+						</td>
+						<td style="text-align: center;">${topQuestion.matchTimes }</td>
 
-							</tr>
-						</c:forEach>
-					</c:if>
-				</table>
-			</div>
-		</div>
+					</tr>
+				</c:forEach>
+			</c:if>
+		</table>
 	</div>
+	<div style="text-align:right;padding-right:20px;">数据来源：<a href="http://www.kb-robot.com">凯博智能客服平台</a></div>
 
 	<div class="modal fade" id="hot_modal">
 		<div class="modal-dialog" style="width: 80%">

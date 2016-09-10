@@ -3,17 +3,18 @@
 <link rel="stylesheet" href="plug-in/kbrobot/css/bootstrap.css" type="text/css">
 <link rel="stylesheet" type="text/css" href="plug-in/kbrobot/css/style.css">
 <link rel="stylesheet" type="text/css" href="plug-in/kbrobot/css/font-awesome.css">
-<link rel="stylesheet" type="text/css" href="plug-in/kbrobot/css/jquery-ui.css">
+<!-- <link rel="stylesheet" type="text/css" href="plug-in/kbrobot/css/jquery-ui.css"> -->
 <link rel="stylesheet" type="text/css" href="plug-in/kbrobot/css/jquery-ui.min.css">
-<link rel="stylesheet" type="text/css" href="plug-in/kbrobot/css/bootstrap-datetimepicker.css">
+<!-- <link rel="stylesheet" type="text/css" href="plug-in/kbrobot/css/bootstrap-datetimepicker.css"> -->
 <link rel="stylesheet" type="text/css" href="plug-in/kbrobot/css/bootstrap-datetimepicker.min.css">
 <!-- artDialog css -->
 <link rel="stylesheet" type="text/css" href="plug-in/artDiglog/css/ui-dialog.css">
 
 <!-- js类库 -->
 <script type="text/javascript" src="plug-in/kbrobot/js/jquery-1.10.2.js"></script>
-<script type="text/javascript" src="plug-in/kbrobot/js/bootstrap.js"></script>
-<script type="text/ecmascript" src="plug-in/kbrobot/js/jquery-ui.js"></script>
+<!-- <script type="text/javascript" src="plug-in/kbrobot/js/bootstrap.js"></script> -->
+<script type="text/javascript" src="plug-in/kbrobot/js/bootstrap.min.js"></script>
+<!-- <script type="text/ecmascript" src="plug-in/kbrobot/js/jquery-ui.js"></script> -->
 <script type="text/ecmascript" src="plug-in/kbrobot/js/jquery-ui.min.js"></script>
 <script type="text/ecmascript" src="plug-in/kbrobot/js/bootstrap-datetimepicker.js"></script>
 <script type="text/ecmascript" src="plug-in/kbrobot/js/bootstrap-datetimepicker.zh-CN.js"></script>
@@ -43,7 +44,8 @@
 <script type="text/javascript" charset="utf-8" src="plug-in/ueditor/lang/zh-cn/zh-cn.js"></script>
 
 <!-- 百度echarts -->
-<script type="text/javascript" charset="utf-8" src="plug-in/echarts/echarts.js"></script>
+<!-- <script type="text/javascript" charset="utf-8" src="plug-in/echarts/echarts.js"></script> -->
+<script type="text/javascript" charset="utf-8" src="plug-in/echarts/echarts.min.js"></script>
 
 <!-- 自定义js -->
 <script type="text/javascript" src="plug-in/kbrobot/js/style.js"></script>

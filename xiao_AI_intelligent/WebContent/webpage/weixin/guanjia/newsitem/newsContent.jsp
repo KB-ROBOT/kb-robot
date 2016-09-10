@@ -74,9 +74,6 @@ ol, ul {
 					<img src="${newsItem.imagePath}">
 				</div>
 				<div class="text" id="js_content">${newsItem.content}</div>
-				<p class="page-toolbar" id="js_toobar">
-					<a href="http://www.jeewx.com" class="page-imform"> 凯博团队 </a>
-				</p>
 			</div>
 		</div>
 

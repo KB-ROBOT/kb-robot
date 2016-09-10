@@ -484,7 +484,7 @@ public class OpenwxController {
 		/*
 		 *  获取地理位置
 		 */
-		else if(eventType.equals(MessageUtil.REQ_MESSAGE_TYPE_LOCATION)){
+		else if(eventType.equals(MessageUtil.EVENT_TYPE_LOCATION)){
 			//地理位置纬度
 			String latitude =  rootElt.elementText("Latitude");
 			//地理位置经度
