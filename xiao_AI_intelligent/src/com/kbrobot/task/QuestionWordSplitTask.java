@@ -1,10 +1,12 @@
 package com.kbrobot.task;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.jeecgframework.core.common.hibernate.qbc.CriteriaQuery;
 import org.jeecgframework.core.common.hibernate.qbc.PageList;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,24 +42,17 @@ public class QuestionWordSplitTask {
 		CriteriaQuery cq = new CriteriaQuery(RobotQuestionEntity.class);
 		cq.isNull("wordSplit");
 		cq.add();
-		PageList pageList = robotQuestionService.getPageList(cq, false);
-		List<RobotQuestionEntity> result = pageList.getResultList();
+		List<RobotQuestionEntity> questionResult = robotQuestionService.getListByCriteriaQuery(cq, false);
 		
-		
-		for(int i=0;i<result.size();i++){
+		/**
+		 * 主问题
+		 */
+		for(int i=0;i<questionResult.size();i++){
 			try {
-				RobotQuestionEntity entity = result.get(i);
+				RobotQuestionEntity entity = questionResult.get(i);
 				entity.setWordSplit(LtpUtil.getWordSplit(entity.getQuestionTitle()));
-				List<RobotSimilarQuestionEntity> similaQuestionList = entity.getSimilarQuestionList();
 				
-				for(int j=0;j<similaQuestionList.size();j++){
-					RobotSimilarQuestionEntity similarEntity = similaQuestionList.get(j);
-					similarEntity.setWordSplit(LtpUtil.getWordSplit(similarEntity.getSimilarQuestionTitle()));
-					similaQuestionList.set(j, similarEntity);
-				}
-				entity.setSimilarQuestionList(similaQuestionList);
-				
-				result.set(i, entity);
+				questionResult.set(i, entity);
 				
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -65,12 +60,39 @@ public class QuestionWordSplitTask {
 			}
 		}
 		
+		robotQuestionService.batchUpdate(questionResult);
+		
+		/**
+		 * 相似问题
+		 */
+		cq = new CriteriaQuery(RobotSimilarQuestionEntity.class);
+		cq.isNull("wordSplit");
+		cq.add();
+		
+		List<RobotSimilarQuestionEntity> similarQuestionResult = robotQuestionService.getListByCriteriaQuery(cq, false);
+		
+		for(int i=0;i<similarQuestionResult.size();i++){
+			RobotSimilarQuestionEntity similarEntity = similarQuestionResult.get(i);
+			try {
+				similarEntity.setWordSplit(LtpUtil.getWordSplit(similarEntity.getSimilarQuestionTitle()));
+				similarQuestionResult.set(i, similarEntity);
+				
+			}
+			catch (JSONException | IOException e) {
+				e.printStackTrace();
+				continue;
+			}
+			
+		}
+		
+		robotQuestionService.batchUpdate(similarQuestionResult);
+		
 		Long end = System.currentTimeMillis();
 		
 		logger.info("用时：" + ((end - start)/1000.0) + "秒 ");
 		
-		robotQuestionService.batchUpdate(result);
+		logger.info("questionResult:" + questionResult.size() + "  similarQuestionResult:" + similarQuestionResult.size());
 		
-		logger.info(result.size());
+		
 	}
 }

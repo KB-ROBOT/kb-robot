@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrobot.entity.RobotSimilarQuestionEntity;
 import com.kbrobot.service.RobotSimilarQuestionServiceI;
+import com.kbrobot.task.QuestionWordSplitTask;
 
 /**
  * 
@@ -38,6 +39,9 @@ public class RobotSimilarQuestionController  extends BaseController {
 
 	@Autowired
 	private RobotSimilarQuestionServiceI robotSimilarQuestionService;
+	
+	@Autowired
+	private QuestionWordSplitTask questionWordSplitTask;
 
 	private String message;
 
@@ -86,6 +90,15 @@ public class RobotSimilarQuestionController  extends BaseController {
 				message = "知识库添加失败";
 			}
 		}
+		//添加成功之后执行一次任务
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				questionWordSplitTask.questionWordSplit();
+			}
+		}).start();
+		
 		j.setMsg(message);
 		return j;
 	}
