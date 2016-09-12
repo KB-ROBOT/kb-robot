@@ -43,6 +43,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.kbrobot.entity.RobotQuestionEntity;
 import com.kbrobot.entity.RobotSimilarQuestionEntity;
+import com.kbrobot.entity.WeixinUserLocationEntity;
 import com.kbrobot.entity.system.WeixinConversationClient;
 import com.kbrobot.entity.system.WeixinConversationContent;
 import com.kbrobot.manager.WeixinClientManager;
@@ -492,9 +493,20 @@ public class OpenwxController {
 			//地理位置经度
 			String longitude = rootElt.elementText("Longitude");
 			//地理位置精度
-			String Precision = rootElt.elementText("Precision");
+			String precision = rootElt.elementText("Precision");
 			
-			LogUtil.info("经度：" + longitude + "\n纬度：" + latitude + "\n精确度" + Precision);
+			LogUtil.info("经度：" + longitude + "\n纬度：" + latitude + "\n精确度" + precision);
+			
+			WeixinUserLocationEntity userLocation = new WeixinUserLocationEntity();
+			
+			userLocation.setLatitude(latitude);
+			userLocation.setLongitude(longitude);
+			userLocation.setLocationPrecision(precision);
+			userLocation.setOpenId(fromUserName);
+			userLocation.setWeixinAccountId(toUserName);
+			userLocation.setCreateTime(new Date());
+			
+			systemService.save(userLocation);
 			
 			weixinThirdUtilInstance.output(response, "success");
 		}
