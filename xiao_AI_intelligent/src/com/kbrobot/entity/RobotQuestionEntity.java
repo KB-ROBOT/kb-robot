@@ -41,8 +41,8 @@ public class RobotQuestionEntity implements java.io.Serializable {
 	/**questionAnswer*/
 	@Excel(exportName="questionAnswer",orderNum="1")
 	private java.lang.String questionAnswer;
-	/**accoundId*/
-	private java.lang.String accoundId;
+	/**accountId*/
+	private java.lang.String accountId;
 	/**wordSplit*/
 	private String wordSplit;
 	
@@ -111,19 +111,19 @@ public class RobotQuestionEntity implements java.io.Serializable {
 	}
 	/**
 	 *方法: 取得java.lang.String
-	 *@return: java.lang.String  accoundId
+	 *@return: java.lang.String  accountId
 	 */
-	@Column(name ="ACCOUND_ID",nullable=true,length=36)
-	public java.lang.String getAccoundId(){
-		return this.accoundId;
+	@Column(name ="ACCOUNT_ID",nullable=true,length=36)
+	public java.lang.String getAccountId(){
+		return this.accountId;
 	}
 
 	/**
 	 *方法: 设置java.lang.String
-	 *@param: java.lang.String  accoundId
+	 *@param: java.lang.String  accountId
 	 */
-	public void setAccoundId(java.lang.String accoundId){
-		this.accoundId = accoundId;
+	public void setAccountId(java.lang.String accountId){
+		this.accountId = accountId;
 	}
 	/**
 	 *方法: 取得java.util.Date
@@ -178,8 +178,8 @@ public class RobotQuestionEntity implements java.io.Serializable {
 	 * 相似问题
 	 * @return
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinColumn(name="question_id")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY ,mappedBy="question")
+	//@JoinColumn(name="question_id")
 	public List<RobotSimilarQuestionEntity> getSimilarQuestionList() {
 		return similarQuestionList;
 	}

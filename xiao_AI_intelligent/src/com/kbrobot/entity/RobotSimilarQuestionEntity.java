@@ -1,8 +1,8 @@
 package com.kbrobot.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -34,7 +34,10 @@ public class RobotSimilarQuestionEntity implements java.io.Serializable {
 	private java.lang.String similarQuestionTitle;
 	/**questionId*/
 	private RobotQuestionEntity question;
-	
+	/**
+	 * 微信公众号ID
+	 */
+	private String accountId;
 	/**
 	 * wordSplit
 	 * 分词结果
@@ -78,7 +81,7 @@ public class RobotSimilarQuestionEntity implements java.io.Serializable {
 		this.similarQuestionTitle = similarQuestionTitle;
 	}
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(cascade=CascadeType.REFRESH,optional=true)
 	@JoinColumn(name="question_id")
 	@JsonBackReference
 	public RobotQuestionEntity getQuestion() {
@@ -89,6 +92,14 @@ public class RobotSimilarQuestionEntity implements java.io.Serializable {
 		this.question = question;
 	}
 	
+	@Column(name ="ACCOUNT_ID",nullable=true,length=255)
+	public java.lang.String getAccountId(){
+		return this.accountId;
+	}
+	public void setAccountId(String accountId) {
+		this.accountId = accountId;
+	}
+
 	@Column(name ="WORD_SPLIT",nullable=true,length=1500)
 	public String getWordSplit() {
 		return wordSplit;

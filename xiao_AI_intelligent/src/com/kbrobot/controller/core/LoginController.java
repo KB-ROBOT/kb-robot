@@ -271,7 +271,7 @@ public class LoginController extends BaseController{
 			 */
 			sql = "SELECT COUNT(*) FROM robot_question";
 			sql += " WHERE ";
-			sql += "ACCOUND_ID = '"+weixinAccountEntity.getId()+"'";
+			sql += "ACCOUNT_ID = '"+weixinAccountEntity.getId()+"'";
 			sql += " AND ";
 			sql += "CREATE_TIME > DATE(CURDATE()-1)";
 			sql += " AND ";

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +42,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.kbrobot.entity.RobotQuestionEntity;
+import com.kbrobot.entity.RobotSimilarQuestionEntity;
 import com.kbrobot.entity.system.WeixinConversationClient;
 import com.kbrobot.entity.system.WeixinConversationContent;
 import com.kbrobot.manager.WeixinClientManager;
@@ -587,17 +589,32 @@ public class OpenwxController {
 			System.out.println("关键词长度：" + likeStringList.length);
 
 			//问题过滤（太多会造成超时）
-			CriteriaQuery cq = new CriteriaQuery(RobotQuestionEntity.class);
-			cq.eq("accoundId", currentWeixinAccount.getId());
+			CriteriaQuery cqQuestion = new CriteriaQuery(RobotQuestionEntity.class);
+			//相似问题查找
+			CriteriaQuery cqSimilarQuestion = new CriteriaQuery(RobotSimilarQuestionEntity.class);
+			cqQuestion.eq("accountId", currentWeixinAccount.getId());
+			cqSimilarQuestion.eq("accountId", currentWeixinAccount.getId());
 			//添加关键词like条件
 			for(String keyWord: likeStringList){
-				cq.like("questionTitle", keyWord);
+				cqQuestion.like("questionTitle", keyWord);
+				cqSimilarQuestion.like("similarQuestionTitle", keyWord);
 				LogUtil.info("提取出来的keyWord:" + keyWord);
 			}
-			cq.add();
-			List<RobotQuestionEntity> filterQuestionList = robotQuestionService.getListByCriteriaQuery(cq, false);
+			cqQuestion.add();
+			cqSimilarQuestion.add();
+			List<RobotQuestionEntity> filterQuestionList = robotQuestionService.getListByCriteriaQuery(cqQuestion, false);
 			LogUtil.info("查询到的条数:" + (filterQuestionList==null?0:filterQuestionList.size()));
-
+			
+			//如果查询到的条数为空，则进行相似问题查询
+			if(filterQuestionList==null||filterQuestionList.isEmpty()){
+				List<RobotSimilarQuestionEntity> filterSimilarQuestionList = robotQuestionService.getListByCriteriaQuery(cqSimilarQuestion, false);
+				//填入到主问题中
+				filterQuestionList = new ArrayList<RobotQuestionEntity>();
+				for(RobotSimilarQuestionEntity similar:filterSimilarQuestionList){
+					filterQuestionList.add(similar.getQuestion());
+				}
+			}
+			
 			//匹配知识库
 			List<RobotQuestionEntity> matchResult = QuestionMatchUtil.matchQuestion(filterQuestionList, content);
 			//若匹配不为空

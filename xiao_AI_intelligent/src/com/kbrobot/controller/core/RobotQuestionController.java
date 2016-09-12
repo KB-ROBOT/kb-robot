@@ -118,7 +118,7 @@ public class RobotQuestionController extends BaseController {
 		}
 
 
-		cq.eq("accoundId", accountId);
+		cq.eq("accountId", accountId);
 		cq.setPageSize(3);
 		cq.setMyAction("./robotQuestionController.do?questionList");
 		cq.addOrder("createTime", SortDirection.desc);//根据时间顺寻排序
@@ -220,7 +220,7 @@ public class RobotQuestionController extends BaseController {
 			message = "知识库添加成功";
 			//获取当前微信账户id
 			String accountId = ResourceUtil.getWeiXinAccountId();
-			robotQuestion.setAccoundId(accountId);
+			robotQuestion.setAccountId(accountId);
 			robotQuestion.setCreateTime(new Date());
 			robotQuestion.setUpdateTime(new Date());
 			robotQuestionService.save(robotQuestion);
@@ -338,7 +338,7 @@ public class RobotQuestionController extends BaseController {
 		String accountId = ResourceUtil.getWeiXinAccountId();
 
 		for(Object question : importList){
-			((RobotQuestionEntity)question).setAccoundId(accountId);
+			((RobotQuestionEntity)question).setAccountId(accountId);
 			((RobotQuestionEntity)question).setCreateTime(new Date());
 			((RobotQuestionEntity)question).setUpdateTime(new Date());
 		}

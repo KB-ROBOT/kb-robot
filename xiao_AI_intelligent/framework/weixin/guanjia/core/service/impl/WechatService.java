@@ -333,7 +333,7 @@ public class WechatService {
 			String speakStr = "";
 //==================================================2.根据消息内容查找回答（1.匹配知识库  [无果]---> 2.图灵智能回答）====================================================================
 			//@知识库
-			List<RobotQuestionEntity> questionList = robotQuestionService.findByProperty(RobotQuestionEntity.class, "accoundId", sys_accountId);
+			List<RobotQuestionEntity> questionList = robotQuestionService.findByProperty(RobotQuestionEntity.class, "accountId", sys_accountId);
 			double maxScore = 0;
 			for(RobotQuestionEntity que : questionList){
 				//遍历每个问题并得出相似度

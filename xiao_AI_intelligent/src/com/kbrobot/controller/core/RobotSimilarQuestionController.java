@@ -7,6 +7,7 @@ import org.jeecgframework.core.common.controller.BaseController;
 import org.jeecgframework.core.common.model.json.AjaxJson;
 import org.jeecgframework.core.constant.Globals;
 import org.jeecgframework.core.util.MyBeanUtils;
+import org.jeecgframework.core.util.ResourceUtil;
 import org.jeecgframework.core.util.StringUtil;
 import org.jeecgframework.web.system.service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,9 @@ public class RobotSimilarQuestionController  extends BaseController {
 	@ResponseBody
 	public AjaxJson saveOrUpdate(RobotSimilarQuestionEntity robotSimilarQuestion, HttpServletRequest request) {
 		AjaxJson j = new AjaxJson();
+		
+		String accountId = ResourceUtil.getWeiXinAccountId();
+		
 		if (StringUtil.isNotEmpty(robotSimilarQuestion.getId())) {
 			message = "知识库更新成功";
 			RobotSimilarQuestionEntity t = robotSimilarQuestionService.get(RobotSimilarQuestionEntity.class, robotSimilarQuestion.getId());
@@ -73,6 +77,7 @@ public class RobotSimilarQuestionController  extends BaseController {
 			message = "知识库添加成功";
 			//获取当前微信账户id
 			try{
+				robotSimilarQuestion.setAccountId(accountId);
 				robotSimilarQuestionService.save(robotSimilarQuestion);
 				systemService.addLog(message, Globals.Log_Type_INSERT, Globals.Log_Leavel_INFO);
 			}

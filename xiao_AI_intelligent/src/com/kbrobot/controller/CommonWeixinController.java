@@ -29,11 +29,11 @@ public class CommonWeixinController {
 	
 	@RequestMapping(params = {"hotQuestionList","hotQuestionList="})
 	public ModelAndView goHotQuestionList(ModelMap modelMap,HttpServletRequest request){
-		String accoundId = request.getParameter("accoundId");
+		String accountId = request.getParameter("accountId");
 		
 		CriteriaQuery cq = new CriteriaQuery(RobotQuestionEntity.class);
 		
-		cq.eq("accoundId", accoundId);
+		cq.eq("accountId", accountId);
 		cq.notEq("matchTimes", 0);
 		cq.addOrder("matchTimes", SortDirection.desc);//根据匹配数量从大到小排序
 		cq.setPageSize(10);
