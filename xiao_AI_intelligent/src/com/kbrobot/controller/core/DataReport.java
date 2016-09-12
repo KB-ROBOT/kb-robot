@@ -109,6 +109,7 @@ public class DataReport {
 		for(WeixinUserLocationEntity location:locationList){
 			Map<String,Object> locationMap = new HashMap<String,Object>();
 			locationMap.put("value", new Double[]{Double.valueOf(location.getLongitude()),Double.valueOf(location.getLatitude()),50.0});
+			locationData.add(locationMap);
 		}
 		
 		
