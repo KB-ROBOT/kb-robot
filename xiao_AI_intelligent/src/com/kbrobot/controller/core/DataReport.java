@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.kbrobot.entity.WeixinUserLocationEntity;
 import com.kbrobot.entity.system.WeixinConversationClient;
 
 import weixin.guanjia.account.entity.WeixinAccountEntity;
@@ -75,20 +76,43 @@ public class DataReport {
 			startTime = new Date(System.currentTimeMillis() - 7*oneDayTime);
 			endTime = new Date();
 		}
-		 
 		
-		CriteriaQuery cq = new CriteriaQuery(WeixinConversationClient.class);
+		//会话人数
+		CriteriaQuery cqConversion = new CriteriaQuery(WeixinConversationClient.class);
 		
-		cq.eq("weixinAccountId", weixinAccountEntity.getWeixinAccountId());
-		cq.gt("addDate", startTime);
-		cq.lt("addDate", endTime);
-		cq.addOrder("addDate",SortDirection.asc );
-		cq.add();
-		//查询出来结果
-		List<WeixinConversationClient> questionList =  systemService.getListByCriteriaQuery(cq, false);
+		//地理位置坐标
+		CriteriaQuery cqLocation = new CriteriaQuery(WeixinUserLocationEntity.class);
+		
+		cqConversion.eq("weixinAccountId", weixinAccountEntity.getWeixinAccountId());
+		cqLocation.eq("weixinAccountId", weixinAccountEntity.getWeixinAccountId());
+		
+		cqConversion.gt("addDate", startTime);
+		cqConversion.lt("addDate", endTime);
+		
+		cqLocation.gt("createTime", startTime);
+		cqLocation.lt("createTime", endTime);
+		
+		cqConversion.addOrder("addDate",SortDirection.asc );
+		
+		cqLocation.addOrder("createTime", SortDirection.asc);
+		
+		cqConversion.add();
+		cqLocation.add();
+		//查询会话
+		List<WeixinConversationClient> questionList =  systemService.getListByCriteriaQuery(cqConversion, false);
+		
+		//查询地域分布
+		List<WeixinUserLocationEntity> locationList =  systemService.getListByCriteriaQuery(cqLocation, false);
+		
+		List<Map<String,Object>> locationData = new ArrayList<Map<String,Object>>();
+		
+		for(WeixinUserLocationEntity location:locationList){
+			Map<String,Object> locationMap = new HashMap<String,Object>();
+			locationMap.put("value", new Double[]{Double.valueOf(location.getLongitude()),Double.valueOf(location.getLatitude()),50.0});
+		}
+		
 		
 		Iterator<WeixinConversationClient> questionIterator =  null;
-		
 		
 		//得出时间距离
 		Long timeDistance = endTime.getTime() - startTime.getTime();
@@ -184,6 +208,10 @@ public class DataReport {
 		}
 		attributes.put("xAxisData", xAxisData);
 		attributes.put("seriesData", seriesData);
+		
+		attributes.put("locationData", locationData);
+		
+		
 		j.setAttributes(attributes);
 		
 		return j;
@@ -202,6 +230,8 @@ public class DataReport {
 		
 		//当前微信账户
 		WeixinAccountEntity weixinAccountEntity = ResourceUtil.getWeiXinAccount();
+		
+		
 		return new ModelAndView("kbrobot/report-question-data");
 	}
 	

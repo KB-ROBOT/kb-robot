@@ -7,6 +7,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <title>凯博机器人后台管理系统</title>
 <jsp:include page="./includePage/linkSource.jsp"></jsp:include>
+<script type="text/javascript" charset="utf-8" src="plug-in/echarts/china.js"></script>
 
 <script type="text/javascript">
 	$(document).ready(function() {
@@ -41,8 +42,12 @@
 			$('.begin_datetime').datetimepicker("setEndDate", endTime);
 		});
 
-		// 初始化echarts实例
+		// 访客数量初始化echarts实例
 		var visitDataChart = echarts.init($("#visit_data")[0]);
+		
+		// 访客地域初始化echarts实例
+		var areaDataChart = echarts.init($("#area_data")[0]);
+		
 		
 		$(".visitDataSearch").on("click",function(){
 			//获取开始和结束时间
@@ -50,6 +55,8 @@
 		 	endTime = $(".end_datetime").val();
 			//loading动画
 			visitDataChart.showLoading();
+			areaDataChart.showLoading();
+			
 			//异步加载
 			var url = "./dataReportController.do?show-visit-data";
 			$.ajax({
@@ -59,22 +66,25 @@
 				data : {"startTime":startTime,"endTime":endTime},
 				success : function(data) {
 					//隐藏loading动画
-					visitDataChart.hideLoading()
+					visitDataChart.hideLoading();
+					areaDataChart.hideLoading();
+					
 					if (data.success) {
 						// 指定图表的配置项和数据
 						var option = {
 							title : {
-								text : '访客统计'
+								text : '访客时间段统计'
 							},
 							tooltip : {
 								trigger : 'axis'
 							},
-							/* legend : {
+							legend : {
 								data : ['访客次数']
-							}, */
+							},
 							toolbox : {
 								feature : {
-									saveAsImage : {}
+									saveAsImage : {},
+									restore: {}
 								}
 							},
 							xAxis : {
@@ -125,8 +135,64 @@
 								}
 							} ]
 						};
-
+						
+						var areaDataChartOption = {
+							    title: {
+							        text: '访客地域统计',
+							        subtext: '测试数据'
+							    },
+							    geo: {
+							        map: 'china',
+							        label: {
+							            emphasis: {
+							                show: false
+							            }
+							        },
+							        roam: true,
+							        zoom: 1.2,
+							        scaleLimit:{
+							        	min:1.2
+							        },
+							        itemStyle: {
+							            normal: {
+							                areaColor: '#fff',
+							                borderColor: '#000'
+							            },
+							            emphasis: {
+							                areaColor: '#eee'
+							            }
+							        }
+							    },
+							    series: [
+							        {
+							            name: '访客数',
+							            type: 'effectScatter',
+							            coordinateSystem: 'geo',
+							            data: data.attributes.locationData ,//[{value:[112.909912,28.207537,50]},{value:[112.909912,28.207537,50]}],
+							            symbolSize: function (val) {
+							                return val[2] / 10;
+							            },
+							            label: {
+							                normal: {
+							                    formatter: '{b}',
+							                    position: 'right',
+							                    show: false
+							                },
+							                emphasis: {
+							                    show: true
+							                }
+							            },
+							            itemStyle: {
+							                normal: {
+							                    color: '#35a2d8'
+							                }
+							            }
+							        }
+							    ]
+							};
+						
 						// 使用刚指定的配置项和数据显示图表。
+						areaDataChart.setOption(areaDataChartOption);
 						visitDataChart.setOption(option); 
 
 					} else {
@@ -141,6 +207,15 @@
 				},
 			});
 		});
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		//数据初始化
 		$(".visitDataSearch").click();
 
@@ -164,7 +239,7 @@
 				<div class="row">
 					<div class="panel col-sm-12">
 						<div class="panel-cont">
-							<h4 class="title">每日访客次数统计</h4>
+							<h4 class="title">访客次数统计</h4>
 							<div class="panel-body">
 								<div class="col-lg-12" style="margin-bottom: 20px;">
 									<form>
@@ -183,10 +258,13 @@
 										</div>
 									</form>
 								</div>
-								<div class="col-lg-12" style="margin-bottom: 20px;">
+								<div class="col-lg-12" style="margin-bottom: 50px;">
 									<div id="visit_data" style="width: 100%; height: 500px;"></div>
 								</div>
 
+								<div class="col-lg-12" style="margin-bottom: 50px;">
+									<div id="area_data" style="width: 100%; height: 800px;"></div>
+								</div>
 							</div>
 						</div>
 					</div>

@@ -47,6 +47,7 @@
 <!-- <script type="text/javascript" charset="utf-8" src="plug-in/echarts/echarts.js"></script> -->
 <script type="text/javascript" charset="utf-8" src="plug-in/echarts/echarts.min.js"></script>
 
+
 <!-- 自定义js -->
 <script type="text/javascript" src="plug-in/kbrobot/js/style.js"></script>
 

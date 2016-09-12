@@ -42,7 +42,7 @@ public class CriteriaQuery implements Serializable {
 	private int isUseimage = 0;// 翻页工具条样式
 	private DetachedCriteria detachedCriteria;
 	private static Map<String, Object> map;
-	private static Map<String, Object> ordermap;//排序字段
+	private Map<String, Object> ordermap;//排序字段
 	private boolean flag = true;// 对同一字段进行第二次重命名查询时值设置FASLE不保存重命名查询条件
 	private String field="";//查询需要显示的字段
 	private Class entityClass;//POJO
@@ -399,12 +399,12 @@ public class CriteriaQuery implements Serializable {
 		}
 	}
 
-	public static Map<String, Object> getOrdermap() {
+	public Map<String, Object> getOrdermap() {
 		return ordermap;
 	}
 
-	public static void setOrdermap(Map<String, Object> ordermap) {
-		CriteriaQuery.ordermap = ordermap;
+	public void setOrdermap(Map<String, Object> ordermap) {
+		ordermap = ordermap;
 	}
 
 	/**
