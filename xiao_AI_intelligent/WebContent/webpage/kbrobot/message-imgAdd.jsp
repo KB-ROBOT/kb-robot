@@ -224,6 +224,7 @@
 				//$.ajaxSettings.traditional = true; 
 				$.ajax({
 					url : url,// 请求的action路径
+					type: 'POST',
 					dataType : "json",
 					data : newsTemplate,// {"newsTemplate":newsTemplate},
 					success : function(data) {
@@ -373,6 +374,7 @@
 																	<div class="progress-bar progress-bar-success" style="width: 0%;"></div>
 																</div>
 																<div id="files_${status.index}" class="files"></div>
+																<input type="hidden" value="${newsItem.imagePath}" name="imagePath">
 															</div>
 															<label class="m10">图文内容</label>
 															<script id="content_${status.index}" type="text/plain" style="height: 200px; width: 100%;" name="content">
