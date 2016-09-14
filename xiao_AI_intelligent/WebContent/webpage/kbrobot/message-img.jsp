@@ -25,7 +25,7 @@
 						data: {"id":newsId},
 						success : function(data) {
 							if(data.success){
-								setTimeout("location.reload()",500);
+								location.reload();
 							}
 							else{
 								dialog({

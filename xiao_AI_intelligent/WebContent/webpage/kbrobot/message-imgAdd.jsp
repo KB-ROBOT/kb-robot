@@ -161,6 +161,8 @@
 			var isSingleNews = true;
 			var isEachEnd = true;
 			//循环读取每一个item
+			
+			newsTemplate.id = $("#accordionRight input[name='id']").val();
 			$("#accordionRight li").each(function(index, element) {
 
 				var currentUE = UE.getEditor('content_' + index);
@@ -353,6 +355,7 @@
 								<div class="col-sm-9">
 									<ol class="accordion panel-group right_list" id="accordionRight">
 										<c:if test="${newsTemplate!=null}">
+											<input type="hidden" name="id" value="${newsTemplate.id}" />
 											<c:forEach items="${newsTemplate.newsItemList}" var="newsItem" varStatus="status">
 												<li class="accordion-group mt10">
 													<div class="panel-heading">

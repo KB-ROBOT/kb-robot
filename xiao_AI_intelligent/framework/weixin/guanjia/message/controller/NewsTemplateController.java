@@ -124,6 +124,7 @@ public class NewsTemplateController {
 	 * @return
 	 */
 	@RequestMapping(params="del")
+	@ResponseBody
 	public AjaxJson del(NewsTemplate newsTemplate,HttpServletRequest req){
 		AjaxJson j = new AjaxJson();
 		if(newsTemplate==null||StringUtil.isEmpty(newsTemplate.getId())){
