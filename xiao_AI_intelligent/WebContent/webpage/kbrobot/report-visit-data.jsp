@@ -209,13 +209,6 @@
 		});
 		
 		
-		
-		
-		
-		
-		
-		
-		
 		//数据初始化
 		$(".visitDataSearch").click();
 

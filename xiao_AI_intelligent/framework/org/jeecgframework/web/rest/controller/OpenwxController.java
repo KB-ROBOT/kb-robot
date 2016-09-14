@@ -48,6 +48,7 @@ import com.kbrobot.entity.system.WeixinConversationClient;
 import com.kbrobot.entity.system.WeixinConversationContent;
 import com.kbrobot.manager.WeixinClientManager;
 import com.kbrobot.service.RobotQuestionServiceI;
+import com.kbrobot.utils.BaiduMapUtil;
 import com.kbrobot.utils.CustomServiceUtil;
 import com.kbrobot.utils.LtpUtil;
 import com.kbrobot.utils.QuestionMatchUtil;
@@ -476,7 +477,7 @@ public class OpenwxController {
 		else if (eventType.equals(MessageUtil.EVENT_TYPE_CLICK)) {
 			String eventKey = rootElt.elementText("EventKey");
 
-			//事件KEY值，与自定义菜单接口中KEY值对应
+			//事件KEY值，与自定义菜单接口中KEY值对应 
 			MenuEntity clickMenu = this.systemService.findUniqueByProperty(MenuEntity.class, "menuKey", eventKey);
 
 			String templateId = clickMenu.getTemplateId();
@@ -488,6 +489,9 @@ public class OpenwxController {
 		 *  获取地理位置
 		 */
 		else if(eventType.equals(MessageUtil.EVENT_TYPE_LOCATION)){
+			
+			weixinThirdUtilInstance.output(response, "success");
+			
 			//地理位置纬度
 			String latitude =  rootElt.elementText("Latitude");
 			//地理位置经度
@@ -497,6 +501,22 @@ public class OpenwxController {
 			
 			LogUtil.info("经度：" + longitude + "\n纬度：" + latitude + "\n精确度" + precision);
 			
+			//查找有没有相同的经纬度
+			CriteriaQuery cqLocation = new CriteriaQuery(WeixinUserLocationEntity.class);
+			cqLocation.eq("longitude", longitude);
+			cqLocation.eq("latitude", latitude);
+			cqLocation.add();
+			
+			//查询已经存在的结果
+			List<WeixinUserLocationEntity> exitResult =  systemService.getListByCriteriaQuery(cqLocation, false);
+			String address = "";
+			if(exitResult==null||exitResult.isEmpty()){
+				address = BaiduMapUtil.location2Address(longitude, latitude);
+			}
+			else{
+				address = exitResult.get(0).getAddress();
+			}
+			//保存
 			WeixinUserLocationEntity userLocation = new WeixinUserLocationEntity();
 			
 			userLocation.setLatitude(latitude);
@@ -504,11 +524,12 @@ public class OpenwxController {
 			userLocation.setLocationPrecision(precision);
 			userLocation.setOpenId(fromUserName);
 			userLocation.setWeixinAccountId(toUserName);
+			userLocation.setAddress(address);
 			userLocation.setCreateTime(new Date());
 			
 			systemService.save(userLocation);
 			
-			weixinThirdUtilInstance.output(response, "success");
+			
 		}
 	}
 
@@ -565,7 +586,7 @@ public class OpenwxController {
 			weixinClientManager.addWeixinConversationClient(fromUserName+":"+toUserName, currentClient);
 		}
 		currentClient.setEndMessageId(receivedMsgId);
-		currentClient.updateAddDate();
+		//currentClient.updateAddDate();
 
 
 		if(msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)){

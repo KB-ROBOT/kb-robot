@@ -7,6 +7,42 @@
 <meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <title>凯博机器人后台管理系统</title>
 <jsp:include page="./includePage/linkSource.jsp"></jsp:include>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		//开始和结束时间
+		var startTime = null;
+		var endTime = null;
+
+		//开始时间
+		$(".begin_datetime").datetimepicker({
+			todayBtn : "linked",
+			autoclose : true,
+			todayHighlight : true,
+			endDate : new Date(),
+			format : "yyyy-mm-dd hh:ii",
+			language : 'zh-CN'
+		}).on('changeDate', function(e) {
+			startTime = e.date;
+			$('.end_datetime').datetimepicker("setStartDate", startTime);
+		});
+
+		//结束时间
+		$(".end_datetime").datetimepicker({
+			todayBtn : "linked",
+			autoclose : true,
+			todayHighlight : true,
+			endDate : new Date(),
+			format : "yyyy-mm-dd hh:ii",
+			language : 'zh-CN'
+		}).on('changeDate', function(e) {
+			endTime = e.date;
+			$('.begin_datetime').datetimepicker("setEndDate", endTime);
+		});
+
+	});
+</script>
+
 </head>
 <body>
 	<div class="page-container">
@@ -37,20 +73,20 @@
 													<li>
 														<a href="#">全部访客</a>
 													</li>
-													<li>
+													<!-- <li>
 														<a href="#">微信访客</a>
 													</li>
 													<li>
 														<a href="#">网页访客</a>
-													</li>
+													</li> -->
 												</ul>
 											</span>
 										</div>
-										<div class="col-sm-2">
-											起始时间：<input type="text" class="form-control input-append date form_datetime" size="16" style="width: 60%; display: inline-block;">
+										<div class="col-sm-3">
+											起始时间： <input type="text" class="form-control input-append begin_datetime" size="16" style="width: 60%; display: inline-block;">
 										</div>
-										<div class="col-sm-2">
-											结束时间：<input type="text" class="form-control input-append date form_datetime" size="16" style="width: 60%; display: inline-block;">
+										<div class="col-sm-3">
+											结束时间： <input type="text" class="form-control input-append end_datetime" size="16" style="width: 60%; display: inline-block;">
 										</div>
 										<div class="col-sm-2">
 											<div class="btn-group">
@@ -93,29 +129,45 @@
 										<tr>
 											<th>访客类型</th>
 											<th>记录条数</th>
-											<th>登录次数</th>
 											<th>停留时间</th>
 											<th>开始时间</th>
 											<th>结束时间</th>
 											<th>访客地址</th>
 											<th>操作</th>
 										</tr>
-										<tr>
+										<!-- <tr>
 											<td>微信访客（ID=5880621）</td>
 											<td>0</td>
-											<td>1</td>
 											<td>0秒</td>
 											<td>2016-07-26 22:55:47</td>
 											<td>2016-07-26 22:55:47</td>
 											<td>湖南省长沙市</td>
 											<td>
-												<a href="">查看聊天记录</a>
+												<a href="#">查看聊天记录</a>
 											</td>
-										</tr>
+										</tr> -->
+										<c:if test="${resultList.size()==0 }">
+											<td colspan="7"></td>
+										</c:if>
+										<c:if test="${resultList.size()!=0 }">
+											<c:forEach items="${resultList}" var="visitData" varStatus="status">
+												<tr>
+													<td>${visitData.visitType }</td>
+													<td>${visitData.conversationCount }</td>
+													<td>${visitData.stayTime }分钟</td>
+													<td>${visitData.conversationStartTime }</td>
+													<td>${visitData.conversationEndTime }</td>
+													<td>${visitData.conversationAddress }</td>
+													<td>
+														<a href="#${visitData.conversationId }">查看聊天记录</a>
+													</td>
+												</tr>
+											</c:forEach>
+										</c:if>
 									</table>
 								</div>
 							</div>
-
+							<div class="row">${pageTools}</div>
 						</div>
 
 					</div>
@@ -124,13 +176,5 @@
 		</div>
 
 	</div>
-
-	<script type="text/javascript" src="js/jquery-1.10.2.js"></script>
-	<script type="text/javascript" src="js/bootstrap.js"></script>
-	<script type="text/ecmascript" src="js/jquery-ui.js"></script>
-	<script type="text/ecmascript" src="js/jquery-ui.min.js"></script>
-	<script type="text/ecmascript" src="js/bootstrap-datetimepicker.js"></script>
-	<script type="text/ecmascript" src="js/bootstrap-datetimepicker.zh-CN.js"></script>
-	<script type="text/ecmascript" src="js/style.js"></script>
 </body>
 </html>

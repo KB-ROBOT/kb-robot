@@ -14,7 +14,7 @@ import org.hibernate.annotations.GenericGenerator;
  * @Title: Entity
  * @Description: 用户地理位置
  * @author zhangdaihao
- * @date 2016-09-12 17:56:40
+ * @date 2016-09-14 11:06:28
  * @version V1.0   
  *
  */
@@ -36,6 +36,8 @@ public class WeixinUserLocationEntity implements java.io.Serializable {
 	private java.lang.String weixinAccountId;
 	/**客户openid*/
 	private java.lang.String openId;
+	/**经纬度转换后的地址*/
+	private java.lang.String address;
 	/**创建时间*/
 	private java.util.Date createTime;
 	
@@ -138,6 +140,22 @@ public class WeixinUserLocationEntity implements java.io.Serializable {
 	 */
 	public void setOpenId(java.lang.String openId){
 		this.openId = openId;
+	}
+	/**
+	 *方法: 取得java.lang.String
+	 *@return: java.lang.String  经纬度转换后的地址
+	 */
+	@Column(name ="ADDRESS",nullable=true,length=255)
+	public java.lang.String getAddress(){
+		return this.address;
+	}
+
+	/**
+	 *方法: 设置java.lang.String
+	 *@param: java.lang.String  经纬度转换后的地址
+	 */
+	public void setAddress(java.lang.String address){
+		this.address = address;
 	}
 	/**
 	 *方法: 取得java.util.Date
