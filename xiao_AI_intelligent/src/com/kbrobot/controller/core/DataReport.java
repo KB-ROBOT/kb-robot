@@ -29,8 +29,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.kbrobot.entity.RobotQuestionEntity;
 import com.kbrobot.entity.WeixinUserLocationEntity;
 import com.kbrobot.entity.system.WeixinConversationClient;
-import com.kbrobot.entity.system.WeixinConversationContent;
-import com.kbrobot.utils.BaiduMapUtil;
 
 import weixin.guanjia.account.entity.WeixinAccountEntity;
 import weixin.util.DateUtils;
@@ -113,6 +111,7 @@ public class DataReport {
 
 		for(WeixinUserLocationEntity location:locationList){
 			Map<String,Object> locationMap = new HashMap<String,Object>();
+			locationMap.put("name", location.getAddress());
 			locationMap.put("value", new Double[]{Double.valueOf(location.getLongitude()),Double.valueOf(location.getLatitude()),50.0});
 			locationData.add(locationMap);
 		}

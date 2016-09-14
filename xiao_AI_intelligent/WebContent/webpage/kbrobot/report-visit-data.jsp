@@ -8,6 +8,8 @@
 <title>凯博机器人后台管理系统</title>
 <jsp:include page="./includePage/linkSource.jsp"></jsp:include>
 <script type="text/javascript" charset="utf-8" src="plug-in/echarts/china.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=AQSirPwSmkNWv513ncysOLlxCe5HkA7U"></script>
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
 
 <script type="text/javascript">
 	$(document).ready(function() {
@@ -141,7 +143,12 @@
 							        text: '访客地域统计',
 							        subtext: '测试数据'
 							    },
-							    geo: {
+							    toolbox : {
+									feature : {
+										restore: {}
+									}
+								},
+							    /* geo: {
 							        map: 'china',
 							        label: {
 							            emphasis: {
@@ -162,12 +169,116 @@
 							                areaColor: '#eee'
 							            }
 							        }
+							    }, */
+							    bmap: {
+							        center: [104.114129, 37.550339],
+							        zoom: 5,
+							        roam: true,
+							        mapStyle: {
+							            styleJson: [{
+							                'featureType': 'water',
+							                'elementType': 'all',
+							                'stylers': {
+							                    'color': '#d1d1d1'
+							                }
+							            }, {
+							                'featureType': 'land',
+							                'elementType': 'all',
+							                'stylers': {
+							                    'color': '#f3f3f3'
+							                }
+							            }, {
+							                'featureType': 'railway',
+							                'elementType': 'all',
+							                'stylers': {
+							                    'visibility': 'off'
+							                }
+							            }, {
+							                'featureType': 'highway',
+							                'elementType': 'all',
+							                'stylers': {
+							                    'color': '#fdfdfd'
+							                }
+							            }, {
+							                'featureType': 'highway',
+							                'elementType': 'labels',
+							                'stylers': {
+							                    'visibility': 'off'
+							                }
+							            }, {
+							                'featureType': 'arterial',
+							                'elementType': 'geometry',
+							                'stylers': {
+							                    'color': '#fefefe'
+							                }
+							            }, {
+							                'featureType': 'arterial',
+							                'elementType': 'geometry.fill',
+							                'stylers': {
+							                    'color': '#fefefe'
+							                }
+							            }, {
+							                'featureType': 'poi',
+							                'elementType': 'all',
+							                'stylers': {
+							                    'visibility': 'off'
+							                }
+							            }, {
+							                'featureType': 'green',
+							                'elementType': 'all',
+							                'stylers': {
+							                    'visibility': 'off'
+							                }
+							            }, {
+							                'featureType': 'subway',
+							                'elementType': 'all',
+							                'stylers': {
+							                    'visibility': 'off'
+							                }
+							            }, {
+							                'featureType': 'manmade',
+							                'elementType': 'all',
+							                'stylers': {
+							                    'color': '#d1d1d1'
+							                }
+							            }, {
+							                'featureType': 'local',
+							                'elementType': 'all',
+							                'stylers': {
+							                    'color': '#d1d1d1'
+							                }
+							            }, {
+							                'featureType': 'arterial',
+							                'elementType': 'labels',
+							                'stylers': {
+							                    'visibility': 'off'
+							                }
+							            }, {
+							                'featureType': 'boundary',
+							                'elementType': 'all',
+							                'stylers': {
+							                    'color': '#fefefe'
+							                }
+							            }, {
+							                'featureType': 'building',
+							                'elementType': 'all',
+							                'stylers': {
+							                    'color': '#d1d1d1'
+							                }
+							            }, {
+							                'featureType': 'label',
+							                'elementType': 'labels.text.fill',
+							                'stylers': {
+							                    'color': '#999999'
+							                }
+							            }]
+							        }
 							    },
 							    series: [
 							        {
 							            name: '访客数',
 							            type: 'effectScatter',
-							            coordinateSystem: 'geo',
+							            coordinateSystem: 'bmap',
 							            data: data.attributes.locationData ,//[{value:[112.909912,28.207537,50]},{value:[112.909912,28.207537,50]}],
 							            symbolSize: function (val) {
 							                return val[2] / 10;
