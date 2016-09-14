@@ -1,5 +1,6 @@
 package com.kbrobot.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kbrobot.entity.RobotQuestionEntity;
+
+import weixin.util.DateUtils;
 
 /**
  * 微信公众号公共coltroller
@@ -42,6 +45,7 @@ public class CommonWeixinController {
 		List<RobotQuestionEntity> topQuestionList =  systemService.getListByCriteriaQuery(cq, true);//isPage为true，只提取前几条
 		
 		modelMap.put("topQuestionList", topQuestionList);
+		modelMap.put("dataUpdateDate", DateUtils.date2Str(new Date() , DateUtils.time_sdf));	
 		
 		return new ModelAndView("kbrobot/commonHotQuestionList");
 	}

@@ -54,7 +54,7 @@ table tr th,.table tr td{border-right:1px solid #dedede;} */
 <div class="page-container">
 
         	<h3>历史热点问题排行</h3>
-            <p style="color:#999;">数据更新时间：2016-09-12</p>
+            <p style="color:#999;">数据更新时间：${dataUpdateDate}</p>
             <table>
                 <tr>
                     <th width="10%">序号</th>
