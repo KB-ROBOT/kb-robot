@@ -479,11 +479,18 @@ public class OpenwxController {
 
 			//事件KEY值，与自定义菜单接口中KEY值对应 
 			MenuEntity clickMenu = this.systemService.findUniqueByProperty(MenuEntity.class, "menuKey", eventKey);
+			
+			if(clickMenu==null||clickMenu.getAccountId()==null){
+				String templateId = clickMenu.getTemplateId();
+				String msgType = clickMenu.getMsgType();
 
-			String templateId = clickMenu.getTemplateId();
-			String msgType = clickMenu.getMsgType();
+				weixinThirdUtilInstance.replyEventMessage(request,response,toUserName,fromUserName,msgType,templateId);
+			}
+			else{
+				weixinThirdUtilInstance.replyTextMessage(request, response, "很抱歉，菜单已更新。\n更新菜单24小时内生效或重新关注立即生效。", toUserName, fromUserName);
+			}
 
-			weixinThirdUtilInstance.replyEventMessage(request,response,toUserName,fromUserName,msgType,templateId);
+			
 		}
 		/*
 		 *  获取地理位置
@@ -605,9 +612,12 @@ public class OpenwxController {
 			//根据找到的问题 转换成  MessageResp
 			BaseMessageResp baseMsgResp = QuestionMatchUtil.matchResultConvert(selectQuestion, toUserName,fromUserName);
 			returnConversationContent = weixinThirdUtilInstance.replyMatchResult(baseMsgResp, request, response);
-
 			//清空问题列表
 			currentClient.clearAllQuestion();
+			/*
+			 * 设置匹配类型
+			 */
+			weixinConversationContent.setReplyMatchType("2");//引导匹配到问题
 
 		}
 		//否则正常逻辑处理消息
@@ -658,6 +668,20 @@ public class OpenwxController {
 				}
 				BaseMessageResp baseMsgResp = QuestionMatchUtil.matchResultConvert(matchResult, toUserName,fromUserName);
 				returnConversationContent = weixinThirdUtilInstance.replyMatchResult(baseMsgResp, request, response);
+				
+				if(matchResult.size()>1){
+					/*
+					 * 设置匹配类型
+					 */
+					weixinConversationContent.setReplyMatchType("3");//引导回复（引导的过程）
+				}
+				else{
+					/*
+					 * 设置匹配类型
+					 */
+					weixinConversationContent.setReplyMatchType("1");//直接匹配到问题
+				}
+				
 
 			}
 			//若为空则调用图灵api
@@ -703,6 +727,11 @@ public class OpenwxController {
 				/*if(StringUtil.isNotEmpty(resultText)){
 
 				}*/
+				
+				/*
+				 * 设置匹配类型
+				 */
+				weixinConversationContent.setReplyMatchType("0");//直接匹配到问题
 			}
 		}
 

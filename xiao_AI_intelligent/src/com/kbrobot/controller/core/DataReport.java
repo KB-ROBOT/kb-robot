@@ -29,6 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.kbrobot.entity.RobotQuestionEntity;
 import com.kbrobot.entity.WeixinUserLocationEntity;
 import com.kbrobot.entity.system.WeixinConversationClient;
+import com.kbrobot.entity.system.WeixinConversationContent;
 
 import weixin.guanjia.account.entity.WeixinAccountEntity;
 import weixin.util.DateUtils;
@@ -259,14 +260,100 @@ public class DataReport {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(params = "report-martch-data")
+	@RequestMapping(params = "report-match-data")
 	public ModelAndView goKnowledgeCount(ModelMap modelMap,HttpServletRequest request){
+
+		return new ModelAndView("kbrobot/report-match-data");
+	}
+
+	/**
+	 * 现实匹配率数据
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(params = "show-match-data")
+	@ResponseBody
+	public AjaxJson showMatchContent(HttpServletRequest request){
+		AjaxJson j = new AjaxJson();
+		Map<String, Object> attributes = new HashMap<String, Object>();
 
 		//当前微信账户
 		WeixinAccountEntity weixinAccountEntity = ResourceUtil.getWeiXinAccount();
-		return new ModelAndView("kbrobot/report-martch-data");
-	}
 
+		String startTimeStr = request.getParameter("startTime");
+		String endTimeStr = request.getParameter("endTime");
+
+		Date startTime = null;
+		Date endTime = null;
+		if(StringUtil.isNotEmpty(startTimeStr)&&StringUtil.isNotEmpty(endTimeStr)){
+			startTime = DateUtils.str2Date(startTimeStr, DateUtils.time_sdf);
+			endTime = DateUtils.str2Date(endTimeStr, DateUtils.time_sdf);
+		}
+		else{
+			startTime = new Date(System.currentTimeMillis() - 7*oneDayTime);
+			endTime = new Date();
+		}
+
+
+		//查询聊天记录
+		CriteriaQuery cqConversationContent = new CriteriaQuery(WeixinConversationContent.class);
+
+		cqConversationContent.eq("toUsername", weixinAccountEntity.getWeixinAccountId());
+
+		cqConversationContent.ge("replyTime", startTime);
+		cqConversationContent.le("replyTime", endTime);
+		cqConversationContent.addOrder("replyTime",SortDirection.asc );
+		cqConversationContent.add();
+		//查找出该公众号的聊天记录
+		List<WeixinConversationContent> conversationContentList =  systemService.getListByCriteriaQuery(cqConversationContent, false);
+
+		List<Map<String,Object>> resultData = new ArrayList<Map<String,Object>>();
+
+		int match1,match2,match3,match0;
+		match1 = match2 = match3 = match0 = 0;
+		for(WeixinConversationContent conversationContent:conversationContentList ){
+			String replyMatchType = conversationContent.getReplyMatchType();
+
+			switch(replyMatchType){
+			case "1":
+				match1++;
+				break;
+			case "2":
+				match2++;
+				break;
+			case "3":
+				match3++;
+				break;
+			case "0":
+				match0++;
+				break;
+			}
+		}
+
+		Map<String,Object> matchMap1 = new HashMap<String,Object>();
+		matchMap1.put("value", match1);
+		matchMap1.put("name", "直接匹配");
+		resultData.add(matchMap1);
+		Map<String,Object> matchMap2 = new HashMap<String,Object>();
+		matchMap2.put("value", match2);
+		matchMap2.put("name", "引导匹配");
+		resultData.add(matchMap2);
+		Map<String,Object> matchMap3 = new HashMap<String,Object>();
+		matchMap3.put("value", match3);
+		matchMap3.put("name", "引导回复");
+		resultData.add(matchMap3);
+		Map<String,Object> matchMap0 = new HashMap<String,Object>();
+		matchMap0.put("value", match0);
+		matchMap0.put("name", "未知问题");
+		resultData.add(matchMap0);
+
+		//结果
+		attributes.put("resultData", resultData);
+		
+		j.setAttributes(attributes);
+		
+		return j;
+	}
 
 	/**
 	 * 访客日志
@@ -290,10 +377,11 @@ public class DataReport {
 		String startTimeStr = request.getParameter("startTime");
 		String endTimeStr = request.getParameter("endTime");
 
+
 		CriteriaQuery cqConversation = new CriteriaQuery(WeixinConversationClient.class,Integer.valueOf(curPageNO));
 		//公众号原始ID
 		cqConversation.eq("weixinAccountId", weixinAccountEntity.getWeixinAccountId());
-		
+
 		Date startTime = null;
 		Date endTime = null;
 		if(StringUtil.isNotEmpty(startTimeStr)&&StringUtil.isNotEmpty(endTimeStr)){
@@ -303,7 +391,7 @@ public class DataReport {
 			cqConversation.ge("addDate", startTime);
 			cqConversation.le("addDate", endTime);
 		}
-		
+
 		cqConversation.setPageSize(15);
 		cqConversation.setMyAction("./dataReportController.do?report-visit-log");
 		cqConversation.addOrder("addDate", SortDirection.desc);//根据时间顺寻排序
@@ -312,9 +400,9 @@ public class DataReport {
 		PageList pageResult = systemService.getPageList(cqConversation, true);
 		//结果集
 		List<WeixinConversationClient> conversationList = pageResult.getResultList();
-		
+
 		List<Map<String,Object>> resultList = new ArrayList<Map<String,Object>>();
-		
+
 		for(WeixinConversationClient conversation : conversationList){
 			//访客的openId
 			String openId = conversation.getOpenId();
@@ -325,10 +413,10 @@ public class DataReport {
 			Long timeDistance = conversationEndDate.getTime() -  conversationStartDate.getTime();
 			int minute = (int) (timeDistance/1000/60);
 			int stayTime = minute==0?1:minute;
-			
+
 			String conversationStartTime = DateUtils.date2Str(conversationStartDate, DateUtils.datetimeFormat);
 			String conversationEndTime = DateUtils.date2Str(conversationEndDate, DateUtils.datetimeFormat);
-			
+
 			//会话条数
 			String sql= "";
 			sql = "SELECT COUNT(*) FROM weixin_conversation_content";
@@ -341,26 +429,26 @@ public class DataReport {
 			sql += " AND ";
 			sql += "receive_time <= '" + conversationEndTime +"'";
 			Long conversationCount = systemService.getCountForJdbcParam(sql, null);
-			
+
 			//获取用户地理位置
 			//方法：用户开始会话时间（conversationStartDate）前后十分钟里 通过openId与weixinAccountId找出唯一结果
 			Calendar calendarInstance = Calendar.getInstance();
 			calendarInstance.setTime(conversationStartDate);
-			
+
 			calendarInstance.add(Calendar.MINUTE, -5);//五分钟前
 			Date locationTimeStart = calendarInstance.getTime();
 			calendarInstance.add(Calendar.MINUTE, 10);//五分钟后
 			Date locationTimeEnd = calendarInstance.getTime();
-			
+
 			CriteriaQuery cqLocation = new CriteriaQuery(WeixinUserLocationEntity.class);
-			
+
 			cqLocation.eq("openId", openId);
 			cqLocation.eq("weixinAccountId", weixinAccountEntity.getWeixinAccountId());
 			cqLocation.ge("createTime", locationTimeStart);
 			cqLocation.le("createTime", locationTimeEnd);
 			cqLocation.add();
 			List<WeixinUserLocationEntity> locationList = systemService.getListByCriteriaQuery(cqLocation, false);
-			
+
 			String conversationAddress = "";
 			if(!locationList.isEmpty()){
 				conversationAddress = locationList.get(0).getAddress();
@@ -368,7 +456,7 @@ public class DataReport {
 			else{
 				conversationAddress = "-";
 			}
-			
+
 			//将值放入map中
 			Map<String,Object> conversationMap = new HashMap<String,Object>();
 			conversationMap.put("visitType", "微信客户（ID="+openId+"）");
@@ -378,13 +466,18 @@ public class DataReport {
 			conversationMap.put("conversationEndTime", conversationEndTime);
 			conversationMap.put("conversationAddress", conversationAddress);
 			conversationMap.put("conversationId", conversation.getId());
-			
+
+
+
 			resultList.add(conversationMap);
 		}
-		
+
 		//分页
 		modelMap.put("pageTools", pageResult.getPager().getToolsBarByUrl());
 		modelMap.put("resultList", resultList);
+		//搜索条件时间段
+		modelMap.put("startTime", startTimeStr);
+		modelMap.put("endTime", endTimeStr);
 
 		return new ModelAndView("kbrobot/report-visit-log");
 	}

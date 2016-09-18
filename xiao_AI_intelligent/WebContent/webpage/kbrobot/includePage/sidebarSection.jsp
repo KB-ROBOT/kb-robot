@@ -87,7 +87,7 @@
 						<a href="dataReportController.do?report-question-data">问题热度统计</a>
 					</li>
 					<li>
-						<a href="dataReportController.do?report-martch-data">匹配率统计</a>
+						<a href="dataReportController.do?report-match-data">匹配率统计</a>
 					</li>
 					<%-- <li>
 						<a href="knowledge-radar.html">知识雷达</a>

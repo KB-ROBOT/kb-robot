@@ -14,7 +14,7 @@ import org.hibernate.annotations.GenericGenerator;
  * @Title: Entity
  * @Description: 微信会话内容
  * @author zhangdaihao
- * @date 2016-09-02 17:22:12
+ * @date 2016-09-17 14:00:13
  * @version V1.0   
  *
  */
@@ -42,6 +42,14 @@ public class WeixinConversationContent implements java.io.Serializable {
 	private java.lang.String responseContent;
 	/**responseType*/
 	private java.lang.String responseType;
+	/**
+	 *回复匹配类型
+	 *0：未知问题（图灵）
+	 *1：直接匹配到问题
+	 *2：引导匹配到问题
+	 *3：引导回复（引导的过程）
+	 **/
+	private java.lang.String replyMatchType;
 	/**接收时间*/
 	private java.util.Date receiveTime;
 	/**回复时间*/
@@ -194,6 +202,30 @@ public class WeixinConversationContent implements java.io.Serializable {
 	 */
 	public void setResponseType(java.lang.String responseType){
 		this.responseType = responseType;
+	}
+	/**
+	 *方法: 取得java.lang.String
+	 *@return: java.lang.String  回复匹配类型
+0：未知问题（图灵）
+1：直接匹配到问题
+2：引导匹配到问题
+3：引导回复（引导的过程）
+	 */
+	@Column(name ="REPLY_MATCH_TYPE",nullable=true,length=1)
+	public java.lang.String getReplyMatchType(){
+		return this.replyMatchType;
+	}
+
+	/**
+	 *方法: 设置java.lang.String
+	 *@param: java.lang.String  回复匹配类型
+0：未知问题（图灵）
+1：直接匹配到问题
+2：引导匹配到问题
+3：引导回复（引导的过程）
+	 */
+	public void setReplyMatchType(java.lang.String replyMatchType){
+		this.replyMatchType = replyMatchType;
 	}
 	/**
 	 *方法: 取得java.util.Date
