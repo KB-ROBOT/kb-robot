@@ -39,6 +39,21 @@
 			endTime = e.date;
 			$('.begin_datetime').datetimepicker("setEndDate", endTime);
 		});
+		
+		
+		$(".visitLogSearch").on("click",function(){
+			/* var url = "./dataReportController.do?show-visit-data";
+			$.ajax({
+				url : url,// 请求的action路径
+				dataType : "json",
+				type : "post",
+				data : {"startTime":startTime,"endTime":endTime},
+				success : function(data) {
+					
+				}
+			}); */
+			
+		});
 
 	});
 </script>
@@ -63,7 +78,7 @@
 						<div class="panel-body">
 							<div class="row">
 								<div class="col-lg-12" style="margin-bottom: 20px;">
-									<form>
+									<form action="dataReportController.do?report-visit-log" method="post" >
 										<div class="col-sm-2">
 											<span class="dropdown" style="padding: 10px 20px; background: #eee; top: 6px;">
 												<a data-toggle="dropdown" class="dropdown-toggle" href="#">
@@ -83,20 +98,22 @@
 											</span>
 										</div>
 										<div class="col-sm-3">
-											起始时间： <input type="text" class="form-control input-append begin_datetime" size="16" style="width: 60%; display: inline-block;">
+											起始时间：
+											<input type="text" name="startTime" value="${startTime}" class="form-control input-append begin_datetime" size="16" style="width: 60%; display: inline-block;">
 										</div>
 										<div class="col-sm-3">
-											结束时间： <input type="text" class="form-control input-append end_datetime" size="16" style="width: 60%; display: inline-block;">
+											结束时间：
+											<input type="text" name="endTime" value="${endTime}" class="form-control input-append end_datetime" size="16" style="width: 60%; display: inline-block;">
 										</div>
 										<div class="col-sm-2">
 											<div class="btn-group">
-												<button type="button" class="btn btn-success" onclick="visiterLog();return false;">
-													<i class="fa fa-search"></i>&nbsp;查询
+												<button type="button" class="btn btn-success" onclick="submit();">
+													<i class="fa fa-search visitLogSearch"></i>&nbsp;查询
 												</button>
 												<button type="reset" class="btn btn-white">清空</button>
 											</div>
 										</div>
-										<div class="col-sm-4">
+										<!-- <div class="col-sm-4">
 											<ul class="nav nav-pills pull-right">
 												<li class="dropdown" style="background-color: #fff;">
 													<a data-toggle="dropdown" class="dropdown-toggle" href="#">
@@ -121,7 +138,7 @@
 													</ul>
 												</li>
 											</ul>
-										</div>
+										</div> -->
 									</form>
 								</div>
 								<div class="col-lg-12">

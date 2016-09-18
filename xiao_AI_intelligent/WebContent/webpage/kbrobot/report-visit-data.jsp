@@ -46,7 +46,6 @@
 
 		// 访客数量初始化echarts实例
 		var visitDataChart = echarts.init($("#visit_data")[0]);
-		
 		// 访客地域初始化echarts实例
 		var areaDataChart = echarts.init($("#area_data")[0]);
 		
