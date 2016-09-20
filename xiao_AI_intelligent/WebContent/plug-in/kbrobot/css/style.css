@@ -65,7 +65,7 @@ img{border: 0 none;height: auto;max-width: 100%;vertical-align: middle;}
 .choose-btn a i{margin-right:10px;}
 .col-lg-12.choose-btn a{width:30%;}
 
-.cont table{margin:10px 15px;width:100%;border:1px solid #dedede;border-left:none;border-bottom:none;text-align:center;}
+.cont table{margin:10px 0px;width:100%;border:1px solid #dedede;border-left:none;border-bottom:none;text-align:center;}
 .cont table tr th,.cont table tr td{line-height:30px;border-bottom:1px solid #dedede;border-left:1px solid #dedede;padding:10px;}
 .cont table tr th{text-align:center;font-size:16px;font-weight:normal;}
 .cont table tr td .choose-btn a{margin:0 20px;}
@@ -245,5 +245,5 @@ body.login{display:block;width: 100%;height: 100%;overflow: hidden;}
 .doubleImg-list ul li span img{border: 1px solid #b2b8bd;
     height: 70px;
     width: 70px;}
-.doubleImg-list ul li h5{width:74%;float:left;margin:0;height:70px;line-height:70px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.doubleImg-list ul li h5{width:73%;float:left;margin:0;height:70px;line-height:70px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
 .input-group-btn .form-control{background:#ddd;border:1px solid #ddd;}
