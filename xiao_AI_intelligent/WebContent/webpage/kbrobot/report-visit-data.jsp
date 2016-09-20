@@ -8,7 +8,7 @@
 <title>凯博机器人后台管理系统</title>
 <jsp:include page="./includePage/linkSource.jsp"></jsp:include>
 <script type="text/javascript" charset="utf-8" src="plug-in/echarts/china.js"></script>
-<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=AQSirPwSmkNWv513ncysOLlxCe5HkA7U"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=i7qiTnPffuGrDAmn5oiwI7XmCYj0Gidu"></script>
 <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
 
 <script type="text/javascript">
