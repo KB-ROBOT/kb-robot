@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.kbrobot.entity.VoiceTemplate;
+
 import weixin.guanjia.base.entity.Subscribe;
 import weixin.guanjia.base.service.SubscribeServiceI;
 import weixin.guanjia.message.entity.NewsTemplate;
@@ -87,12 +89,20 @@ public class SubscribeController {
 				if (textTemplate != null) {
 					templateName = textTemplate.getTemplateName();
 				}
-			} else if ("news".equals(msgType)) {
+			}
+			else if ("news".equals(msgType)) {
 				NewsTemplate newsTemplate = this.subscribeService.getEntity(NewsTemplate.class, templateId);
 				if (newsTemplate != null) {
 					templateName = newsTemplate.getTemplateName();
 				}
 			}
+			else if ("voice".equals(msgType)) {
+				VoiceTemplate voiceTemplate = this.subscribeService.getEntity(VoiceTemplate.class, templateId);
+				if (voiceTemplate != null) {
+					templateName = voiceTemplate.getTemplateName();
+				}
+			}
+			
 			org.jeecgframework.core.util.LogUtil.info(".....templateName......"+templateName);
 			subscribe.setTemplateName(templateName);
 			subscribe.setAccountid(ResourceUtil.getWeiXinAccountId());

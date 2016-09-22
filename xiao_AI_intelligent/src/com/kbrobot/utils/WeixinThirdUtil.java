@@ -26,10 +26,12 @@ import org.jeewx.api.third.JwThirdAPI;
 import org.jeewx.api.third.model.ApiAuthorizerToken;
 import org.jeewx.api.third.model.ApiAuthorizerTokenRet;
 import org.jeewx.api.third.model.ApiComponentToken;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import com.kbrobot.entity.RobotQuestionEntity;
+import com.kbrobot.entity.VoiceTemplate;
 import com.kbrobot.entity.system.WeixinConversationContent;
 import com.kbrobot.service.RobotQuestionServiceI;
 
@@ -348,8 +350,10 @@ public class WeixinThirdUtil {
 	 * @param msgType
 	 * @param templateId
 	 * @throws AesException
+	 * @throws WexinReqException 
+	 * @throws JSONException 
 	 */
-	public void replyEventMessage(HttpServletRequest request, HttpServletResponse response,String toUserName, String fromUserName,String msgType,String templateId) throws AesException{
+	public void replyEventMessage(HttpServletRequest request, HttpServletResponse response,String toUserName, String fromUserName,String msgType,String templateId) throws AesException, JSONException, WexinReqException{
 		
 		if (MessageUtil.REQ_MESSAGE_TYPE_TEXT.equals(msgType)) {//文本消息
 			TextTemplate textTemplate = this.systemService.getEntity(TextTemplate.class, templateId);
@@ -357,7 +361,8 @@ public class WeixinThirdUtil {
 
 			replyTextMessage(request, response, content,toUserName,fromUserName);
 
-		} else if (MessageUtil.RESP_MESSAGE_TYPE_NEWS.equals(msgType)) {//图文消息
+		}
+		else if (MessageUtil.RESP_MESSAGE_TYPE_NEWS.equals(msgType)) {//图文消息
 			List<NewsItem> newsList = this.systemService.findByProperty(NewsItem.class,"newsTemplate.id", templateId);
 			List<Article> articleList = new ArrayList<Article>();
 			for (NewsItem news : newsList) {
@@ -377,6 +382,12 @@ public class WeixinThirdUtil {
 			}
 
 			replyNewsMessage(request, response,articleList,toUserName,fromUserName);
+		}
+		else if(MessageUtil.REQ_MESSAGE_TYPE_VOICE.equals(msgType)){//语音消息
+			VoiceTemplate textTemplate = this.systemService.getEntity(VoiceTemplate.class, templateId);
+			String content = textTemplate.getVoiceText();
+			output(response, "");
+			CustomServiceUtil.sendCustomServiceVoiceMessage(fromUserName, getAuthorizerAccessToken(toUserName), content);
 		}
 
 	}

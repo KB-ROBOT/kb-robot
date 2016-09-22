@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.kbrobot.entity.VoiceTemplate;
 import com.kbrobot.utils.WeixinThirdUtil;
 
 import net.sf.json.JSONArray;
@@ -153,6 +154,9 @@ public class MenuManagerController {
 				}
 				else if("news".equals(menuEntity.getMsgType())){
 					menuMap.put("templateObject",  systemService.get(NewsTemplate.class, menuEntity.getTemplateId()));
+				}
+				else if("voice".equals(menuEntity.getMsgType())){
+					menuMap.put("templateObject",  systemService.get(VoiceTemplate.class, menuEntity.getTemplateId()));
 				}
 			}
 			else if("view".equals(type)){

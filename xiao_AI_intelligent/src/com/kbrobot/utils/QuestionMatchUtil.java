@@ -166,7 +166,7 @@ public class QuestionMatchUtil {
 		answerContent = answerContent==null||answerContent.equals("")?emptyAnswer:answerContent;
 
 		//答案处理
-		if(answerContent.indexOf("<p>")==0&&answerContent.lastIndexOf("</p>")==(answerContent.length()-4)&&answerContent.length()>7){
+		if(answerContent.indexOf("<p>")==0&&answerContent.lastIndexOf("</p>")==(answerContent.length()-4)&&answerContent.length()>135){
 			answerContent = answerContent.substring(3, answerContent.length()-4);
 		}
 

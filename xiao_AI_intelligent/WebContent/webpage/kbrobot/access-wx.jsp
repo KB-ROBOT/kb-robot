@@ -16,6 +16,7 @@
 		//首先查找相数据  将mediaList放在全局变量中
 		var textTemplateList;
 		var newsTemplateList;
+		var voiceTemplateList;
 		//素材查找
 		var url = "./robotBindController.do?mediaSourceFind";
 		$.ajax({
@@ -25,11 +26,13 @@
 			success : function(data) {
 				textTemplateList = data.attributes.textTemplateList;
 				newsTemplateList = data.attributes.newsTemplateList;
+				voiceTemplateList = data.attributes.voiceTemplateList;
 
 				$('.subscribeList').html("");
 				$("select[name^=menuText_]").html();
+				var innerHtml = '';
 				for (var i = 0; i < textTemplateList.length; i++) {
-					var innerHtml = '<option value="'+textTemplateList[i].id+'">' + textTemplateList[i].templateName + '</option>';
+					innerHtml = '<option value="'+textTemplateList[i].id+'">' + textTemplateList[i].templateName + '</option>';
 					$('.subscribeList').append(innerHtml);
 					//菜单选择
 					$("select[name^=menuText_]").html(innerHtml);
@@ -40,36 +43,43 @@
 
 			},
 		});
-		//关键字
-		$(".fa-plus").on("click", function() {
-			currHash = window.location.hash;
-			currHash = currHash.replace(/#/, '');
-			if (currHash == 'cont3' && $("input[name=keyWord]").length <= 0) {
-				//关键字表单
-				var keyWordHtml = '';
-				keyWordHtml += '<div class="form-group">';
-				keyWordHtml += '<label class="control-label">关键字：</label>';
-				keyWordHtml += '<input type="text" name="keyWord" class="form-control" maxlength="6" placeholder="请输入关键字" />';
-				keyWordHtml += '</div>';
-				keyWordHtml += $("#focus_modal").find(".modal-body").html();
-
-				$("#focus_modal").find(".modal-body").html(keyWordHtml);
-			} else if (currHash != 'cont3' && $("input[name=keyWord]").length > 0) {//如果已经存在了关键字输入框
-				$("#focus_modal").find(".form-group:eq(0)").remove();
-			}
-		});
+		
 
 		//下拉列表框
 		$(".subscribeType").on("change", function() {
 			var type = $(this).val();
 			if (type == 'text') {
 				var eachList = textTemplateList;
-			} else {
+			} else if (type == 'news') {
 				var eachList = newsTemplateList;
+			} else if (type == 'voice') {
+				var eachList = voiceTemplateList;
 			}
+
 			$('.subscribeList').html("");
 			for (var i = 0; i < eachList.length; i++) {
 				$('.subscribeList').append('<option value="'+eachList[i].id+'">' + eachList[i].templateName + '</option>');
+			}
+		});
+		
+		//关键字
+		$(".fa-plus").on("click", function() {
+			currHash = window.location.hash;
+			currHash = currHash.replace(/#/, '');
+			if (currHash == 'cont3' && $(".groupMsg").length <= 0) {
+				//关键字表单
+				var groupMsg = '';
+				groupMsg += '<div class="form-group groupMsg">';
+				groupMsg += '<label class="control-label">群发名称：</label>';
+				groupMsg += '<input type="text" name="groupMsgName" class="form-control" maxlength="60" placeholder="请输入群发名称" />';
+				groupMsg += '<label class="control-label">群发描述：</label>';
+				groupMsg += '<input type="text" name="groupMsgDesc" class="form-control" maxlength="100" placeholder="请输入群发描述" />';
+				groupMsg += '</div>';
+				//groupMsg += $("#focus_modal").find(".modal-body").html();
+
+				$("#focus_modal").find(".modal-body").append(groupMsg);
+			} else if (currHash != 'cont3' && $(".groupMsg").length > 0) {//如果已经存在了关键字输入框
+				$("#focus_modal").find(".form-group:eq(0)").remove();
 			}
 		});
 
@@ -80,20 +90,33 @@
 			var data = {};
 			var msgType = $("select[name=mediaType]").val();
 			var templateId = $("select[name=mediaId]").val();
-			var keyWord = $("input[name=keyWord]").val();
-
-			if (currHash == 'cont3' && (keyWord == '' || keyWord == undefined)) {
-				$("input[name=keyWord]").focus();
-				return;
+			
+			//群发消息
+			var groupMsgName = $("#focus_modal input[name='groupMsgName']").val();
+			var groupMsgDesc = $("#focus_modal input[name='groupMsgDesc']").val();
+			
+			if(currHash == 'cont3'){
+				if(groupMsgName == undefined || groupMsgName == ''){
+					$("#focus_modal input[name='groupMsgName']").focus();
+					return ;
+				}
+				if(groupMsgDesc == undefined || groupMsgDesc == ''){
+					$("#focus_modal input[name='groupMsgDesc']").focus();
+					return ;
+				}
+				
+				data.groupMsgName = groupMsgName;
+				data.groupMsgDesc = groupMsgDesc;
 			}
+			
 			if (templateId == undefined || templateId == '') {
 				$("select[name=mediaId]").focus();
 				return;
 			}
-
-			data.keyWord = keyWord;
 			data.templateId = templateId;
 			data.msgType = msgType;
+			
+			
 			//请求的url
 			var url = '';
 			switch (currHash) {
@@ -105,7 +128,7 @@
 				break;
 			case 'cont3':
 
-				url = './autoResponseController.do?doSave';
+				url = './weixinSendMsgAllController.do?addSendMsgAll';
 				break;
 			case 'cont4':
 				url = './.do?doSave';
@@ -194,6 +217,13 @@
 			}
 			$("select[name=menuNews]").html(innerHtml);
 
+			innerHtml = '';
+			for (var i = 0; i < voiceTemplateList.length; i++) {
+				//菜单选择
+				innerHtml += '<option value="'+voiceTemplateList[i].id+'">' + voiceTemplateList[i].templateName + '</option>';
+			}
+			$("select[name=menuVoice]").html(innerHtml);
+
 		});
 
 		//保存菜单设置
@@ -211,6 +241,8 @@
 					templateId = $("select[name=menuText]").val();
 				} else if ("news" == msgType) {
 					templateId = $("select[name=menuNews]").val();
+				} else if ("voice" == msgType) {
+					templateId = $("select[name=menuVoice]").val();
 				}
 				menuObject.msgType = msgType;
 				menuObject.templateId = templateId;
@@ -341,6 +373,35 @@
 				},
 			});
 		});
+		
+		//群发消息
+		$(".groupMsgSend").click(function(){
+			var id = $(this).data("msgid");
+			
+			dialog({
+				title : "发送群发",
+				content : "确认发送群发消息吗？",
+				ok : function() {
+					var url = './weixinSendMsgAllController.do?groupMsgSend';
+					$.ajax({
+						url : url,// 请求的action路径
+						type : 'post',
+						dataType : "json",
+						data : {
+							"id" : id
+						},
+						success : function(data) {
+							alert(data.msg);
+							//setTimeout("location.reload()", 100);
+						},
+						error : function() {// 请求失败处理函数
+						},
+					});
+				},
+				cancle : function() {
+				}
+			}).width(320).showModal();
+		});
 
 	});
 </script>
@@ -368,7 +429,7 @@
 								<li data="cont2">关注欢迎语</li>
 							</a>
 							<a href="#cont3">
-								<li data="cont3">关键字管理</li>
+								<li data="cont3">群发消息</li>
 							</a>
 							<a href="#cont4">
 								<li data="cont4">菜单管理</li>
@@ -459,6 +520,7 @@
 										<td>
 											<c:if test="${subscribe.msgType=='text'}">文本</c:if>
 											<c:if test="${subscribe.msgType=='news'}">图文</c:if>
+											<c:if test="${subscribe.msgType=='voice'}">语音</c:if>
 										</td>
 										<td>
 											<div class="choose-btn">
@@ -473,35 +535,58 @@
 						</div>
 						<div class="cont" id="cont3" style="display: none;">
 							<h4 class="title">
-								关键字管理
-								<a data-toggle="modal" data-target="#focus_modal" href="javascript:void(0);" class="fa fa-plus fr" style="margin-top: 20px;" title="添加"></a>
+								群发消息
+								<a href="javascript:;" data-toggle="modal" data-target="#focus_modal" class="fa fa-plus fr" style="margin-top: 20px;" title="添加"></a>
 							</h4>
 							<h5>当前公众号[${sessionScope.WEIXIN_ACCOUNT.accountName}]</h5>
+							<!-- 本月群发消息还剩：1次 -->
+
 							<table>
 								<tr>
-									<th>关键字</th>
-									<th>素材</th>
+									<th>名称</th>
+									<th>描述</th>
+									<th>类型</th>
+									<th>状态</th>
+									<th>发送总量</th>
+									<th>过滤后总量</th>
+									<th>成功</th>
+									<th>失败</th>
+									<th>创建时间</th>
+									<th>发送时间</th>
 									<th>操作</th>
 								</tr>
-								<c:forEach items="${autoResponseList}" var="autoResponse" varStatus="status">
+								<c:forEach items="${sendGroupMsgList}" var="sendGroupMsg" varStatus="status">
 									<tr>
-										<td>${autoResponse.keyWord }</td>
-										<td>${autoResponse.templateName }</td>
+										<th>${sendGroupMsg.groupMsgName}</th>
+										<th>${sendGroupMsg.groupMsgDesc}</th>
+										<th>${sendGroupMsg.msgType}</th>
+										<th>${sendGroupMsg.status}</th>
+										<th>${sendGroupMsg.totalCount}</th>
+										<th>${sendGroupMsg.filterCount}</th>
+										<th>${sendGroupMsg.sendCount}</th>
+										<th>${sendGroupMsg.errorCount}</th>
+										<th>${sendGroupMsg.createTime}</th>
+										<th>${sendGroupMsg.sendTime}</th>
 										<td>
 											<div class="choose-btn">
-												<a>编辑</a>
-												<a class="delete-btn">删除</a>
+												<a class="groupMsgSend" data-msgId="${sendGroupMsg.id}">确认发送</a>
+												<a class="delete-btn groupMsgDel">删除</a>
 											</div>
 										</td>
 									</tr>
 								</c:forEach>
+								<c:if test="${sendGroupMsgList.size()==0}">
+									<tr>
+										<td colspan="10">还没有群发过消息</td>
+									</tr>
+								</c:if>
 							</table>
 						</div>
 						<div class="cont" id="cont4" style="display: none;">
 							<div class="col-lg-12" style="float: none;">
 								<h4 class="title">
 									自定义菜单
-									<a data-toggle="modal" data-target="#myModal" href="javascript:void(0);" class="fa fa-plus fr" style="margin-top: 20px;" title="添加主菜单"></a>
+									<a data-toggle="modal" data-target="#myModal" href="javascript:;" class="fa fa-plus fr" style="margin-top: 20px;" title="添加主菜单"></a>
 								</h4>
 								<h5>当前公众号[${sessionScope.WEIXIN_ACCOUNT.accountName}]</h5>
 								<div class="fans-content">
@@ -583,8 +668,6 @@
 																			</div>
 																		</div>
 																		<div class="new lookup" id="news" style="display: none;">
-																			<!-- <input type="text" class="form-control" disabled="disabled" placeholder="请选择图文">
-																		<button data-toggle="modal" data-target="#film_modal">查找图文</button> -->
 																			<select name="menuNews" class="form-control subscribeType">
 																				<option value="id">模板名称</option>
 																			</select>
@@ -594,10 +677,11 @@
 																			</div>
 																		</div>
 																		<div class="new lookup" id="voice" style="display: none;">
-																			<input type="text" class="form-control" disabled="disabled" placeholder="请选择语音文件">
-																			<button data-toggle="modal" data-target="#volume_modal">查找语音</button>
+																			<select name="menuVoice" class="form-control subscribeType">
+																				<option value="id">模板名称</option>
+																			</select>
 																			<div class="col-lg-5 choose-btn">
-																				<a>保存</a>
+																				<a data-type="click" data-msgType="voice" class="menu_action_save">保存</a>
 																				<a class="cancel-btn tab-return">返回</a>
 																			</div>
 																		</div>
@@ -631,69 +715,8 @@
 			</div>
 
 		</div>
-		<!--查找图文对话框开始-->
-		<div id="film_modal" class="modal fade custom-width in film_modal">
-			<div class="modal-dialog" style="width: 750px;">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-						<h4 class="modal-title">请选择图文消息</h4>
-					</div>
-					<div class="modal-body ">
-						<div class="scrollable" data-max-height="400" style="height: 400px;">
-							<div id="img_boxs"></div>
-						</div>
-						<ul id="VpageList4" style="float: right; margin: 0;">
-						</ul>
-					</div>
-					<div class="modal-footer">
-						<button data-dismiss="modal" class="btn btn-white" type="button">取消</button>
-						<button class="btn btn-info" type="button" onClick="addImgTxt('film_modal')">确定</button>
-					</div>
-				</div>
-			</div>
-		</div>
 
-		<!--查找图文对话框结束-->
-
-		<!--查找语音对话框开始-->
-		<div id="volume_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog" style="width: 750px;">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-						<h5>请选择语音文件</h5>
-					</div>
-					<div class="modal-body">
-						<div class="nano has-scrollbar">
-							<div class="content" tabindex="0" style="right: -17px;">
-								<form class="control-group row-fluid vedioForm">
-									<input type="text" placeholder="请输入要查找的文件名" class="input-medium span6 form-control">
-									<button class="btn btn-info yun_btn voice_btn" type="button">查找</button>
-								</form>
-								<table class="table table-bordered">
-									<thead>
-										<tr>
-											<th width="10%">选择</th>
-											<th width="90%">文件名</th>
-										</tr>
-									</thead>
-									<tbody id="voiceDiv">
-									</tbody>
-								</table>
-							</div>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button data-dismiss="modal" class="btn btn-white" type="button">取消</button>
-						<button class="btn btn-info" type="button" onClick="addImgTxt('film_modal')">确定</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!--查找语音对话框结束-->
-
-		<!--关注欢迎语-->
+		<!--素材选择-->
 		<div id="focus_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -704,7 +727,8 @@
 						</div>
 						<div class="modal-body">
 							<div class="form-group">
-								<label class="control-label">消息类型：</label> <select name="mediaType" class="form-control subscribeType">
+								<label class="control-label">消息类型：</label>
+								<select name="mediaType" class="form-control subscribeType">
 									<option value="text">文本消息</option>
 									<option value="news">图文消息</option>
 									<option value="voice">语音消息</option>

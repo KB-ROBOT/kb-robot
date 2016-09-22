@@ -18,6 +18,7 @@
 			done : function(e, data) {
 				$("#img_" + liSeq).attr("src", data.result.attributes.url);
 				$("#left_del_" + liSeq).data("delurl", data.result.attributes.delurl);
+				$("#imgFile_" + liSeq + " input[name=imagePath]").remove();
 				$("#imgFile_" + liSeq).append("<input type='hidden'  value='"+data.result.attributes.url+"' name='imagePath'/>");
 				//alert($(this).attr("id"));
 				//alert("上传成功!");
@@ -107,7 +108,7 @@
 			s += '</div>';
 			s += '</div>';
 			s += '<div class="yun_display_none">';
-			s += '<div class="yun_position_absolute_'+i+'">';
+			s += '<div class="yun_position_absolute_'+i+' yun_position_absolute_left">';
 			s += '<a onClick="Location(\'collapse_' + i + '\')"><i class="fa fa-pencil"></i></a>&nbsp;';
 			s += '<a id=\"left_del_' + i + '\" data-delurl="#" data-seq=\"' + i + '\" onClick=\"delpage(this)\" ><i class="fa fa-trash-o"></i></a>';
 			s += '</div>';
@@ -166,6 +167,8 @@
 			$("#accordionRight li").each(function(index, element) {
 
 				var currentUE = UE.getEditor('content_' + index);
+				
+				var newsItemId = $(element).find("input[name=id]").val();
 
 				var title = $(element).find("input[name=title]").val();
 				var author = $(element).find("input[name=author]").val();
@@ -198,7 +201,8 @@
 					$(element).find("input[name=description]").focus();
 					return isEachEnd = false;
 				}
-
+				
+				newsTemplate["newsItemList[" + index + "].id"] = newsItemId;
 				newsTemplate["newsItemList[" + index + "].title"] = title;
 				newsTemplate["newsItemList[" + index + "].author"] = author;
 				newsTemplate["newsItemList[" + index + "].imagePath"] = imagePath;
@@ -280,7 +284,7 @@
 																<img id="img_${status.index}" src="${newsItem.imagePath}">
 															</div>
 															<div class="yun_display_none">
-																<div class="yun_position_absolute_${status.index}">
+																<div class="yun_position_absolute_${status.index} yun_position_absolute_left">
 																	<a onclick="Location('collapse_${status.index}')">
 																		<i class="fa fa-pencil"></i>
 																	</a>
@@ -326,7 +330,7 @@
 															<img id="img_0" src="plug-in/kbrobot/images/thumb_index.png">
 														</div>
 														<div class="yun_display_none">
-															<div class="yun_position_absolute_0">
+															<div class="yun_position_absolute_0 yun_position_absolute_left">
 																<a onclick="Location('collapse_0')">
 																	<i class="fa fa-pencil"></i>
 																</a>
@@ -365,6 +369,7 @@
 													</div>
 													<div class="panel-collapse collapse in" id="collapse_${status.index}">
 														<div class="panel-body">
+															<input type="hidden" name="id" value="${newsItem.id}" />
 															<label>标题</label> <input type="text" name="title" id="title_${status.index}" class="form-control" maxlength="64" value="${newsItem.title}" onChange="testChange(this,'left_title_${status.index}','right_title_${status.index}')"> <label class="m10">作者</label> <input type="text" name="author" id="author_${status.index}" class="form-control" maxlength="8" value="${newsItem.author }"> <label class="m10">描述</label> <input type="text" name="description" id="description_${status.index}" class="form-control" maxlength="64" value="${newsItem.description}">
 															<div id="imgFile_${status.index}" style="margin-top: 10px; position: relative;">
 																<span class="btn btn-success fileinput-button">

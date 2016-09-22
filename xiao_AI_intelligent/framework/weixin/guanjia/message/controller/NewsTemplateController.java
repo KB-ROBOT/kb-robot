@@ -48,10 +48,7 @@ public class NewsTemplateController {
 	private NewsItemServiceI newsItemService;
 	@Autowired
 	private SystemService systemService;
-	@Autowired
-	private AutoResponseServiceI autoResponseService;
-	@Autowired
-	private WeixinAccountServiceI weixinAccountService;
+
 	private String message;
 
 
@@ -131,12 +128,13 @@ public class NewsTemplateController {
 			message = "信息有误";
 		}
 		else{
+			
+			newsTemplate = this.newsTemplateService.getEntity(NewsTemplate.class, newsTemplate.getId());
 			this.newsTemplateService.delete(newsTemplate);
-
 			message = "删除信息数据成功！";
 			systemService.addLog(message, Globals.Log_Type_DEL, Globals.Log_Leavel_INFO);
 		}
-		newsTemplate = this.newsTemplateService.getEntity(NewsTemplate.class, newsTemplate.getId());
+		
 		
 		j.setMsg(this.message);
 		return j;

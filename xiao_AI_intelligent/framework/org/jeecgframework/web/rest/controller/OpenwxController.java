@@ -43,6 +43,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.kbrobot.entity.RobotQuestionEntity;
 import com.kbrobot.entity.RobotSimilarQuestionEntity;
+import com.kbrobot.entity.WeixinSendGroupMsgEntity;
 import com.kbrobot.entity.WeixinUserLocationEntity;
 import com.kbrobot.entity.system.WeixinConversationClient;
 import com.kbrobot.entity.system.WeixinConversationContent;
@@ -448,8 +449,10 @@ public class OpenwxController {
 	 * @param fromUserName
 	 * @param authorizer_access_token
 	 * @throws AesException
+	 * @throws WexinReqException 
+	 * @throws JSONException 
 	 */
-	public void processEventMessage(HttpServletRequest request, HttpServletResponse response,Element rootElt,String toUserName, String fromUserName,String authorizer_access_token) throws AesException{
+	public void processEventMessage(HttpServletRequest request, HttpServletResponse response,Element rootElt,String toUserName, String fromUserName,String authorizer_access_token) throws AesException, JSONException, WexinReqException{
 		String eventType = rootElt.elementText("Event");
 
 		WeixinAccountEntity  currentWeixinAccount =  weixinAccountService.findByToUsername(toUserName);
@@ -480,7 +483,7 @@ public class OpenwxController {
 			//事件KEY值，与自定义菜单接口中KEY值对应 
 			MenuEntity clickMenu = this.systemService.findUniqueByProperty(MenuEntity.class, "menuKey", eventKey);
 			
-			if(clickMenu==null||clickMenu.getAccountId()==null){
+			if(clickMenu!=null&&StringUtil.isNotEmpty(clickMenu.getId())){
 				String templateId = clickMenu.getTemplateId();
 				String msgType = clickMenu.getMsgType();
 
@@ -538,6 +541,30 @@ public class OpenwxController {
 			
 			
 		}
+		/*
+		 *  群发结果 EVENT_TYPE_MASSSENDJOBFINISH
+		 */
+		else if(eventType.equals(MessageUtil.EVENT_TYPE_MASSSENDJOBFINISH)){
+			String msgId = rootElt.elementText("MsgID");
+			String status = rootElt.elementText("Status");
+			String totalCount = rootElt.elementText("TotalCount");
+			String filterCount = rootElt.elementText("FilterCount");
+			String sentCount = rootElt.elementText("SentCount");
+			String errorCount = rootElt.elementText("ErrorCount");
+			
+			WeixinSendGroupMsgEntity weixinSendGroupMsgEntity = systemService.findUniqueByProperty(WeixinSendGroupMsgEntity.class, "msgId", msgId);
+		
+			weixinSendGroupMsgEntity.setStatus(status);
+			weixinSendGroupMsgEntity.setTotalCount(Integer.valueOf(totalCount));
+			weixinSendGroupMsgEntity.setFilterCount(Integer.valueOf(filterCount));
+			weixinSendGroupMsgEntity.setSendCount(Integer.valueOf(sentCount));
+			weixinSendGroupMsgEntity.setErrorCount(Integer.valueOf(errorCount));
+			
+			systemService.saveOrUpdate(weixinSendGroupMsgEntity);
+			
+			LogUtil.info("群发结果返回  totalCount：" + totalCount);
+		
+		}
 	}
 
 	/**
@@ -593,7 +620,7 @@ public class OpenwxController {
 			weixinClientManager.addWeixinConversationClient(fromUserName+":"+toUserName, currentClient);
 		}
 		currentClient.setEndMessageId(receivedMsgId);
-		//currentClient.updateAddDate();
+		currentClient.updateAddTime();
 
 
 		if(msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)){
