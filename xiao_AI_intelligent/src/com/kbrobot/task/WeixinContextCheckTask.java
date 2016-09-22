@@ -33,7 +33,7 @@ public class WeixinContextCheckTask {
 		while(keyItreator.hasNext()){
 			String currentKey = keyItreator.next();
 			WeixinConversationClient checkClient = allWeixinConversationClient.get(currentKey);
-			Long addTime =  checkClient.getAddDate().getTime();
+			Long addTime =  checkClient.getUpdateTime().getTime();
 			Long nowTime = System.currentTimeMillis();
 			String fromUserName = checkClient.getOpenId();
 			if((nowTime - addTime)>= timeout*60*1000 ){

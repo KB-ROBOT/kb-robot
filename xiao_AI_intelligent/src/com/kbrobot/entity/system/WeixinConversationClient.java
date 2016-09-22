@@ -45,6 +45,10 @@ public class WeixinConversationClient implements java.io.Serializable {
 	/**endDate*/
 	private java.util.Date endDate;
 	
+	//加入会话时间
+	@Transient
+	private Date updateTime;
+	
 	/**
 	 * 最后的问题列表
 	 */
@@ -188,7 +192,16 @@ public class WeixinConversationClient implements java.io.Serializable {
 		this.lastQuestionList.clear();
 	}
 	
-	public void updateAddDate(){
-		this.addDate = new Date();
+	public void updateAddTime(){
+		this.updateTime = new Date();
 	}
+	@Transient
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+	
+	
 }
