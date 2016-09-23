@@ -558,7 +558,7 @@
 								<c:forEach items="${sendGroupMsgList}" var="sendGroupMsg" varStatus="status">
 									<tr>
 										<th>${sendGroupMsg.groupMsgName}</th>
-										<th>${sendGroupMsg.groupMsgDesc}</th>
+										<th><a href="#cont3" title="${sendGroupMsg.groupMsgDesc}">${fn:substring(sendGroupMsg.groupMsgDesc, 0, 10)}</a></th>
 										<th>${sendGroupMsg.msgType}</th>
 										<th>${sendGroupMsg.status}</th>
 										<th>${sendGroupMsg.totalCount}</th>
@@ -567,9 +567,11 @@
 										<th>${sendGroupMsg.errorCount}</th>
 										<th>${sendGroupMsg.createTime}</th>
 										<th>${sendGroupMsg.sendTime}</th>
-										<td>
+										<td width="10%">
 											<div class="choose-btn">
-												<a class="groupMsgSend" data-msgId="${sendGroupMsg.id}">确认发送</a>
+												<c:if test="${sendGroupMsg.sendCount==0||sendGroupMsg.sendCount==''}">
+													<a class="groupMsgSend" data-msgId="${sendGroupMsg.id}">确认发送</a>
+												</c:if>
 												<a class="delete-btn groupMsgDel">删除</a>
 											</div>
 										</td>
