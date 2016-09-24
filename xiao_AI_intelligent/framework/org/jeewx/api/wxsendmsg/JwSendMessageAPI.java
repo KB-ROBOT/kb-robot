@@ -43,6 +43,10 @@ public class JwSendMessageAPI {
 	private static String message_preview_url = "https://api.weixin.qq.com/cgi-bin/message/mass/preview?access_token=ACCESS_TOKEN";
 	// 上传媒体资源URL
 	private static String upload_media_url = "http://file.api.weixin.qq.com/cgi-bin/media/upload?access_token=ACCESS_TOKEN&type=TYPE";
+
+	// 新增其他类型永久素材
+	private static String upload_add_material_url = "https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=ACCESS_TOKEN";
+
 	// 上传图文素材资源URL
 	private static String upload_article_url = "https://api.weixin.qq.com/cgi-bin/media/uploadnews?access_token=ACCESS_TOKEN";
 	// 根据分组进行群发URL
@@ -53,7 +57,7 @@ public class JwSendMessageAPI {
 	private static String message_delete_url = "https://api.weixin.qq.com/cgi-bin/message/mass/delete?access_token=ACCESS_TOKEN";
 	// 查询群发消息发送状态URL
 	private static String message_get_url = "https://api.weixin.qq.com/cgi-bin/message/mass/get?access_token=ACCESS_TOKEN";
-			
+
 	/**
 	 * 图文消息预览
 	 * 
@@ -278,7 +282,7 @@ public class JwSendMessageAPI {
 					filter.put("group_id", group.getId());
 
 				}
-				 
+
 				obj.put("filter", filter);
 
 				media.put("media_id", mediaId);
@@ -572,10 +576,10 @@ public class JwSendMessageAPI {
 		return response.getMedia_id();
 
 	}
-	
-	
-	
-	
+
+
+
+
 
 	public static String getMediaId(String accesstoken, List<WxArticle> wxArticles) throws WexinReqException {
 
@@ -585,7 +589,7 @@ public class JwSendMessageAPI {
 		}
 		return response.getMedia_id();
 	}
-	
+
 	/**
 	 * 上传图文消息素材
 	 * 
@@ -637,8 +641,8 @@ public class JwSendMessageAPI {
 
 		return wxArticlesResponse;
 	}
-	
-	
+
+
 
 	/**
 	 * 获取文件上传文件的media_id
@@ -671,10 +675,12 @@ public class JwSendMessageAPI {
 	public static WxMediaResponse uploadMediaFile(String accesstoken, String filePath, String fileName, String type) throws WexinReqException {
 		WxMediaResponse mediaResource = null;
 		if (accesstoken != null) {
-			String requestUrl = upload_media_url.replace("ACCESS_TOKEN", accesstoken).replace("TYPE", type);
-
+			String requestUrl = upload_add_material_url.replace("ACCESS_TOKEN", accesstoken).replace("TYPE", type);
+			//String requestUrl = upload_media_url.replace("ACCESS_TOKEN", accesstoken).replace("TYPE", type);
+			
 			File file = new File(filePath + fileName);
 			String contentType = WeiXinReqUtil.getFileContentType(fileName.substring(fileName.lastIndexOf(".") + 1));
+			
 			JSONObject result = WxstoreUtils.uploadMediaFile(requestUrl, file, contentType);
 			//System.out.println("微信返回的结果：" + result.toString());
 			if (result.containsKey("errcode")) {
@@ -683,15 +689,15 @@ public class JwSendMessageAPI {
 				// {"type":"TYPE","media_id":"MEDIA_ID","created_at":123456789}
 				mediaResource = new WxMediaResponse();
 				mediaResource.setMedia_id(result.getString("media_id"));
-				mediaResource.setType(result.getString("type"));
-				mediaResource.setCreated_at(new Date(result.getLong("created_at") * 1000));
+				//mediaResource.setType(result.getString("type"));
+				//mediaResource.setCreated_at(new Date(result.getLong("created_at") * 1000));
 			}
 			// return mediaResource;
 		}
 		return mediaResource;
 	}
-	
-	
+
+
 
 	public static void main(String[] args) throws WexinReqException {
 		/*
@@ -710,7 +716,7 @@ public class JwSendMessageAPI {
 		/*String a = "" + "{" + "   \"errcode\":0," + "   \"errmsg\":\"send job submission success\"," + "   \"msg_id\":34182" + "}";
 		SendMessageResponse response = (SendMessageResponse) JSONObject.toBean(JSONObject.fromObject(a), SendMessageResponse.class);
 		System.out.println(response);*/
-		
+
 		/*List<String> a  = new ArrayList<String>();
 		a.add("111");
 		a.add("3");

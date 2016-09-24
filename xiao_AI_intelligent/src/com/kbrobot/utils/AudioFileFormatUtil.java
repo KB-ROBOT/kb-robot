@@ -44,6 +44,25 @@ public class AudioFileFormatUtil {
 		encoder.encode(souceFile, targetFile, attrs);
 	}
 	
+	public static void wav2amr(String src,String target) throws IllegalArgumentException, InputFormatException, EncoderException{
+		File souceFile = new File(src);
+		File targetFile = new File(target);
+		
+		AudioAttributes audio = new AudioAttributes();
+		audio.setCodec("libamr_nb");
+		audio.setBitRate(new Integer(12200));
+		audio.setChannels(new Integer(1));
+		audio.setSamplingRate(new Integer(8000));
+		
+		EncodingAttributes attrs = new EncodingAttributes();
+		attrs.setFormat("amr");
+		attrs.setAudioAttributes(audio);
+		Encoder encoder = new Encoder();
+		
+		encoder.encode(souceFile, targetFile, attrs);
+	}
+	
+	
 	/**
 	 * 讯飞录音文件格式转换
 	 * @param src

@@ -624,7 +624,7 @@ public class OpenwxController {
 
 
 		if(msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)){
-			CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizer_access_token, "听到你说：" + new String(content));
+			CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizer_access_token, "听到您说：" + new String(content));
 		}
 
 		WeixinConversationContent returnConversationContent = null;

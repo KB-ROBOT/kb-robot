@@ -246,28 +246,39 @@ public class WxstoreUtils {
 		BufferedInputStream bufin = null;
 		BufferedReader bufferedReader = null;
 		try {
+			TrustManager[] tm = { new MyX509TrustManager() };
+			SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
+			sslContext.init(null, tm, new SecureRandom());
+
+			SSLSocketFactory ssf = sslContext.getSocketFactory();
+			
 			submit = new URL(requestUrl);
-			HttpURLConnection conn = (HttpURLConnection) submit
+			HttpsURLConnection conn = (HttpsURLConnection) submit
 					.openConnection();
+			conn.setSSLSocketFactory(ssf);
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
 			conn.setUseCaches(false);
 
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Connection", "Keep-Alive");
-			conn.setRequestProperty("Content-Type",
-					"multipart/form-data;boundary=" + boundary);
+			conn.setRequestProperty("Content-Type","multipart/form-data;boundary=" + boundary);
 
 			// 获取输出流对象，准备上传文件
 			dos = new DataOutputStream(conn.getOutputStream());
-			dos.writeBytes(twoHyphens + boundary + end);
-			dos.writeBytes("Content-Disposition: form-data; name=\"" + file
-					+ "\";filename=\"" + file.getName() + ";Content-Type=\""
-					+ content_type + end);
-			dos.writeBytes(end);
+			//定义表头
+			StringBuilder outStr = new StringBuilder(); 
+			outStr.append(twoHyphens + boundary + end);
+			//dos.writeBytes("Content-Disposition: form-data; name=\"" + file + "\";filename=\"" + file.getName() + ";Content-Type=\"" + content_type + end);
+			outStr.append("Content-Disposition:form-data;name=\"media\";filelength=\""+file.length()+"\";filename=\"" + file.getName() + "\"" + end);
+			outStr.append("Content-Type:application/octet-stream" + end + end);
+			//输出表头
+			dos.write(outStr.toString().getBytes("UTF-8"));
+			
+			
 			// 对文件进行传输
 			bufin = new BufferedInputStream(new FileInputStream(file));
-			byte[] buffer = new byte[8192]; // 8k
+			byte[] buffer = new byte[1024]; // 1k
 			int count = 0;
 			while ((count = bufin.read(buffer)) != -1) {
 				dos.write(buffer, 0, count);
@@ -275,8 +286,7 @@ public class WxstoreUtils {
 
 			bufin.close(); // 关闭文件流
 
-			dos.writeBytes(end);
-			dos.writeBytes(twoHyphens + boundary + twoHyphens + end);
+			dos.write((end + twoHyphens + boundary + twoHyphens + end).getBytes("UTF-8"));
 			dos.flush();
 
 			// 读取URL链接返回字符串
