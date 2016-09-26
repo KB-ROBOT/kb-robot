@@ -442,9 +442,10 @@ public class WechatService {
 	 * @param toUserName
 	 * @param fromUserName
 	 * @throws JSONException 
+	 * @throws InterruptedException 
 	 */
 	String doDingYueEventResponse(Map<String, String> requestMap,TextMessageResp textMessage ,ResourceBundle bundler,String respMessage
-			,String toUserName,String fromUserName,String sys_accountId,String accessToken) throws JSONException{
+			,String toUserName,String fromUserName,String sys_accountId,String accessToken) throws JSONException, InterruptedException{
 		//respContent = "谢谢您的关注！回复\"?\"进入主菜单。";
 		//查找关注时回复语
 		List<Subscribe> lst = subscribeService.findByProperty(Subscribe.class, "accountid", sys_accountId);

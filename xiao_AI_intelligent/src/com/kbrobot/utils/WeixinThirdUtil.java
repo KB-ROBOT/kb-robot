@@ -352,8 +352,9 @@ public class WeixinThirdUtil {
 	 * @throws AesException
 	 * @throws WexinReqException 
 	 * @throws JSONException 
+	 * @throws InterruptedException 
 	 */
-	public void replyEventMessage(HttpServletRequest request, HttpServletResponse response,String toUserName, String fromUserName,String msgType,String templateId) throws AesException, JSONException, WexinReqException{
+	public void replyEventMessage(HttpServletRequest request, HttpServletResponse response,String toUserName, String fromUserName,String msgType,String templateId) throws AesException, JSONException, WexinReqException, InterruptedException{
 		
 		if (MessageUtil.REQ_MESSAGE_TYPE_TEXT.equals(msgType)) {//文本消息
 			TextTemplate textTemplate = this.systemService.getEntity(TextTemplate.class, templateId);

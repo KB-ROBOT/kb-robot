@@ -64,7 +64,7 @@ public class WeixinSendGroupMsgController extends BaseController {
 	//群发消息返回值
 	private SendMessageResponse sendMessageResponse = new SendMessageResponse();
 
-	private Object lock = new Object();
+	//private Object lock = new Object();
 
 	@RequestMapping(params = "addSendMsgAll")
 	@ResponseBody
@@ -145,7 +145,7 @@ public class WeixinSendGroupMsgController extends BaseController {
 				SynthesizeToUriListener synthesizeToUriListener = new SynthesizeToUriListener() {
 					@Override
 					public void onSynthesizeCompleted(final String uri, SpeechError error) {
-						synchronized (lock) {
+						synchronized (SpeechSynthesizerUtil.speechLock) {
 							if (error == null) {
 								LogUtil.info("*************合成成功*************");
 								LogUtil.info("合成音频生成路径：" + uri);
@@ -181,7 +181,7 @@ public class WeixinSendGroupMsgController extends BaseController {
 							else{
 								LogUtil.info("*************" + error.getErrorCode()+ "*************");
 							}
-							lock.notify();//释放线程锁
+							SpeechSynthesizerUtil.speechLock.notify();
 						}
 					}
 
@@ -195,9 +195,9 @@ public class WeixinSendGroupMsgController extends BaseController {
 				SpeechSynthesizerUtil.speechSynthesize(voiceTemplate.getVoiceText(),synthesizeToUriListener);
 			}
 
-			synchronized (lock) {
+			synchronized (SpeechSynthesizerUtil.speechLock) {
 				if("voice".equals(msgType)){
-					lock.wait();//线程锁
+					SpeechSynthesizerUtil.speechLock.wait();//线程锁
 				}
 				
 				String mediaId = sendMessageResponse.getMsg_id();

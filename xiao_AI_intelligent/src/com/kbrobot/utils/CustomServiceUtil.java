@@ -40,48 +40,55 @@ public class CustomServiceUtil {
 		LogUtil.info(resultJson);
 	}
 
-	public static void sendCustomServiceVoiceMessage(final String toUser,final String accessToken,String speakStr) throws JSONException{
+	public static void sendCustomServiceVoiceMessage(final String toUser,final String accessToken,String speakStr) throws JSONException, InterruptedException{
 		//微信请求url
 		//final String url = CUSTOM_SERVICE_API_URL.replaceAll("ACCESS_TOKEN", accessToken);
 		
 		SynthesizeToUriListener synthesizeToUriListener = new SynthesizeToUriListener() {
 			@Override
 			public void onSynthesizeCompleted(final String uri, SpeechError error) {
-				if (error == null) {
-					LogUtil.info("*************合成成功*************");
-					LogUtil.info("合成音频生成路径：" + uri);
-					//转换格式
-					try {
-						//wav音频路径
-						String wavFile = uri.substring(0, uri.lastIndexOf('.'));
-						//经过两次格式转换
-						String srcFile = wavFile + ".wav";
-						String targetFile = wavFile + ".mp3";
-						AudioFileFormatUtil.pcm2wav(uri ,srcFile );
-						AudioFileFormatUtil.wav2mp3(srcFile, targetFile);
-						
-						//上传到微信临时素材 mp3格式
-						File voiceFile = new File(targetFile);
-						LogUtil.info("文件绝对路径：" + voiceFile.getAbsolutePath());
-						//上传文件 使用jeewAPI
-						//WeixinMediaUtil.uploadMediaFiles(accessToken, mediaFile);
-						WxUpload uploadObj = JwMediaAPI.uploadMedia(accessToken, WeixinMediaType.VOICE.toString().toLowerCase(),voiceFile.getPath());
-								
-						//发送语音消息
-						Map<String,Object> obj = new HashMap<String,Object>();
-						obj.put("touser", toUser);
-						obj.put("msgtype", "voice");
-						Map<String,Object> contentObj = new HashMap<String,Object>();
-						contentObj.put("media_id", uploadObj.getMedia_id());//获取mediaId
-						obj.put("voice", contentObj);
-						String resultJson = JwThirdAPI.sendMessage(obj, accessToken); //WeixinUtil.httpsRequest(url, "POST", obj.toString()).toString();
-						LogUtil.info(resultJson);
-						
-					} catch (Exception e) {
-						e.printStackTrace();
+				
+				synchronized (SpeechSynthesizerUtil.speechLock) {
+					if (error == null) {
+						LogUtil.info("*************合成成功*************");
+						LogUtil.info("合成音频生成路径：" + uri);
+						//转换格式
+						try {
+							//wav音频路径
+							String wavFile = uri.substring(0, uri.lastIndexOf('.'));
+							//经过两次格式转换
+							String srcFile = wavFile + ".wav";
+							String targetFile = wavFile + ".mp3";
+							AudioFileFormatUtil.pcm2wav(uri ,srcFile );
+							AudioFileFormatUtil.wav2mp3(srcFile, targetFile);
+							
+							//上传到微信临时素材 mp3格式
+							File voiceFile = new File(targetFile);
+							LogUtil.info("文件绝对路径：" + voiceFile.getAbsolutePath());
+							//上传文件 使用jeewAPI
+							//WeixinMediaUtil.uploadMediaFiles(accessToken, mediaFile);
+							WxUpload uploadObj = JwMediaAPI.uploadMedia(accessToken, WeixinMediaType.VOICE.toString().toLowerCase(),voiceFile.getPath());
+									
+							//发送语音消息
+							Map<String,Object> obj = new HashMap<String,Object>();
+							obj.put("touser", toUser);
+							obj.put("msgtype", "voice");
+							Map<String,Object> contentObj = new HashMap<String,Object>();
+							contentObj.put("media_id", uploadObj.getMedia_id());//获取mediaId
+							obj.put("voice", contentObj);
+							String resultJson = JwThirdAPI.sendMessage(obj, accessToken); //WeixinUtil.httpsRequest(url, "POST", obj.toString()).toString();
+							LogUtil.info(resultJson);
+							
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
-				} else
-					LogUtil.info("*************" + error.getErrorCode()+ "*************");
+					else{
+						LogUtil.info("*************" + error.getErrorCode()+ "*************");
+					}
+					
+					SpeechSynthesizerUtil.speechLock.notify();
+				}
 			}
 			
 			@Override
@@ -91,5 +98,7 @@ public class CustomServiceUtil {
 		};
 		//语音合成
 		SpeechSynthesizerUtil.speechSynthesize(speakStr,synthesizeToUriListener);
+		
+		
 	}
 }

@@ -52,8 +52,8 @@ public class WeixinContextCheckTask {
 					//保存当前会话
 					systemService.save(checkClient);
 					//移除超时会话端
-					WeixinClientManager.instance.removeWeixinConversationClient(currentKey);
-					//keyItreator.remove();
+					//WeixinClientManager.instance.removeWeixinConversationClient(currentKey);
+					keyItreator.remove();
 				}
 			}
 		}

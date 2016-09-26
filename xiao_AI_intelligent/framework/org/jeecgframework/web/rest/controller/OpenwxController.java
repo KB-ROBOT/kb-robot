@@ -332,9 +332,11 @@ public class OpenwxController {
 
 	/**
 	 * 公众号消息与事件接收URL
+	 * @throws InterruptedException 
+	 * @throws NumberFormatException 
 	 */
 	@RequestMapping(value = "{appid}/callback")
-	public void acceptMessageAndEvent(HttpServletRequest request, HttpServletResponse response) throws IOException, AesException, DocumentException, WexinReqException, JSONException {
+	public void acceptMessageAndEvent(HttpServletRequest request, HttpServletResponse response) throws IOException, AesException, DocumentException, WexinReqException, JSONException, NumberFormatException, InterruptedException {
 		startTime = System.currentTimeMillis();
 
 		String msgSignature = request.getParameter("msg_signature");
@@ -394,7 +396,7 @@ public class OpenwxController {
 	}
 
 
-	public void checkWeixinAllNetworkCheck(HttpServletRequest request, HttpServletResponse response,String xml,String authorizer_access_token) throws DocumentException, IOException, AesException, JSONException, WexinReqException{
+	public void checkWeixinAllNetworkCheck(HttpServletRequest request, HttpServletResponse response,String xml,String authorizer_access_token) throws DocumentException, IOException, AesException, JSONException, WexinReqException, NumberFormatException, InterruptedException{
 		String nonce = request.getParameter("nonce");
 		String timestamp = request.getParameter("timestamp");
 		String msgSignature = request.getParameter("msg_signature");
@@ -451,8 +453,9 @@ public class OpenwxController {
 	 * @throws AesException
 	 * @throws WexinReqException 
 	 * @throws JSONException 
+	 * @throws InterruptedException 
 	 */
-	public void processEventMessage(HttpServletRequest request, HttpServletResponse response,Element rootElt,String toUserName, String fromUserName,String authorizer_access_token) throws AesException, JSONException, WexinReqException{
+	public void processEventMessage(HttpServletRequest request, HttpServletResponse response,Element rootElt,String toUserName, String fromUserName,String authorizer_access_token) throws AesException, JSONException, WexinReqException, InterruptedException{
 		String eventType = rootElt.elementText("Event");
 
 		WeixinAccountEntity  currentWeixinAccount =  weixinAccountService.findByToUsername(toUserName);
@@ -582,6 +585,7 @@ public class OpenwxController {
 	 * @throws JSONException
 	 * @throws WexinReqException
 	 * @throws AesException
+	 * @throws InterruptedException 
 	 */
 	public void processTextMessage(HttpServletRequest request, 
 			HttpServletResponse response,
@@ -591,7 +595,7 @@ public class OpenwxController {
 			String msgType,
 			String msgId,
 			Long timestamp,
-			String authorizer_access_token) throws IOException, DocumentException, JSONException, WexinReqException, AesException{
+			String authorizer_access_token) throws IOException, DocumentException, JSONException, WexinReqException, AesException, InterruptedException{
 
 
 		//保存接受到的信息，并保存会话实例（如果是新会话）
@@ -725,6 +729,10 @@ public class OpenwxController {
 				}
 
 				//图灵 如果是语音 则返回语音
+				/*CustomServiceUtil.sendCustomServiceVoiceMessage(fromUserName, authorizer_access_token, textMessageResp.getContent());
+				returnConversationContent = new WeixinConversationContent();
+				returnConversationContent.setResponseContent(textMessageResp.getContent());
+				returnConversationContent.setResponseType(MessageUtil.REQ_MESSAGE_TYPE_VOICE);*/
 				if(msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)){
 					CustomServiceUtil.sendCustomServiceVoiceMessage(fromUserName, authorizer_access_token, textMessageResp.getContent());
 
