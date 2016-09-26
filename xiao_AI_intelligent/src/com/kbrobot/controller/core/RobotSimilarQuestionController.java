@@ -71,6 +71,7 @@ public class RobotSimilarQuestionController  extends BaseController {
 			RobotSimilarQuestionEntity t = robotSimilarQuestionService.get(RobotSimilarQuestionEntity.class, robotSimilarQuestion.getId());
 			try {
 				MyBeanUtils.copyBeanNotNull2Bean(robotSimilarQuestion, t);
+				t.setWordSplit(null);//清空分词
 				robotSimilarQuestionService.saveOrUpdate(t);
 				systemService.addLog(message, Globals.Log_Type_UPDATE, Globals.Log_Leavel_INFO);
 			} catch (Exception e) {

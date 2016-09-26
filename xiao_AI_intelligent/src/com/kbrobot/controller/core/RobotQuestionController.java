@@ -210,6 +210,7 @@ public class RobotQuestionController extends BaseController {
 			t.setUpdateTime(new Date());//设置更新时间
 			try {
 				MyBeanUtils.copyBeanNotNull2Bean(robotQuestion, t);
+				t.setWordSplit(null);//更新后清空分词
 				robotQuestionService.saveOrUpdate(t);
 				systemService.addLog(message, Globals.Log_Type_UPDATE, Globals.Log_Leavel_INFO);
 			} catch (Exception e) {
@@ -227,13 +228,7 @@ public class RobotQuestionController extends BaseController {
 			systemService.addLog(message, Globals.Log_Type_INSERT, Globals.Log_Leavel_INFO);
 		}
 		//添加或更新完成之后立即执行分词定时任务
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				questionWordSplitTask.questionWordSplit();
-			}
-		}).start();
+		splitWord();
 
 		j.setMsg(message);
 		return j;
@@ -346,6 +341,12 @@ public class RobotQuestionController extends BaseController {
 		robotQuestionService.batchSave((List<RobotQuestionEntity>)importList);
 
 		//导入完成之后立即执行分词定时任务
+		splitWord();
+
+		return j;
+	}
+
+	public void splitWord(){
 		new Thread(new Runnable() {
 
 			@Override
@@ -353,8 +354,6 @@ public class RobotQuestionController extends BaseController {
 				questionWordSplitTask.questionWordSplit();
 			}
 		}).start();
-
-		return j;
 	}
 
 }
