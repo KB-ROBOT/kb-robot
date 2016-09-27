@@ -1,5 +1,6 @@
 package org.jeewx.api.wxuser.user.model;
 
+import java.util.List;
 
 /**   
  * @Title: Entity
@@ -33,6 +34,14 @@ public class Wxuser {
 	private java.lang.String subscribe_time;
 	/**公众号*/
 	private java.lang.String unionid;
+	/**
+	 * 用户所在的分组ID（兼容旧的用户分组接口）
+	 */
+	private String groupid;
+	/**
+	 * 用户被打上的标签ID列表
+	 */
+	private List<String> tagid_list;
 	
 	private String remark;
 	
@@ -108,6 +117,18 @@ public class Wxuser {
 	}
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+	public String getGroupid() {
+		return groupid;
+	}
+	public void setGroupid(String groupid) {
+		this.groupid = groupid;
+	}
+	public List<String> getTagid_list() {
+		return tagid_list;
+	}
+	public void setTagid_list(List<String> tagid_list) {
+		this.tagid_list = tagid_list;
 	}
 	
 }

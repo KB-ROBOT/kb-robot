@@ -42,6 +42,23 @@ public class JwUserAPI {
 		}
 		return null;
 	}
+	
+	/**
+	 * 获取用户总数量
+	 * @param accesstoken
+	 * @return
+	 * @throws WexinReqException
+	 */
+	public static int getWxuserTotal(String accesstoken) throws WexinReqException{
+		if (accesstoken != null) {
+			UserInfoListGet userInfoListGet = new UserInfoListGet();
+			userInfoListGet.setAccess_token(accesstoken);
+			JSONObject result = WeiXinReqService.getInstance().doWeinxinReqJson(userInfoListGet);
+			int total = result.getInt("total");
+			return total;
+		}
+		return 0;
+	}
 
 	/**
 	 * 获取所有关注用户信息信息

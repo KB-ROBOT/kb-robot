@@ -23,7 +23,23 @@
 			<div class="section">
 				<div class="row">
 					<div class="col-lg-12">
-						<div class="col-lg-3">
+						<div class="col-xs-1-5">
+							<div class="dashboard-stat2">
+								<div class="dashboard-cont">
+									<div class="fl">
+										<h3>${wxuserTotal }</h3>
+										<p>粉丝总数</p>
+									</div>
+									<span class="fr">
+										<i class="fa fa-star-o"></i>
+									</span>
+								</div>
+								<div class="dashboard-bar" style="background: #f3a15a;">
+									<span class="progress-bar"></span>
+								</div>
+							</div>
+						</div>
+						<div class="col-xs-1-5">
 							<div class="dashboard-stat2">
 								<div class="dashboard-cont">
 									<div class="fl">
@@ -39,7 +55,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-lg-3">
+						<div class="col-xs-1-5">
 							<div class="dashboard-stat2">
 								<div class="dashboard-cont">
 									<div class="fl">
@@ -55,7 +71,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-lg-3">
+						<div class="col-xs-1-5">
 							<div class="dashboard-stat2">
 								<div class="dashboard-cont">
 									<div class="fl">
@@ -71,7 +87,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-lg-3">
+						<div class="col-xs-1-5">
 							<div class="dashboard-stat2">
 								<div class="dashboard-cont">
 									<div class="fl">

@@ -37,6 +37,9 @@ import org.jeecgframework.web.system.pojo.base.TSRoleUser;
 import org.jeecgframework.web.system.pojo.base.TSUser;
 import org.jeecgframework.web.system.service.SystemService;
 import org.jeecgframework.web.system.service.UserService;
+import org.jeewx.api.core.exception.WexinReqException;
+import org.jeewx.api.wxuser.user.JwUserAPI;
+import org.jeewx.api.wxuser.user.model.Wxuser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -48,6 +51,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.geetest.sdk.GeetestConfig;
 import com.geetest.sdk.GeetestLib;
+import com.kbrobot.utils.WeixinThirdUtil;
 
 import weixin.guanjia.account.entity.WeixinAccountEntity;
 import weixin.guanjia.account.service.WeixinAccountServiceI;
@@ -191,10 +195,11 @@ public class LoginController extends BaseController{
 	 * 
 	 * @param request
 	 * @return
+	 * @throws WexinReqException 
 	 */
 	@SuppressWarnings("deprecation")
 	@RequestMapping(params = "login")
-	public String login(ModelMap modelMap,HttpServletRequest request) {
+	public String login(ModelMap modelMap,HttpServletRequest request) throws WexinReqException {
 		DataSourceContextHolder.setDataSourceType(DataSourceType.dataSource_jeecg);
 		TSUser user = ResourceUtil.getSessionUserName();
 		String roles = "";
@@ -279,11 +284,17 @@ public class LoginController extends BaseController{
 			
 			Long lastDayAddQuestionNum =  systemService.getCountForJdbcParam(sql, null);
 			
+			/**
+			 * 总粉丝数量
+			 */
+			int wxuserTotal = JwUserAPI.getWxuserTotal(WeixinThirdUtil.getInstance().getAuthorizerAccessToken(weixinAccountEntity.getWeixinAccountId()));
+			
 			
 			modelMap.put("lastDayVisitNum", lastDayVisitNum);
 			modelMap.put("lastDayRobotAskNum", lastDayRobotAskNum);
 			modelMap.put("lastDayArtificialVisitNum", lastDayArtificialVisitNum);
 			modelMap.put("lastDayAddQuestionNum", lastDayAddQuestionNum);
+			modelMap.put("wxuserTotal", wxuserTotal);
 			
 			
 			return "kbrobot/home";
