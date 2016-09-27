@@ -117,9 +117,8 @@ public class RobotQuestionController extends BaseController {
 			}
 		}
 
-
 		cq.eq("accountId", accountId);
-		cq.setPageSize(3);
+		cq.setPageSize(15);
 		cq.setMyAction("./robotQuestionController.do?questionList");
 		cq.addOrder("createTime", SortDirection.desc);//根据时间顺寻排序
 		cq.add();//加载条件
