@@ -3,6 +3,7 @@ package com.kbrobot.entity;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -81,7 +82,7 @@ public class RobotSimilarQuestionEntity implements java.io.Serializable {
 		this.similarQuestionTitle = similarQuestionTitle;
 	}
 	
-	@ManyToOne(cascade=CascadeType.REFRESH,optional=true)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="question_id")
 	@JsonBackReference
 	public RobotQuestionEntity getQuestion() {

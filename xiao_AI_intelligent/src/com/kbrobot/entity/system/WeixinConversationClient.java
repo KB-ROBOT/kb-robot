@@ -1,5 +1,6 @@
 package com.kbrobot.entity.system;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -48,6 +49,8 @@ public class WeixinConversationClient implements java.io.Serializable {
 	//加入会话时间
 	@Transient
 	private Date updateTime;
+	@Transient
+	private Integer chartTimes = 0;
 	
 	/**
 	 * 最后的问题列表
@@ -178,23 +181,6 @@ public class WeixinConversationClient implements java.io.Serializable {
 	public void setLastQuestionList(List<RobotQuestionEntity> lastQuestionList) {
 		this.lastQuestionList = lastQuestionList;
 	}
-	
-	//辅助方法
-	public boolean questionListIsEmpty(){
-		return lastQuestionList==null||lastQuestionList.isEmpty();
-	}
-	
-	public boolean questionListIsNotEmpty(){
-		return !questionListIsEmpty();
-	}
-	
-	public void clearAllQuestion(){
-		this.lastQuestionList.clear();
-	}
-	
-	public void updateAddTime(){
-		this.updateTime = new Date();
-	}
 	@Transient
 	public Date getUpdateTime() {
 		return updateTime;
@@ -202,6 +188,39 @@ public class WeixinConversationClient implements java.io.Serializable {
 	public void setUpdateTime(Date updateTime) {
 		this.updateTime = updateTime;
 	}
-	
-	
+	@Transient
+	public Integer getChartTimes() {
+		return chartTimes;
+	}
+	public void setChartTimes(Integer chartTimes) {
+		this.chartTimes = chartTimes;
+	}
+	//辅助方法
+	public boolean questionListIsEmpty(){
+		return lastQuestionList==null||lastQuestionList.isEmpty();
+	}
+	public boolean questionListIsNotEmpty(){
+		return !questionListIsEmpty();
+	}
+	public void clearAllQuestion(){
+		if(this.lastQuestionList!=null){
+			this.lastQuestionList.clear();
+		}
+	}
+	public void updateAddTime(){
+		this.updateTime = new Date();
+	}
+	public void addChartTimes(){
+		this.chartTimes++;
+	}
+	public void clearChartTimes(){
+		this.chartTimes=0;
+	}
+	public boolean isNeedRemind(Integer maxTimes){
+		if(this.chartTimes>=maxTimes){
+			this.clearChartTimes();
+			return true;
+		}
+		return false;
+	}
 }
