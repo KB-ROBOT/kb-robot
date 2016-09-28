@@ -8,8 +8,10 @@ import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jeecgframework.core.util.StringUtil;
 import org.json.JSONException;
 
+import com.kbrobot.entity.RobotInfoEntity;
 import com.kbrobot.entity.RobotQuestionEntity;
 import com.kbrobot.entity.RobotSimilarQuestionEntity;
 import com.kbrobot.entity.system.WeixinConversationClient;
@@ -118,10 +120,10 @@ public class QuestionMatchUtil {
 	 * @param fromUserName
 	 * @return
 	 */
-	public static BaseMessageResp matchResultConvert(RobotQuestionEntity selectQuestion,String toUserName,String fromUserName){
+	public static BaseMessageResp matchResultConvert(RobotQuestionEntity selectQuestion,String toUserName,String fromUserName, RobotInfoEntity robotInfo){
 		List<RobotQuestionEntity> matchResult = new ArrayList<RobotQuestionEntity>();
 		matchResult.add(selectQuestion);
-		return matchResultConvert(matchResult,toUserName,fromUserName);
+		return matchResultConvert(matchResult,toUserName,fromUserName,robotInfo);
 	}
 	/**
 	 * 匹配结果转换
@@ -130,7 +132,7 @@ public class QuestionMatchUtil {
 	 * @param fromUserName
 	 * @return
 	 */
-	public static BaseMessageResp matchResultConvert(List<RobotQuestionEntity> matchResult,String toUserName,String fromUserName){
+	public static BaseMessageResp matchResultConvert(List<RobotQuestionEntity> matchResult,String toUserName,String fromUserName, RobotInfoEntity robotInfo){
 		String answerContent = "";//答案内容
 		RobotQuestionEntity selectQueston = null;//选中的问题
 
@@ -153,7 +155,11 @@ public class QuestionMatchUtil {
 				}
 				
 			}
-			answerContent += "\n如果没有您想要的问题，请完善您的关键词。";
+			String artificialStr = "";
+			if(StringUtil.isNotEmpty(robotInfo.getPhoneNumber())){
+				artificialStr += "或拨打" + robotInfo.getPhoneNumber() + "咨询人工客服。";
+			}
+			answerContent += "\n如果没有您想要的问题，请完善您的关键词。" + artificialStr;
 
 		}
 		else{
@@ -198,6 +204,9 @@ public class QuestionMatchUtil {
 			return newsResp;
 		}
 		else{//文本形式
+			
+			answerContent = answerContent.replaceAll("&nbsp;", " ");
+			
 			TextMessageResp textMessageResp = new TextMessageResp();
 			textMessageResp.setCreateTime(new Date().getTime());
 			textMessageResp.setFromUserName(toUserName);
