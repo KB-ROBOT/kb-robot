@@ -632,6 +632,9 @@ public class OpenwxController {
 		}
 
 		WeixinConversationContent returnConversationContent = null;
+		
+		content = content.trim();
+		content = (content.contains("。")||content.contains("."))?content:content+"。";
 
 		//如果正在会话中（正在回答问题列表）
 		int questionIndex = -1;
@@ -653,6 +656,7 @@ public class OpenwxController {
 		}
 		//否则正常逻辑处理消息
 		else{
+			
 			WeixinAccountEntity  currentWeixinAccount =  weixinAccountService.findByToUsername(toUserName);
 			//关键词提取
 			String[] likeStringList =  LtpUtil.getKeyWordArray(content);
