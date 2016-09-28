@@ -49,7 +49,7 @@ public class JwUserAPI {
 	 * @return
 	 * @throws WexinReqException
 	 */
-	public static int getWxuserTotal(String accesstoken) throws WexinReqException{
+	public static Integer getWxuserTotal(String accesstoken) throws WexinReqException{
 		if (accesstoken != null) {
 			UserInfoListGet userInfoListGet = new UserInfoListGet();
 			userInfoListGet.setAccess_token(accesstoken);
