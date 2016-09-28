@@ -32,6 +32,8 @@ public class LtpUtil{
 	 * @throws JSONException
 	 */
 	public static JSONObject getLTPResultByStr(String str) throws IOException, JSONException{
+		str = str.replaceAll("。|？|、|！|“|”", "");
+		str = str.replaceAll("[.]|[?]", "");
 		return  new JSONObject(WeixinUtil.httpRequest(URL.replaceAll("INPUT_TEXT", URLEncoder.encode(str.replaceAll(" ", ""), "utf-8")), "GET", null).toString());
 	}
 	/**
@@ -115,10 +117,10 @@ public class LtpUtil{
 				String wordrelate =  sendArray.getJSONObject(j).optString("relate");
 				if("SBV".equals(wordrelate)){
 					String posStr = sendArray.getJSONObject(j).optString("pos");
-					if(posStr.equalsIgnoreCase("n")){//如果是名词则加入关键词中
+					//if(posStr.equalsIgnoreCase("n")){//如果是名词则加入关键词中
 						resultSet.add(sendArray.getJSONObject(j).optString("cont").trim());
 						System.out.println("SBV.n" + sendArray.getJSONObject(j).optString("cont"));
-					}
+					//}
 				}
 			}
 		}
