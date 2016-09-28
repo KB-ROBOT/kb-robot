@@ -199,7 +199,7 @@ public class LoginController extends BaseController{
 	 */
 	@SuppressWarnings("deprecation")
 	@RequestMapping(params = "login")
-	public String login(ModelMap modelMap,HttpServletRequest request) throws WexinReqException {
+	public String login(ModelMap modelMap,HttpServletRequest request) {
 		DataSourceContextHolder.setDataSourceType(DataSourceType.dataSource_jeecg);
 		TSUser user = ResourceUtil.getSessionUserName();
 		String roles = "";
@@ -287,7 +287,14 @@ public class LoginController extends BaseController{
 			/**
 			 * 总粉丝数量
 			 */
-			int wxuserTotal = JwUserAPI.getWxuserTotal(WeixinThirdUtil.getInstance().getAuthorizerAccessToken(weixinAccountEntity.getWeixinAccountId()));
+			String wxuserTotal;
+			try {
+				wxuserTotal = JwUserAPI.getWxuserTotal(WeixinThirdUtil.getInstance().getAuthorizerAccessToken(weixinAccountEntity.getWeixinAccountId())).toString();
+			}
+			catch (WexinReqException e) {
+				e.printStackTrace();
+				wxuserTotal = "获取失败(api权限不足)";
+			}
 			
 			
 			modelMap.put("lastDayVisitNum", lastDayVisitNum);
