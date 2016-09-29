@@ -3,11 +3,14 @@ package com.kbrobot.utils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jeecgframework.core.util.LogUtil;
 import org.jeecgframework.core.util.StringUtil;
 import org.json.JSONException;
 
@@ -28,7 +31,7 @@ public class QuestionMatchUtil {
 	/**
 	 * 相似度最小值
 	 */
-	public static double minScore = 0.75d;
+	public static double minScore = 0.60d;
 
 	public static double niceScore = 0.95d;
 	/**
@@ -44,7 +47,7 @@ public class QuestionMatchUtil {
 	 * 空答案
 	 */
 	private static String emptyAnswer = "此答案为空";
-	
+
 
 	/**
 	 * 
@@ -56,10 +59,10 @@ public class QuestionMatchUtil {
 	 * @throws JSONException
 	 * @throws IOException
 	 */
-	public static List<RobotQuestionEntity> matchQuestion(List<RobotQuestionEntity> questionList,String content) throws JSONException, IOException{
+	public static Set<RobotQuestionEntity> matchQuestion(List<RobotQuestionEntity> questionList,String content) throws JSONException, IOException{
 		double maxScore = 0;
 
-		List<RobotQuestionEntity> findResultQuestionList = new ArrayList<RobotQuestionEntity>();
+		Set<RobotQuestionEntity> findResultQuestionSet = new HashSet<RobotQuestionEntity>();
 
 		String[] contentWordSplit = LtpUtil.getWordList(content);
 
@@ -73,23 +76,12 @@ public class QuestionMatchUtil {
 				maxScore = currentScore;
 				niceMatchQuestion = que;
 				//如果相似度大于0.95 则判定为已经找到了答案
-				if(maxScore >= minScore){
-					findResultQuestionList.add(que);
-					continue;
+				if(maxScore >= niceScore){
+					break;
 				}
-			}
-			//遍历相似问题进行比较 getWordSplit是已经分好的词
-			List<RobotSimilarQuestionEntity> similarQueList = que.getSimilarQuestionList();
-			for(RobotSimilarQuestionEntity simliarQue : similarQueList){
-				currentScore = TextCompareUtil.getSimilarScore(simliarQue.getWordSplit().split(","), contentWordSplit);
-				//取得当前最大值
-				if(currentScore>maxScore){
-					maxScore = currentScore;
-					niceMatchQuestion = que;
-					//如果相似度大于minScore 则判定为很相似
-					if(maxScore >= minScore){
-						findResultQuestionList.add(que);
-					}
+				else if(maxScore >= minScore){
+					LogUtil.info("插入推荐问题，分数：" + currentScore +  "   set中：" + findResultQuestionSet.size() + "个");
+					findResultQuestionSet.add(que);
 				}
 			}
 		}
@@ -97,13 +89,17 @@ public class QuestionMatchUtil {
 
 		//如果最大分数大于niceScore，则判定为找到了答案
 		if(maxScore>=niceScore){
-			findResultQuestionList.clear();
-			findResultQuestionList.add(niceMatchQuestion);
-			return findResultQuestionList;
+			findResultQuestionSet.clear();
+			findResultQuestionSet.add(niceMatchQuestion);
+			return findResultQuestionSet;
 		}
 		//否则就返回一些相似答案
-		else if(!findResultQuestionList.isEmpty()){
-			return findResultQuestionList.subList(0, findResultQuestionList.size()>5?5:findResultQuestionList.size());
+		else if(!findResultQuestionSet.isEmpty()){
+
+			List<RobotQuestionEntity> findResultQuestionList = new ArrayList<RobotQuestionEntity>(findResultQuestionSet);
+			findResultQuestionList = findResultQuestionList.subList(0, findResultQuestionList.size()>5?5:findResultQuestionList.size());
+
+			return new HashSet<RobotQuestionEntity>(findResultQuestionList);
 		}
 
 		else{
@@ -143,7 +139,7 @@ public class QuestionMatchUtil {
 			WeixinConversationClient currentClient =  weixinClientManager.getWeixinConversationClient(fromUserName+":"+toUserName);
 			//设置问题列表
 			currentClient.setLastQuestionList(matchResult);
-			
+
 			answerContent += "您是否在关心下列问题:\n【请回复序号查看】\n";
 			for(int i=0;i<matchResult.size();i++){
 				String questionTitle = matchResult.get(i).getQuestionTitle();
@@ -153,7 +149,7 @@ public class QuestionMatchUtil {
 				else{
 					answerContent += ( (i+1) + "."+ questionTitle +"\n");
 				}
-				
+
 			}
 			String artificialStr = "";
 			if(StringUtil.isNotEmpty(robotInfo.getPhoneNumber())){
@@ -204,9 +200,9 @@ public class QuestionMatchUtil {
 			return newsResp;
 		}
 		else{//文本形式
-			
+
 			answerContent = answerContent.replaceAll("&nbsp;", " ");
-			
+
 			TextMessageResp textMessageResp = new TextMessageResp();
 			textMessageResp.setCreateTime(new Date().getTime());
 			textMessageResp.setFromUserName(toUserName);
