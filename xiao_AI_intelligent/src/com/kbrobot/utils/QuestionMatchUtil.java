@@ -2,6 +2,7 @@ package com.kbrobot.utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -98,14 +99,14 @@ public class QuestionMatchUtil {
 
 			List<RobotQuestionEntity> findResultQuestionList = new ArrayList<RobotQuestionEntity>(findResultQuestionSet);
 			findResultQuestionList = findResultQuestionList.subList(0, findResultQuestionList.size()>5?5:findResultQuestionList.size());
-
+			
+			Collections.reverse(findResultQuestionList);
 			return new HashSet<RobotQuestionEntity>(findResultQuestionList);
 		}
 
 		else{
 			return null;
 		}
-
 	}
 
 
