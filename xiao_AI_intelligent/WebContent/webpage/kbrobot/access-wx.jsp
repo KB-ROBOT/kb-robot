@@ -569,7 +569,7 @@
 										<th>${sendGroupMsg.sendTime}</th>
 										<td width="10%">
 											<div class="choose-btn">
-												<c:if test="${sendGroupMsg.sendCount==0||sendGroupMsg.sendCount==''}">
+												<c:if test="${sendGroupMsg.sendCount==0||sendGroupMsg.sendCount==''||sendGroupMsg.sendCount==null}">
 													<a class="groupMsgSend" data-msgId="${sendGroupMsg.id}">确认发送</a>
 												</c:if>
 												<a class="delete-btn groupMsgDel">删除</a>
