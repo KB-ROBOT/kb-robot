@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.SecureRandom;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -251,16 +252,30 @@ public class WxstoreUtils {
 			sslContext.init(null, tm, new SecureRandom());
 
 			SSLSocketFactory ssf = sslContext.getSocketFactory();
-			
+
 			submit = new URL(requestUrl);
-			HttpsURLConnection conn = (HttpsURLConnection) submit
-					.openConnection();
-			conn.setSSLSocketFactory(ssf);
+
+
+			URLConnection conn = submit.openConnection();
+			String protocol = submit.getProtocol();
+			if("https".equals(protocol)){
+				HttpsURLConnection httpsConn = (HttpsURLConnection)conn;
+				httpsConn.setSSLSocketFactory(ssf);
+				httpsConn.setRequestMethod("POST");
+				conn = httpsConn;
+			}
+			else{
+				HttpURLConnection httpConn = (HttpURLConnection)conn;
+				httpConn.setRequestMethod("POST");
+				conn = httpConn;
+			}
+
+
 			conn.setDoInput(true);
 			conn.setDoOutput(true);
 			conn.setUseCaches(false);
 
-			conn.setRequestMethod("POST");
+			
 			conn.setRequestProperty("Connection", "Keep-Alive");
 			conn.setRequestProperty("Content-Type","multipart/form-data;boundary=" + boundary);
 
@@ -274,8 +289,8 @@ public class WxstoreUtils {
 			outStr.append("Content-Type:application/octet-stream" + end + end);
 			//输出表头
 			dos.write(outStr.toString().getBytes("UTF-8"));
-			
-			
+
+
 			// 对文件进行传输
 			bufin = new BufferedInputStream(new FileInputStream(file));
 			byte[] buffer = new byte[1024]; // 1k

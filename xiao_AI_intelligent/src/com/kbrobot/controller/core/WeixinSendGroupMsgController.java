@@ -118,7 +118,7 @@ public class WeixinSendGroupMsgController extends BaseController {
 					wxArticle.setAuthor(news.getAuthor());
 
 					String filePath = bundler.getString("fileRootPath") + File.separatorChar + news.getImagePath();
-					wxArticle.setFilePath(filePath.substring(0, filePath.lastIndexOf("/")));
+					wxArticle.setFilePath(filePath.substring(0, filePath.lastIndexOf("/")+1));
 					wxArticle.setFileName(filePath.substring(filePath.lastIndexOf("/")+1));
 					String url = "";
 					if (oConvertUtils.isEmpty(news.getUrl())) {

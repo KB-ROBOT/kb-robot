@@ -675,8 +675,14 @@ public class JwSendMessageAPI {
 	public static WxMediaResponse uploadMediaFile(String accesstoken, String filePath, String fileName, String type) throws WexinReqException {
 		WxMediaResponse mediaResource = null;
 		if (accesstoken != null) {
-			String requestUrl = upload_add_material_url.replace("ACCESS_TOKEN", accesstoken).replace("TYPE", type);
-			//String requestUrl = upload_media_url.replace("ACCESS_TOKEN", accesstoken).replace("TYPE", type);
+			
+			String requestUrl = "";
+			if("image".equals(type)){
+				requestUrl = upload_media_url.replace("ACCESS_TOKEN", accesstoken).replace("TYPE", type);
+			}
+			else{
+				requestUrl = upload_add_material_url.replace("ACCESS_TOKEN", accesstoken).replace("TYPE", type);
+			}
 			
 			File file = new File(filePath + fileName);
 			String contentType = WeiXinReqUtil.getFileContentType(fileName.substring(fileName.lastIndexOf(".") + 1));
