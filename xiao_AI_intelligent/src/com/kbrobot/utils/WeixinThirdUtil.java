@@ -261,6 +261,7 @@ public class WeixinThirdUtil {
 		TextMessageResp textMessageResp = new TextMessageResp();
 		textMessageResp.setFromUserName(toUserName);
 		textMessageResp.setToUserName(fromUserName);
+		textMessageResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
 		textMessageResp.setContent(content);
 		
 		replyTextMessage(request,response,textMessageResp);
@@ -289,6 +290,7 @@ public class WeixinThirdUtil {
 		newsResp.setToUserName(fromUserName);
 		newsResp.setFromUserName(toUserName);
 		newsResp.setArticles(articleList);
+		newsResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_NEWS);
 		replyNewsMessage(request,response,newsResp);
 	}
 	public void replyNewsMessage(HttpServletRequest request, HttpServletResponse response,NewsMessageResp newsResp) throws AesException{

@@ -501,8 +501,6 @@ public class OpenwxController {
 			else{
 				weixinThirdUtilInstance.replyTextMessage(request, response, "很抱歉，菜单已更新。\n更新菜单24小时内生效或重新关注立即生效。", toUserName, fromUserName);
 			}
-
-
 		}
 		/*
 		 *  获取地理位置
