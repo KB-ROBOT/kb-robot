@@ -98,6 +98,12 @@
 				</ul>
 			</li>
 			<li>
+				<a href="customServiceController.do?sustomServiceList">
+					<i class="fa fa-group"></i>
+					<span>人工客服</span>
+				</a>
+			</li>
+			<li>
 				<a href="help.html">
 					<i class="fa fa-wrench"></i>
 					<span>帮助中心</span>

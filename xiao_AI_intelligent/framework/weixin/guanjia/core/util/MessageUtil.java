@@ -13,6 +13,7 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import weixin.guanjia.core.entity.message.resp.Article;
+import weixin.guanjia.core.entity.message.resp.BaseMessageResp;
 import weixin.guanjia.core.entity.message.resp.MusicMessageResp;
 import weixin.guanjia.core.entity.message.resp.NewsMessageResp;
 import weixin.guanjia.core.entity.message.resp.TextMessageResp;
@@ -38,6 +39,12 @@ public class MessageUtil {
      * 返回消息类型：图文
      */
     public static final String RESP_MESSAGE_TYPE_NEWS = "news";
+    
+    /**
+     * 返回消息类型：转接客服
+     */
+    public static final String REQ_MESSAGE_TYPE_TRANSFER_CUSTOMER_SERVICE = "transfer_customer_service";
+    
 
     /**
      * 请求消息类型：文本
@@ -68,7 +75,7 @@ public class MessageUtil {
      * 请求消息类型：推送
      */
     public static final String REQ_MESSAGE_TYPE_EVENT = "event";
-
+    
     /**
      * 事件类型：subscribe(订阅)
      */
@@ -128,6 +135,18 @@ public class MessageUtil {
 
         return map;
     }
+    
+    /**
+     * 文本消息对象转换成xml
+     * 
+     * @param textMessage 文本消息对象
+     * @return xml
+     */
+    public static String baseMessageToXml(BaseMessageResp baseMessageResp) {
+        xstream.alias("xml", baseMessageResp.getClass());
+        return xstream.toXML(baseMessageResp);
+    }
+    
 
     /**
      * 文本消息对象转换成xml

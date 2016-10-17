@@ -55,8 +55,35 @@ img{border: 0 none;height: auto;max-width: 100%;vertical-align: middle;}
 .dock-btn{display:inline-block;margin-left:20px;}
 .wx-list{width:100%;margin:10px 20px;}
 
-.addBtn{width:25%;font-size:12px;border-radius:5px;text-align:center;background:#35a2d8;color:#fff !important;padding:10px;margin-top: 10px;cursor:pointer;}
-.addBtn i.fa-plus-circle{margin-right:5px;}
+.addBtn {
+	width: 25%;
+	font-size: 12px;
+	border-radius: 5px;
+	text-align: center;
+	margin-left:20px;
+	background: #35a2d8;
+	color: #fff !important;
+	padding: 10px;
+	margin-top: 10px;
+	cursor: pointer;
+}
+.updateBtn {
+	width: 25%;
+	font-size: 12px;
+	border-radius: 5px;
+	text-align: center;
+	margin-left:20px;
+	background: #ff9e59;
+	color: #fff !important;
+	padding: 10px;
+	margin-top: 10px;
+	cursor: pointer;
+}
+
+.addBtn i,.updateBtn i {
+	margin-right: 5px;
+}
+
 .submit-btn{display:block;background:#35a2d8;color:#fff !important;width:10%;margin:20px auto;line-height:36px;border-radius:5px;text-align:center;}
 .choose-btn{float:none;margin:10px auto;text-align:center;}
 .choose-btn a{display:inline-block;width:25%;line-height:36px;border-radius:5px;text-align:center;background:#35a2d8;color:#fff;margin: 20px;cursor:pointer;}

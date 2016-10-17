@@ -3,23 +3,25 @@ package org.jeewx.api.wxsendmsg;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
+import org.jeecgframework.core.util.StringUtil;
 import org.jeewx.api.core.exception.WexinReqException;
 import org.jeewx.api.core.req.WeiXinReqService;
 import org.jeewx.api.core.req.model.kfaccount.KfOnlineAccountList;
 import org.jeewx.api.core.req.model.kfaccount.KfaccountAdd;
+import org.jeewx.api.core.req.model.kfaccount.KfaccountBindWeixin;
+import org.jeewx.api.core.req.model.kfaccount.KfaccountCreateSession;
 import org.jeewx.api.core.req.model.kfaccount.KfaccountDel;
 import org.jeewx.api.core.req.model.kfaccount.KfaccountList;
 import org.jeewx.api.core.req.model.kfaccount.KfaccountUpdate;
 import org.jeewx.api.core.req.model.kfaccount.KfaccountUploadheadimg;
 import org.jeewx.api.core.req.model.kfaccount.KfcustomSend;
 import org.jeewx.api.core.util.WeiXinConstant;
-import org.jeewx.api.wxbase.wxtoken.JwTokenAPI;
 import org.jeewx.api.wxsendmsg.model.WxKfaccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * 微信客服管理处理
@@ -45,12 +47,11 @@ public class JwKfaccountAPI {
 	 * @throws WexinReqException
 	 * 
 	 */
-	public static String addKfacount(String accessToken, String kf_account, String nickname, String password) throws WexinReqException {
+	public static String addKfacount(String accessToken, String kf_account, String nickname) throws WexinReqException {
 		KfaccountAdd kf = new KfaccountAdd();
 		kf.setAccess_token(accessToken);
 		kf.setKf_account(kf_account);
 		kf.setNickname(nickname);
-		kf.setPassword(password);
 		JSONObject result = WeiXinReqService.getInstance().doWeinxinReqJson(kf);
 		String msg = result.getString(WeiXinConstant.RETURN_ERROR_INFO_MSG);
 		return msg;
@@ -65,12 +66,11 @@ public class JwKfaccountAPI {
 	 * @return
 	 * @throws WexinReqException
 	 */
-	public static String modifyKfaccount(String accessToken, String kf_account, String nickname, String password) throws WexinReqException{
+	public static String modifyKfaccount(String accessToken, String kf_account, String nickname ) throws WexinReqException{
 		KfaccountUpdate kfUp = new KfaccountUpdate();
 		kfUp.setAccess_token(accessToken);
 		kfUp.setKf_account(kf_account);
 		kfUp.setNickname(nickname);
-		kfUp.setPassword(password);
 		JSONObject result = WeiXinReqService.getInstance().doWeinxinReqJson(kfUp);
 		String msg = result.getString(WeiXinConstant.RETURN_ERROR_INFO_MSG);
 		return msg;
@@ -85,8 +85,7 @@ public class JwKfaccountAPI {
 	 * @return
 	 * @throws WexinReqException
 	 */
-	public static String deleteKfaccount(String accessToken, String kf_account,
-			String nickname, String password) throws WexinReqException{
+	public static String deleteKfaccount(String accessToken, String kf_account) throws WexinReqException{
 		KfaccountDel kfdel = new KfaccountDel();
 		kfdel.setAccess_token(accessToken);
 		kfdel.setKf_account(kf_account);
@@ -185,7 +184,54 @@ public class JwKfaccountAPI {
 		}
 		return lstWxKfaccount;
 	}
-	public static void main(String[] args){
+	
+	/**
+	 * 客服账号绑定微信
+	 * @param accessToken 
+	 * @param kfAccount 要绑定的客服账户
+	 * @param inviteWx  要绑定的微信号
+	 * @return
+	 * @throws WexinReqException 
+	 */
+	public static String bindWeixinAccount(String accessToken,String kfAccount,String inviteWx) throws WexinReqException{
+		
+		KfaccountBindWeixin kfBind = new KfaccountBindWeixin();
+		kfBind.setAccess_token(accessToken);
+		kfBind.setKf_account(kfAccount);
+		kfBind.setInvite_wx(inviteWx);
+		
+		JSONObject result = WeiXinReqService.getInstance().doWeinxinReqJson(kfBind);
+		String msg = result.getString(WeiXinConstant.RETURN_ERROR_INFO_CODE);
+		
+		return msg;
+		
+	}
+	
+	/**
+	 * 新建会话
+	 * @param accessToken
+	 * @param kfAccount
+	 * @param openid
+	 * @param text 可为null
+	 * @return
+	 * @throws WexinReqException
+	 */
+	public static String createSession(String accessToken,String kfAccount,String openid,String text) throws WexinReqException{
+		KfaccountCreateSession createSession = new KfaccountCreateSession();
+		createSession.setAccess_token(accessToken);
+		createSession.setKf_account(kfAccount);
+		createSession.setOpenid(openid);
+		if(StringUtil.isNotEmpty(text)){
+			createSession.setText(text);
+		}
+		JSONObject result = WeiXinReqService.getInstance().doWeinxinReqJson(createSession);
+		String msg = result.getString(WeiXinConstant.RETURN_ERROR_INFO_CODE);
+		
+		return msg;
+	}
+	
+	
+	/*public static void main(String[] args){
 		try {
 			String s = "qQo8f2B0D0ZnlTP-8TKOMWoDcGiCoAhICn09S_QKxMgpSVp0VG8rgg_8PAJhy893z4lU-kY89DsZAsC3M54zxQBxuwTehg2nC_dO75VEGqw";
 			//JwTokenAPI.getAccessToken("wx00737224cb9dbc7d","b9479ebdb58d1c6b6efd4171ebe718b5");
@@ -199,5 +245,5 @@ public class JwKfaccountAPI {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+	}*/
 }

@@ -4,7 +4,7 @@ import org.jeewx.api.core.annotation.ReqType;
 import org.jeewx.api.core.req.model.WeixinReqParam;
 
 /**
- * 取多媒体文件
+ * 客服账号添加
  * 
  * @author sfli.sir
  * 
@@ -16,8 +16,6 @@ public class KfaccountAdd extends WeixinReqParam {
 	
 	private String nickname;
 	
-	private String password;
-
 	public String getKf_account() {
 		return kf_account;
 	}
@@ -32,15 +30,6 @@ public class KfaccountAdd extends WeixinReqParam {
 
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	
+	}	
 	
 }

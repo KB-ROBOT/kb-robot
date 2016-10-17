@@ -7,8 +7,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.RandomAccess;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -16,6 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.RandomUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -37,6 +41,8 @@ import org.jeewx.api.third.JwThirdAPI;
 import org.jeewx.api.third.model.ApiGetAuthorizer;
 import org.jeewx.api.third.model.ApiGetAuthorizerRet;
 import org.jeewx.api.third.model.ApiGetAuthorizerRetAuthortionFunc;
+import org.jeewx.api.wxsendmsg.JwKfaccountAPI;
+import org.jeewx.api.wxsendmsg.model.WxKfaccount;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -55,7 +61,6 @@ import com.kbrobot.manager.WeixinClientManager;
 import com.kbrobot.service.RobotQuestionServiceI;
 import com.kbrobot.utils.BaiduMapUtil;
 import com.kbrobot.utils.CustomServiceUtil;
-import com.kbrobot.utils.LtpUtil;
 import com.kbrobot.utils.QuestionMatchUtil;
 import com.kbrobot.utils.TuLingUtil;
 import com.kbrobot.utils.TuLingUtil.ResultKey;
@@ -630,18 +635,24 @@ public class OpenwxController {
 		currentClient.setEndMessageId(receivedMsgId);
 		currentClient.updateAddTime();
 
+		//新建响应(当前会话响应)
+		BaseMessageResp currentMessageResp = new BaseMessageResp();
+
 		//获取机器人基本设定
 		RobotInfoEntity robotInfo = this.systemService.findUniqueByProperty(RobotInfoEntity.class, "weixinAccountId", toUserName);
+		if(robotInfo==null){
+			robotInfo = new RobotInfoEntity();
+		}
 
 		if(msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)){
 			CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizer_access_token, "听到您说：" + new String(content));
 		}
 
-		WeixinConversationContent returnConversationContent = null;
+		WeixinConversationContent returnConversationContent =  new WeixinConversationContent();
 
 		//如果正在会话中（正在回答问题列表）
 		int questionIndex = -1;
-		if(currentClient.questionListIsNotEmpty()&&( questionIndex = weixinThirdUtilInstance.convertString2Number(content.trim() ))!=-1){
+		if(currentClient.questionListIsNotEmpty()&&(questionIndex = weixinThirdUtilInstance.convertString2Number(content.trim() ))!=-1){
 
 			//找出对应的问题
 			List<RobotQuestionEntity> lastQuestionList = currentClient.getLastQuestionList();
@@ -650,8 +661,8 @@ public class OpenwxController {
 			}
 			RobotQuestionEntity selectQuestion =  currentClient.getLastQuestionList().get(questionIndex - 1);
 			//根据找到的问题 转换成  MessageResp
-			BaseMessageResp baseMsgResp = QuestionMatchUtil.matchResultConvert(selectQuestion, toUserName,fromUserName,robotInfo);
-			returnConversationContent = weixinThirdUtilInstance.replyMatchResult(baseMsgResp, request, response);
+			currentMessageResp = QuestionMatchUtil.matchResultConvert(selectQuestion, toUserName,fromUserName,robotInfo);
+			returnConversationContent = weixinThirdUtilInstance.replyMatchResult(currentMessageResp, request, response);
 
 			/*
 			 * 设置匹配类型
@@ -666,43 +677,26 @@ public class OpenwxController {
 			currentClient.clearAllQuestion();
 
 			WeixinAccountEntity  currentWeixinAccount =  weixinAccountService.findByToUsername(toUserName);
-			/*//关键词提取
-			String[] likeStringList =  LtpUtil.getKeyWordArray(content);
-			if(likeStringList==null){
-				likeStringList = new String[]{};
-			}
 
-			if(likeStringList.length==1&&likeStringList[0].length() == 1){
-				likeStringList[0] = "abcdefghijklmn12345678";
-			}
-
-			System.out.println("关键词长度：" + likeStringList.length);*/
-
-			//问题过滤（太多会造成超时）
-			CriteriaQuery cqQuestion = new CriteriaQuery(RobotQuestionEntity.class);
+			//问题全量查找
+			CriteriaQuery cqAllQuestion = new CriteriaQuery(RobotQuestionEntity.class);
 			//相似问题查找
-			CriteriaQuery cqSimilarQuestion = new CriteriaQuery(RobotSimilarQuestionEntity.class);
-			cqQuestion.eq("accountId", currentWeixinAccount.getId());
-			cqSimilarQuestion.eq("accountId", currentWeixinAccount.getId());
-			/*//添加关键词like条件
-			for(String keyWord: likeStringList){
-				cqQuestion.like("questionTitle", keyWord);
-				cqSimilarQuestion.like("similarQuestionTitle", keyWord);
-				LogUtil.info("提取出来的keyWord:" + keyWord);
-			}*/
+			CriteriaQuery cqAllSimilarQuestion = new CriteriaQuery(RobotSimilarQuestionEntity.class);
+			cqAllQuestion.eq("accountId", currentWeixinAccount.getId());
+			cqAllSimilarQuestion.eq("accountId", currentWeixinAccount.getId());
 
-			cqQuestion.addOrder("matchTimes", SortDirection.desc);//根据问题热度倒叙排序
-			cqQuestion.add();
-			cqSimilarQuestion.add();
-			List<RobotQuestionEntity> filterQuestionList = robotQuestionService.getListByCriteriaQuery(cqQuestion, false);
-			LogUtil.info("查询到的条数:" + (filterQuestionList==null?0:filterQuestionList.size()));
+			cqAllQuestion.addOrder("matchTimes", SortDirection.desc);//根据问题热度倒叙排序
+			cqAllQuestion.add();
+			cqAllSimilarQuestion.add();
+			List<RobotQuestionEntity> filterQuestionList = robotQuestionService.getListByCriteriaQuery(cqAllQuestion, false);
+			//LogUtil.info("查询到的条数:" + (filterQuestionList==null?0:filterQuestionList.size()));
 
 			//相似问题查找填入到主问题中
-			List<RobotSimilarQuestionEntity> filterSimilarQuestionList = robotQuestionService.getListByCriteriaQuery(cqSimilarQuestion, false);
+			List<RobotSimilarQuestionEntity> filterSimilarQuestionList = robotQuestionService.getListByCriteriaQuery(cqAllSimilarQuestion, false);
 			for(RobotSimilarQuestionEntity similar:filterSimilarQuestionList){
 				RobotQuestionEntity tempQuestion = new RobotQuestionEntity();
 				RobotQuestionEntity similarQuestionParent = similar.getQuestion();
-				
+
 				MyBeanUtils.copyBeanNotNull2Bean(similarQuestionParent, tempQuestion);
 
 				tempQuestion.setQuestionTitle(similar.getSimilarQuestionTitle());
@@ -713,12 +707,33 @@ public class OpenwxController {
 			//匹配知识库
 			Set<RobotQuestionEntity> matchResult = QuestionMatchUtil.matchQuestion(filterQuestionList, content);
 
+			//匹配结果为空
+			if(matchResult==null||matchResult.isEmpty()){
+				CriteriaQuery cqKeyWordQuestion = new CriteriaQuery(RobotQuestionEntity.class);
+
+				content = content.replaceAll("，|。|？|、", "").replaceAll(",|[.]|[?]", "");
+				cqKeyWordQuestion.eq("accountId", currentWeixinAccount.getId());
+				for(int i=0;i<content.length();i++){
+					cqKeyWordQuestion.like("questionTitle", content.charAt(i));
+				}
+				cqKeyWordQuestion.addOrder("matchTimes", SortDirection.desc);//根据问题热度倒叙排序
+				cqKeyWordQuestion.add();
+
+				filterQuestionList = robotQuestionService.getListByCriteriaQuery(cqKeyWordQuestion, false);
+				LogUtil.info("keyWord查询到的条数:" + (filterQuestionList==null?0:filterQuestionList.size()));
+				if(!filterQuestionList.isEmpty()){
+					filterQuestionList = filterQuestionList.subList(0, filterQuestionList.size()>5?5:filterQuestionList.size());
+					//给匹配结果赋予keyWord搜索结果
+					matchResult = new HashSet<RobotQuestionEntity>(filterQuestionList);
+				}
+			}
+
 			//若匹配不为空
 			if(matchResult!=null&&!matchResult.isEmpty()){
 				//根据找到的问题 转换成  MessageResp
 
-				BaseMessageResp baseMsgResp = QuestionMatchUtil.matchResultConvert(new ArrayList<RobotQuestionEntity>(matchResult), toUserName,fromUserName,robotInfo);
-				returnConversationContent = weixinThirdUtilInstance.replyMatchResult(baseMsgResp, request, response);
+				currentMessageResp = QuestionMatchUtil.matchResultConvert(new ArrayList<RobotQuestionEntity>(matchResult), toUserName,fromUserName,robotInfo);
+				returnConversationContent = weixinThirdUtilInstance.replyMatchResult(currentMessageResp, request, response);
 
 				if(matchResult.size()>1){
 					/*
@@ -733,10 +748,47 @@ public class OpenwxController {
 					weixinConversationContent.setReplyMatchType("1");//直接匹配到问题
 				}
 			}
+			else if(content.contains("人工")){
+				weixinConversationContent.setReplyMatchType("4");//转人工
+				TextMessageResp textMessageResp = new TextMessageResp();//(TextMessageResp)currentMessageResp;
+				textMessageResp.setFromUserName(toUserName);
+				textMessageResp.setToUserName(fromUserName);
+				textMessageResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
+				try{
+					List<WxKfaccount> wxKfaccountList = JwKfaccountAPI.getAllOnlineKfaccount(authorizer_access_token);
+					if(wxKfaccountList.isEmpty()){
+						textMessageResp.setContent("对不起，目前暂时没有人工客服在线，请稍后再试。");
+					}
+					else{
+						/*currentMessageResp.setFromUserName(toUserName);
+						currentMessageResp.setToUserName(fromUserName);
+						currentMessageResp.setMsgType(MessageUtil.REQ_MESSAGE_TYPE_TRANSFER_CUSTOMER_SERVICE);*/
+
+						WxKfaccount wxKfaccount = wxKfaccountList.get(RandomUtils.nextInt(wxKfaccountList.size()));
+						JwKfaccountAPI.createSession(authorizer_access_token, wxKfaccount.getKf_account(), fromUserName,"有新的客户接入。");
+						textMessageResp.setContent("您好，已经成功转人工客服，可以开始对话了。");
+						/*CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizer_access_token, textMessageResp.getContent());
+						returnConversationContent.setResponseContent(textMessageResp.getContent());
+						returnConversationContent.setResponseType(MessageUtil.REQ_MESSAGE_TYPE_VOICE);*/
+					}
+				}
+				catch(Exception e){
+					e.printStackTrace();
+					String errorMsg = e.getMessage();
+					if(errorMsg.contains("65400")){
+						textMessageResp.setContent("不好意思，本公众号还未开通人工客服功能。");
+					}
+					else{
+						textMessageResp.setContent("接入失败，请稍后再试。");
+					}
+				}
+				currentMessageResp = textMessageResp;
+
+				returnConversationContent = weixinThirdUtilInstance.replyMatchResult(currentMessageResp, request, response);
+			}
 			//若为空则调用图灵api
 			else{
-				TextMessageResp textMessageResp = new TextMessageResp();
-				textMessageResp.setCreateTime(new Date().getTime());
+				TextMessageResp textMessageResp = new TextMessageResp();//(TextMessageResp)currentMessageResp;
 				textMessageResp.setFromUserName(toUserName);
 				textMessageResp.setToUserName(fromUserName);
 				textMessageResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
@@ -756,14 +808,14 @@ public class OpenwxController {
 				//图灵 如果是语音 则返回语音
 				if(msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)){
 					CustomServiceUtil.sendCustomServiceVoiceMessage(fromUserName, authorizer_access_token, textMessageResp.getContent());
-
-					returnConversationContent = new WeixinConversationContent();
 					returnConversationContent.setResponseContent(textMessageResp.getContent());
 					returnConversationContent.setResponseType(MessageUtil.REQ_MESSAGE_TYPE_VOICE);
 				}
 				else{
-					returnConversationContent = weixinThirdUtilInstance.replyMatchResult(textMessageResp, request, response);
+					currentMessageResp = textMessageResp;
+					returnConversationContent = weixinThirdUtilInstance.replyMatchResult(currentMessageResp, request, response);
 				}
+
 
 				//判断是否进行问答提醒
 				currentClient.addChartTimes();

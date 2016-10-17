@@ -257,16 +257,18 @@ public class WeixinThirdUtil {
 	 * @throws DocumentException
 	 * @throws IOException
 	 */
-	public void replyTextMessage(HttpServletRequest request, HttpServletResponse response, String content,String toUserName,String fromUserName) throws AesException{
+	public void replyTextMessage(HttpServletRequest request, HttpServletResponse response,String content,String toUserName,String fromUserName) throws AesException{
+		TextMessageResp textMessageResp = new TextMessageResp();
+		textMessageResp.setFromUserName(toUserName);
+		textMessageResp.setToUserName(fromUserName);
+		textMessageResp.setContent(content);
+		
+		replyTextMessage(request,response,textMessageResp);
+	}
+	public void replyTextMessage(HttpServletRequest request, HttpServletResponse response, TextMessageResp textMessageResp) throws AesException{
 		Long createTime = Calendar.getInstance().getTimeInMillis() / 1000;
-		TextMessageResp textMessage = new TextMessageResp();
-		textMessage.setToUserName(fromUserName);
-		textMessage.setFromUserName(toUserName);
-		textMessage.setCreateTime(createTime);
-		textMessage.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
-		textMessage.setContent(content);
-		String replyMessageStr =  MessageUtil.textMessageToXml(textMessage);
-
+		textMessageResp.setCreateTime(createTime);
+		String replyMessageStr =  MessageUtil.textMessageToXml(textMessageResp);
 		String returnvaleue = "";
 		returnvaleue = getWeixinMsgCrypt().encryptMsg(replyMessageStr,createTime.toString(), request.getParameter("nonce"));
 		output(response, returnvaleue);
@@ -283,18 +285,18 @@ public class WeixinThirdUtil {
 	 * @throws AesException 
 	 */
 	public void replyNewsMessage(HttpServletRequest request, HttpServletResponse response,List<Article> articleList,String toUserName,String fromUserName) throws AesException{
-		Long createTime = Calendar.getInstance().getTimeInMillis() / 1000;
-
-
 		NewsMessageResp newsResp = new NewsMessageResp();
-		newsResp.setCreateTime(createTime);
-		newsResp.setFromUserName(toUserName);
 		newsResp.setToUserName(fromUserName);
-		newsResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_NEWS);
-		newsResp.setArticleCount(articleList.size());
+		newsResp.setFromUserName(toUserName);
 		newsResp.setArticles(articleList);
+		replyNewsMessage(request,response,newsResp);
+	}
+	public void replyNewsMessage(HttpServletRequest request, HttpServletResponse response,NewsMessageResp newsResp) throws AesException{
+		Long createTime = Calendar.getInstance().getTimeInMillis() / 1000;
+		newsResp.setCreateTime(createTime);
+		newsResp.setArticleCount(newsResp.getArticles().size());
+		newsResp.setArticles(newsResp.getArticles());
 		String replyMessageStr = MessageUtil.newsMessageToXml(newsResp);
-
 		String returnvaleue = "";
 		returnvaleue = getWeixinMsgCrypt().encryptMsg(replyMessageStr,createTime.toString(),request.getParameter("nonce"));
 		output(response, returnvaleue);
@@ -316,7 +318,7 @@ public class WeixinThirdUtil {
 			/*
 			 * 回复文本消息
 			 */
-			replyTextMessage(request, response, textMessageResp.getContent(),textMessageResp.getFromUserName(),textMessageResp.getToUserName());
+			replyTextMessage(request, response, textMessageResp);
 		
 			resultConversation.setResponseContent(textMessageResp.getContent());
 		}
@@ -326,7 +328,7 @@ public class WeixinThirdUtil {
 			/*
 			 * 回复图文消息
 			 */
-			replyNewsMessage(request, response,articleList,newsMessageResp.getFromUserName(),newsMessageResp.getToUserName());
+			replyNewsMessage(request, response,newsMessageResp);
 			
 			if(!articleList.isEmpty()){
 				resultConversation.setResponseContent(articleList.get(0).getUrl());
@@ -334,7 +336,14 @@ public class WeixinThirdUtil {
 			else{
 				resultConversation.setResponseContent("图文消息为空。");
 			}
-			
+		}
+		else if(MessageUtil.REQ_MESSAGE_TYPE_TRANSFER_CUSTOMER_SERVICE.equals(matchMsgType)){
+			Long createTime = Calendar.getInstance().getTimeInMillis() / 1000;
+			baseMsgResp.setCreateTime(createTime);
+			String replyMessageStr = MessageUtil.baseMessageToXml(baseMsgResp);
+			String returnvaleue = "";
+			returnvaleue = getWeixinMsgCrypt().encryptMsg(replyMessageStr,createTime.toString(),request.getParameter("nonce"));
+			output(response, returnvaleue);
 		}
 		
 		
@@ -359,7 +368,7 @@ public class WeixinThirdUtil {
 		if (MessageUtil.REQ_MESSAGE_TYPE_TEXT.equals(msgType)) {//文本消息
 			TextTemplate textTemplate = this.systemService.getEntity(TextTemplate.class, templateId);
 			String content = textTemplate.getContent();
-
+			
 			replyTextMessage(request, response, content,toUserName,fromUserName);
 
 		}

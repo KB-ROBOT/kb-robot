@@ -10,12 +10,19 @@
     <!-- 客服接口 -->
     <req key="kfaccountAdd" method="post" datatype="json" url="https://api.weixin.qq.com/customservice/kfaccount/add?1=1"></req>
     <req key="kfaccountUpdate" method="post" datatype="json" url="https://api.weixin.qq.com/customservice/kfaccount/update?1=1"></req>
-    <req key="kfaccountDel" method="post" datatype="json" url="https://api.weixin.qq.com/customservice/kfacount/del?1=1"></req>
-    <req key="kfaccountUploadheadimg" method="post" mappingHandler="org.jeewx.api.core.handler.impl.WeixinReqMediaUploadHandler" 
-    	 url="http://api.weixin.qq.com/customservice/kfacount/uploadheadimg?1=1"></req>
+    <req key="kfaccountDel" method="get" url="https://api.weixin.qq.com/customservice/kfaccount/del?1=1"></req>
+    <req key="kfaccountUploadheadimg"
+    		method="post"
+    		mappingHandler="org.jeewx.api.core.handler.impl.WeixinReqMediaUploadHandler" 
+			url="https://api.weixin.qq.com/customservice/kfaccount/uploadheadimg?1=1"></req>
+				 
     <req key="getkflist" method="get" url="https://api.weixin.qq.com/cgi-bin/customservice/getkflist?1=1"></req>
     <req key="getonlinekflist" method="get" url="https://api.weixin.qq.com/cgi-bin/customservice/getonlinekflist?1=1"></req>
-    
+    <!-- 绑定微信号 -->
+    <req key="inviteworker" method="post" datatype="json" url="https://api.weixin.qq.com/customservice/kfaccount/inviteworker?1=1"></req>
+    <!-- 新建会话 -->
+    <req key="createSession" method="post" datatype="json" url="https://api.weixin.qq.com/customservice/kfsession/create?1=1"></req>
+    <!-- 发送客服消息 -->
     <req key="customsend" method="post" datatype="json" url="https://api.weixin.qq.com/cgi-bin/message/custom/send?1=1"></req>
     
     <req key="industryTemplateSet" method="post" datatype="json" url="https://api.weixin.qq.com/cgi-bin/template/api_set_industry?1=1"></req>
