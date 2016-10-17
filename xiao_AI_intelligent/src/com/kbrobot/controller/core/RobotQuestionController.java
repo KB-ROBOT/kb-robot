@@ -332,9 +332,13 @@ public class RobotQuestionController extends BaseController {
 		String accountId = ResourceUtil.getWeiXinAccountId();
 
 		for(Object question : importList){
-			((RobotQuestionEntity)question).setAccountId(accountId);
-			((RobotQuestionEntity)question).setCreateTime(new Date());
-			((RobotQuestionEntity)question).setUpdateTime(new Date());
+			RobotQuestionEntity que = (RobotQuestionEntity)question;
+			que.setAccountId(accountId);
+			que.setCreateTime(new Date());
+			que.setUpdateTime(new Date());
+			String questionAnswer = que.getQuestionAnswer();
+			questionAnswer = questionAnswer.replaceAll("\n", "<br/>").replaceAll(" ", "&nbsp;");
+			que.setQuestionAnswer(questionAnswer);
 		}
 
 		robotQuestionService.batchSave((List<RobotQuestionEntity>)importList);
