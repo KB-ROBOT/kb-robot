@@ -31,7 +31,21 @@
 					if (data.success) {
 
 						$("#editqueModal input[name=questionTitle]").val(data.obj.questionTitle);
-						globalEditor.setContent((data.obj.questionAnswer==null||data.obj.questionAnswer==undefined)?"":data.obj.questionAnswer);
+						var answerContent = data.obj.questionAnswer;
+						if(answerContent==null||answerContent==undefined){
+							answerContent = "";
+						}
+						//html格式转义
+						answerContent = answerContent.replace(/[<]br&nbsp;\/[>]/g,'');
+						answerContent = answerContent.replace(/&(ldquo|rdquo|hellip);/g, function (m) {
+				            return {
+				            	'&nbsp;':' ',
+				                '&ldquo;':'"',
+				                '&rdquo;':'"',
+				                '&hellip;':'...'
+				            }[m]
+				        }); 
+						globalEditor.setContent(answerContent);
 
 						//显示模态框
 						$("#editqueModal").modal("show");
