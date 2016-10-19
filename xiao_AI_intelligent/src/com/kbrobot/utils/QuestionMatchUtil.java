@@ -3,7 +3,6 @@ package com.kbrobot.utils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -17,7 +16,6 @@ import org.json.JSONException;
 
 import com.kbrobot.entity.RobotInfoEntity;
 import com.kbrobot.entity.RobotQuestionEntity;
-import com.kbrobot.entity.RobotSimilarQuestionEntity;
 import com.kbrobot.entity.system.WeixinConversationClient;
 import com.kbrobot.manager.WeixinClientManager;
 
@@ -191,7 +189,6 @@ public class QuestionMatchUtil {
 			articleList.add(article);
 
 			NewsMessageResp newsResp = new NewsMessageResp();
-			newsResp.setCreateTime(new Date().getTime());
 			newsResp.setFromUserName(toUserName);
 			newsResp.setToUserName(fromUserName);
 			newsResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_NEWS);
@@ -205,7 +202,6 @@ public class QuestionMatchUtil {
 			answerContent = answerContent.replaceAll("&nbsp;", " ");
 
 			TextMessageResp textMessageResp = new TextMessageResp();
-			textMessageResp.setCreateTime(new Date().getTime());
 			textMessageResp.setFromUserName(toUserName);
 			textMessageResp.setToUserName(fromUserName);
 			textMessageResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
