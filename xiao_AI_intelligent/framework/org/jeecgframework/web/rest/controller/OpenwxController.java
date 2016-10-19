@@ -62,6 +62,7 @@ import com.kbrobot.service.RobotQuestionServiceI;
 import com.kbrobot.utils.BaiduMapUtil;
 import com.kbrobot.utils.CustomServiceUtil;
 import com.kbrobot.utils.QuestionMatchUtil;
+import com.kbrobot.utils.RooboUtil;
 import com.kbrobot.utils.TuLingUtil;
 import com.kbrobot.utils.TuLingUtil.ResultKey;
 import com.kbrobot.utils.TuLingUtil.ReturnCode;
@@ -790,18 +791,24 @@ public class OpenwxController {
 				textMessageResp.setFromUserName(toUserName);
 				textMessageResp.setToUserName(fromUserName);
 				textMessageResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
-				Map<ResultKey,Object> tulingResult = TuLingUtil.getResultBySpeakStr(content,fromUserName);//把询问人的id作为会话ID
+				/*Map<ResultKey,Object> tulingResult = TuLingUtil.getResultBySpeakStr(content,fromUserName);//把询问人的id作为会话ID
 				if(tulingResult.get(ResultKey.resultType)==ReturnCode.TEXT){//文本
 					String resultText = tulingResult.get(ResultKey.text).toString();//文本回复
 					textMessageResp.setContent(resultText);
 				}
-				/*else if(tulingResult.get(ResultKey.resultType)==ReturnCode.LINK){//链接类型
+				else if(tulingResult.get(ResultKey.resultType)==ReturnCode.LINK){//链接类型
 					String link = "<a href='"+tulingResult.get(ResultKey.url).toString()+"'>"+tulingResult.get(ResultKey.text).toString()+"</a>";
 					textMessageResp.setContent(link);
-				}*/
+				}
 				else{
 					textMessageResp.setContent("别问我，我也不知道。");
-				}
+				}*/
+				
+				/*
+				 * 布丁的api
+				 */
+				String rooboResult = RooboUtil.getRooboResultBySpeakStr(content,fromUserName);
+				textMessageResp.setContent(rooboResult);
 
 				//图灵 如果是语音 则返回语音
 				if(msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)){
