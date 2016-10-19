@@ -29,8 +29,6 @@ public class SpeechSynthesizerUtil {
 		if(speechSynthesizer==null){
 			speechSynthesizer = SpeechSynthesizer.createSynthesizer();
 		}
-
-
 		synchronized (speechLock) {
 			if(speechSynthesizer.isSpeaking()){
 				LogUtil.info("语音正在合成，等待中...");
@@ -38,7 +36,7 @@ public class SpeechSynthesizerUtil {
 			}
 			LogUtil.info("====没有线程在合成，开始合成====");
 			// 设置发音人
-			speechSynthesizer.setParameter(SpeechConstant.VOICE_NAME, "xiaoyan");
+			speechSynthesizer.setParameter(SpeechConstant.VOICE_NAME, "xiaoqi");
 			// 设置语速，范围0~100
 			speechSynthesizer.setParameter(SpeechConstant.SPEED, "50");
 			// 设置语调，范围0~100
