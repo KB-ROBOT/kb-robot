@@ -41,7 +41,7 @@ public class RooboUtil {
 			String resultJson = WeixinUtil.httpRequest(ROOBO_URL, "POST", obj.toString()).toString();
 			System.out.println(resultJson);
 			JSONObject jsonResult = new JSONObject(resultJson);
-			resultStr = jsonResult.getJSONObject("text").optString("hint");
+			resultStr = jsonResult.getJSONObject("result").optString("hint");
 		} catch (JSONException e) {
 			e.printStackTrace();
 			resultStr = "别问我，我也不知道。";
