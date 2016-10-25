@@ -37,7 +37,7 @@
 						}
 						//html格式转义
 						answerContent = answerContent.replace(/[<]br&nbsp;\/[>]/g,'');
-						answerContent = answerContent.replace(/&(ldquo|rdquo|hellip);/g, function (m) {
+						answerContent = answerContent.replace(/&(ldquo|rdquo|hellip|nbsp);/g, function (m) {
 				            return {
 				            	'&nbsp;':' ',
 				                '&ldquo;':'"',
