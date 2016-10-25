@@ -46,6 +46,7 @@ public class RooboUtil {
 			e.printStackTrace();
 			resultStr = "别问我，我也不知道。";
 		}
+		resultStr = resultStr.replaceAll("布丁", "小AI");
 		return resultStr;
 	}
 }
