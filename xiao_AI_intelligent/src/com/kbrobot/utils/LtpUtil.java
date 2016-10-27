@@ -32,7 +32,7 @@ public class LtpUtil{
 	 * @throws JSONException
 	 */
 	public static JSONObject getLTPResultByStr(String str) throws IOException, JSONException{
-		str = str.replaceAll("。|？|、|！|“|”", "");
+		str = str.replaceAll("，|。|？|、|！|“|”", "");
 		str = str.replaceAll("[.]|[?]", "");
 		return  new JSONObject(WeixinUtil.httpRequest(URL.replaceAll("INPUT_TEXT", URLEncoder.encode(str.replaceAll(" ", ""), "utf-8")), "GET", null).toString());
 	}
