@@ -707,6 +707,7 @@ public class OpenwxController {
 			Set<RobotQuestionEntity> matchResult = QuestionMatchUtil.matchQuestion(filterQuestionList, content);
 
 			//匹配结果为空
+
 			if(matchResult==null||matchResult.isEmpty()){
 				CriteriaQuery cqKeyWordQuestion = new CriteriaQuery(RobotQuestionEntity.class);
 
@@ -756,7 +757,7 @@ public class OpenwxController {
 				try{
 					List<WxKfaccount> wxKfaccountList = JwKfaccountAPI.getAllOnlineKfaccount(authorizer_access_token);
 					if(wxKfaccountList.isEmpty()){
-						textMessageResp.setContent("对不起，目前暂时没有人工客服在线，请稍后再试。");
+						textMessageResp.setContent("抱歉！现在人工客服不在线。请您稍后再联系。");
 					}
 					else{
 						/*currentMessageResp.setFromUserName(toUserName);
@@ -765,7 +766,7 @@ public class OpenwxController {
 
 						WxKfaccount wxKfaccount = wxKfaccountList.get(RandomUtils.nextInt(wxKfaccountList.size()));
 						JwKfaccountAPI.createSession(authorizer_access_token, wxKfaccount.getKf_account(), fromUserName,"有新的客户接入。");
-						textMessageResp.setContent("您好，已经成功转人工客服，可以开始对话了。");
+						textMessageResp.setContent("您好！已经成功转接到人工客服。您可以通过语音、文字、图片或者短视频等方式向我们的人工客服反馈您的问题了。");
 						/*CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizer_access_token, textMessageResp.getContent());
 						returnConversationContent.setResponseContent(textMessageResp.getContent());
 						returnConversationContent.setResponseType(MessageUtil.REQ_MESSAGE_TYPE_VOICE);*/
@@ -791,7 +792,7 @@ public class OpenwxController {
 				textMessageResp.setFromUserName(toUserName);
 				textMessageResp.setToUserName(fromUserName);
 				textMessageResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
-				/*Map<ResultKey,Object> tulingResult = TuLingUtil.getResultBySpeakStr(content,fromUserName);//把询问人的id作为会话ID
+				Map<ResultKey,Object> tulingResult = TuLingUtil.getResultBySpeakStr(content,fromUserName);//把询问人的id作为会话ID
 				if(tulingResult.get(ResultKey.resultType)==ReturnCode.TEXT){//文本
 					String resultText = tulingResult.get(ResultKey.text).toString();//文本回复
 					textMessageResp.setContent(resultText);
@@ -802,13 +803,13 @@ public class OpenwxController {
 				}
 				else{
 					textMessageResp.setContent("别问我，我也不知道。");
-				}*/
+				}
 				
 				/*
 				 * 布丁的api
 				 */
-				String rooboResult = RooboUtil.getRooboResultBySpeakStr(content,fromUserName);
-				textMessageResp.setContent(rooboResult);
+				/*String rooboResult = RooboUtil.getRooboResultBySpeakStr(content,fromUserName);
+				textMessageResp.setContent(rooboResult);*/
 
 				//图灵 如果是语音 则返回语音
 				if(msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_VOICE)){
