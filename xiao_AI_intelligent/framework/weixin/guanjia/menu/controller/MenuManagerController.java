@@ -24,6 +24,9 @@ import org.jeecgframework.tag.vo.datatable.SortDirection;
 import org.jeecgframework.tag.vo.easyui.TreeGridModel;
 import org.jeecgframework.web.system.service.SystemService;
 import org.jeewx.api.core.exception.WexinReqException;
+import org.jeewx.api.core.req.model.menu.config.CustomWeixinButtonConfig;
+import org.jeewx.api.core.req.model.menu.config.WeixinButtonExtend;
+import org.jeewx.api.wxmenu.JwMenuAPI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
@@ -50,6 +53,7 @@ import weixin.guanjia.menu.entity.MenuEntity;
 import weixin.guanjia.menu.service.WeixinMenuServiceI;
 import weixin.guanjia.message.entity.NewsTemplate;
 import weixin.guanjia.message.entity.TextTemplate;
+import weixin.guanjia.message.service.TextTemplateServiceI;
 
 /**
  * 微信自定义菜单
@@ -65,9 +69,13 @@ public class MenuManagerController {
 	private WeixinAccountServiceI weixinAccountService;
 	@Autowired
 	private WeixinMenuServiceI weixinMenuService;
-/*	@Autowired
+	/*	@Autowired
 	private WeixinExpandconfigServiceI weixinExpandconfigService;*/
+	@Autowired
+	private TextTemplateServiceI textTemplateService;
 	private String message;
+
+	WeixinThirdUtil weixinThirdUtilInstance = WeixinThirdUtil.getInstance();
 
 	/**
 	 * 添加菜单
@@ -81,17 +89,17 @@ public class MenuManagerController {
 	public AjaxJson su(MenuEntity menuEntity, HttpServletRequest req,String fatherName) {
 		AjaxJson j = new AjaxJson();
 		//String id = oConvertUtils.getString(req.getParameter("id"));
-		
+
 		if (StringUtil.isNotEmpty(menuEntity.getId())) {
-			
+
 			MenuEntity tempMenu = this.systemService.getEntity(MenuEntity.class, menuEntity.getId());
-			
+
 			this.message = "更新" + tempMenu.getName() + "的菜单信息信息成功！";
 			try {
 				MyBeanUtils.copyBeanNotNull2Bean(menuEntity, tempMenu);
 				this.weixinMenuService.saveOrUpdate(tempMenu);
 				systemService.addLog(message, Globals.Log_Type_UPDATE,Globals.Log_Leavel_INFO);
-				
+
 			} catch (Exception e) {
 				this.message = "更新" + tempMenu.getName() + "的菜单信息信息成功！";
 				systemService.addLog(message, Globals.Log_Type_UPDATE,Globals.Log_Leavel_INFO);
@@ -110,36 +118,36 @@ public class MenuManagerController {
 				menuEntity.setId(menuId);
 				menuEntity.setMenuKey(menuId);
 				this.weixinMenuService.saveOrUpdate(menuEntity);
-				
+
 				this.message = "添加" + menuEntity.getName() + "的信息成功！";
-				
+
 				j.setSuccess(true);
 				j.setMsg(this.message);
 			} else {
 				j.setSuccess(false);
 				j.setMsg("请添加一个公众帐号。");
 			}
-			
+
 			systemService.addLog(message, Globals.Log_Type_INSERT, Globals.Log_Leavel_INFO);
 		}
 		return j;
 	}
-	
+
 	@RequestMapping(params = "menuEnetityDetail")
 	@ResponseBody
 	public AjaxJson getMenuEnetityDetail(MenuEntity menuEntity, HttpServletRequest req){
 		AjaxJson j = new AjaxJson();
 		Map<String,Object> menuMap = new HashMap<String,Object>();
-		
+
 		if(StringUtil.isNotEmpty(menuEntity.getId())){
 			menuEntity = this.systemService.getEntity(MenuEntity.class,menuEntity.getId());
 			if (menuEntity.getMenuEntity() != null&& menuEntity.getMenuEntity().getId() != null) {
 				menuMap.put("fatherId", menuEntity.getMenuEntity().getId());
 				menuMap.put("fatherName", menuEntity.getMenuEntity().getName());
 			}
-			
+
 			String type = menuEntity.getType();
-			
+
 			menuMap.put("name", menuEntity.getName());
 			menuMap.put("type", type);
 			menuMap.put("menuKey", menuEntity.getMenuKey());
@@ -147,7 +155,7 @@ public class MenuManagerController {
 			menuMap.put("orders", menuEntity.getOrders());
 			menuMap.put("templateId", menuEntity.getTemplateId());
 			menuMap.put("msgType", menuEntity.getMsgType());
-			
+
 			if("click".equals(type)){
 				if("text".equals(menuEntity.getMsgType())){
 					menuMap.put("templateObject", systemService.get(TextTemplate.class, menuEntity.getTemplateId()));
@@ -162,7 +170,7 @@ public class MenuManagerController {
 			else if("view".equals(type)){
 				//url
 			}
-			
+
 			j.setAttributes(menuMap);
 			j.setSuccess(true);
 		}
@@ -171,7 +179,7 @@ public class MenuManagerController {
 			j.setMsg(message);
 			j.setSuccess(false);
 		}
-		
+
 		return j;
 	}
 	/**
@@ -185,20 +193,131 @@ public class MenuManagerController {
 	public AjaxJson del(MenuEntity menuEntity, HttpServletRequest req) {
 		AjaxJson j = new AjaxJson();
 		menuEntity = this.systemService.getEntity(MenuEntity.class, menuEntity.getId());
-		
+
 		//找到所有子节点
 		List<MenuEntity> chileMenuList = this.systemService.findByProperty(MenuEntity.class, "menuEntity.id", menuEntity.getId());
 		chileMenuList.add(menuEntity);
 		//父节点、子节点删除
 		systemService.deleteAllEntitie(chileMenuList);
-		
+
 
 		message = "删除" + menuEntity.getName() + "菜单信息数据";
 		systemService.addLog(message, Globals.Log_Type_DEL, Globals.Log_Leavel_INFO);
 		j.setMsg(this.message);
 		return j;
 	}
-	
+
+	/**
+	 * 刷新已有菜单
+	 * @param request
+	 * @return
+	 * @throws WexinReqException 
+	 */
+	/*@RequestMapping(params = "refreshMenu")
+	@ResponseBody
+	public AjaxJson refreshMenu( HttpServletRequest request) throws WexinReqException{
+		AjaxJson j = new AjaxJson();
+
+		List<MenuEntity> menuList = new ArrayList<MenuEntity>();
+
+		WeixinAccountEntity weixinAccountEntity = ResourceUtil.getWeiXinAccount();
+		CustomWeixinButtonConfig customWeixinButtonConfig = JwMenuAPI.getAllMenuConfigure(weixinThirdUtilInstance.getAuthorizerAccessToken(weixinAccountEntity.getWeixinAccountId()));
+
+		if("1".equals(customWeixinButtonConfig.getIs_menu_open())){
+			List<WeixinButtonExtend> weixinButtonExtendList = customWeixinButtonConfig.getSelfmenu_info();
+
+			for(WeixinButtonExtend fatherButtonExtend : weixinButtonExtendList){//第一层button
+				MenuEntity fatherMenu = new MenuEntity();
+
+				List<WeixinButtonExtend> sub_button = fatherButtonExtend.getSub_button();
+				if(sub_button==null||sub_button.isEmpty()){//sub_button为空，没有子菜单
+					String type = fatherButtonExtend.getType();
+					fatherMenu.setType(type);
+					fatherMenu.setName(fatherButtonExtend.getName());
+
+					if("text".equalsIgnoreCase(type)){
+						//保存文字到value
+					}
+					else if("img".equalsIgnoreCase(type)||"voice".equalsIgnoreCase(type)){
+						//保存mediaID到value
+						fatherMenu.setType("media_id");
+					}
+					else if("video".equalsIgnoreCase(type)){
+						//保存视频下载链接到value
+					}
+					else if("news".equalsIgnoreCase(type)){
+						//保存图文消息到news_info，同时保存mediaID到value
+					}
+					else if("view".equalsIgnoreCase(type)){
+						//保存链接到url
+						
+					}
+					else {
+						//保存值到key
+						
+					}
+
+
+				}
+				else{//sub_button不为空，有子菜单
+					
+					List<MenuEntity> childMenuList = new ArrayList<MenuEntity>();
+					
+					for(WeixinButtonExtend childButonExtend : sub_button ){
+						MenuEntity childMenu = new MenuEntity();
+						
+						String type = childButonExtend.getType();
+						fatherMenu.setType(type);
+						fatherMenu.setName(childButonExtend.getName());
+
+						if("text".equalsIgnoreCase(type)){
+							//保存文字到value
+						}
+						else if("img".equalsIgnoreCase(type)||"voice".equalsIgnoreCase(type)){
+							//保存mediaID到value
+							
+						}
+						else if("video".equalsIgnoreCase(type)){
+							//保存视频下载链接到value
+						}
+						else if("news".equalsIgnoreCase(type)){
+							//保存图文消息到news_info，同时保存mediaID到value
+						}
+						else if("view".equalsIgnoreCase(type)){
+							//保存链接到url
+							
+						}
+						//使用API设置的自定义菜单 click等等
+						else {
+							//保存值到key
+							
+						}
+						
+						childMenuList.add(childMenu);
+					}
+					
+					//添加子菜单
+					fatherMenu.setMenuList(childMenuList);
+				}
+				
+				//添加父级菜单
+				menuList.add(fatherMenu);
+			}
+		}
+		else{
+			j.setSuccess(false);
+			j.setMsg("该公众号暂未开启菜单");
+		}
+
+
+		return j;
+	}*/
+
+
+
+
+
+
 	@RequestMapping(params = "list")
 	public ModelAndView list() {
 		return new ModelAndView("weixin/guanjia/menu/menulist");
@@ -210,22 +329,22 @@ public class MenuManagerController {
 		String accountid = ResourceUtil.getWeiXinAccountId();
 		//String msgType = request.getParameter("msgType");
 		String resMsg = "";
-		 JsonConfig config = new JsonConfig();
-		 config.setJsonPropertyFilter(new PropertyFilter(){  
-			    public boolean apply(Object source, String name, Object value) {  
-			        if(name.equals("menuList")) { //要过滤的areas ，Map对象中的  
-			            return true;  
-			        } else {  
-			            return false;  
-			        }  
-			    }
-			});
-			List<MenuEntity> textList = this.weixinMenuService
-					.findByQueryString("from MenuEntity t  where t.accountId = '"
-							+  accountid+ "'");
-			JSONArray json = JSONArray.fromObject(textList,config);
-			resMsg = json.toString();
-	
+		JsonConfig config = new JsonConfig();
+		config.setJsonPropertyFilter(new PropertyFilter(){  
+			public boolean apply(Object source, String name, Object value) {  
+				if(name.equals("menuList")) { //要过滤的areas ，Map对象中的  
+					return true;  
+				} else {  
+					return false;  
+				}  
+			}
+		});
+		List<MenuEntity> textList = this.weixinMenuService
+				.findByQueryString("from MenuEntity t  where t.accountId = '"
+						+  accountid+ "'");
+		JSONArray json = JSONArray.fromObject(textList,config);
+		resMsg = json.toString();
+
 		try {
 			response.setCharacterEncoding("utf-8");
 			PrintWriter writer = response.getWriter();
@@ -247,14 +366,14 @@ public class MenuManagerController {
 		String resMsg = "";
 		if ("text".equals(msgType)) {
 			List<TextTemplate> textList = this.weixinMenuService.findByQueryString("from TextTemplate t where t.accountId = '"
-							+  accountid+ "'");
+					+  accountid+ "'");
 			JSONArray json = JSONArray.fromObject(textList);
 			resMsg = json.toString();
 		} else if ("news".equals(msgType)) {
 			JsonConfig jsonConfig = new JsonConfig();
 			jsonConfig.setExcludes(new String[] { "newsItemList" });
 			List<NewsTemplate> newsList = this.weixinMenuService.findByQueryString("from NewsTemplate t where t.accountId = '"
-							+ accountid + "'");
+					+ accountid + "'");
 			JSONArray json = JSONArray.fromObject(newsList, jsonConfig);
 			resMsg = json.toString();
 		}else if("expand".equals(msgType)){
@@ -262,10 +381,10 @@ public class MenuManagerController {
 			JsonConfig jsonConfig = new JsonConfig();
 			jsonConfig.setExcludes(new String[] { "newsItemList" });
 			List<NewsTemplate> newsList = this.weixinMenuService.findByQueryString("from WeixinExpandconfigEntity t where t.accountid = '"
-							+ accountid + "'");
+					+ accountid + "'");
 			JSONArray json = JSONArray.fromObject(newsList, jsonConfig);
 			resMsg = json.toString();
-		
+
 		}
 		try {
 			response.setCharacterEncoding("utf-8");
@@ -340,19 +459,19 @@ public class MenuManagerController {
 		}
 		return new ModelAndView("weixin/guanjia/menu/menuinfo");
 	}
-	
+
 	@RequestMapping(params = "jumpselect")
 	public ModelAndView jumpselect() {
 		return new ModelAndView("");
 	}
-	
+
 
 	@RequestMapping(params = "sameMenu")
 	@ResponseBody
 	public AjaxJson sameMenu(MenuEntity menuEntity, HttpServletRequest req) throws WexinReqException {
 		AjaxJson j = new AjaxJson();
 		String hql = "from MenuEntity where fatherid is null and accountId = '" + ResourceUtil.getWeiXinAccountId() + "'  order by  orders asc";
-		
+
 		List<MenuEntity> menuList = this.systemService.findByQueryString(hql);
 		org.jeecgframework.core.util.LogUtil.info(".....一级菜单的个数是....." + menuList.size());
 		Menu menu = new Menu();
@@ -408,14 +527,14 @@ public class MenuManagerController {
 		menu.setButton(firstArr);
 		JSONObject jsonMenu = JSONObject.fromObject(menu);
 		String accessToken = weixinAccountService.getAccessToken();
-		
+
 		if(StringUtil.isEmpty(accessToken)){
 			//可能是第三方接入
 			WeixinAccountEntity weixinEntity = ResourceUtil.getWeiXinAccount();
 			accessToken = WeixinThirdUtil.getInstance().getAuthorizerAccessToken(weixinEntity.getWeixinAccountId());
 		}
-		
-		
+
+
 		String url = WeixinUtil.menu_create_url.replace("ACCESS_TOKEN", accessToken);
 		JSONObject jsonObject= new JSONObject();
 		try {
@@ -423,7 +542,7 @@ public class MenuManagerController {
 			LogUtil.info(jsonObject);
 			if(jsonObject!=null){
 				if (0 == jsonObject.getInt("errcode")) {
-						message = "同步菜单信息数据成功！";
+					message = "同步菜单信息数据成功！";
 				}
 				else {
 					message = "同步菜单信息数据失败！错误码为："+jsonObject.getInt("errcode")+"错误信息为："+jsonObject.getString("errmsg");
@@ -439,7 +558,7 @@ public class MenuManagerController {
 		}
 		return j;
 	}
-	
+
 	@RequestMapping(params = "treeMenu")
 	@ResponseBody
 	public List<TreeGrid> treeMenu(HttpServletRequest request, ComboTree comboTree) {
@@ -453,7 +572,7 @@ public class MenuManagerController {
 		cq.eq("accountId", ResourceUtil.getWeiXinAccountId());
 		cq.add();
 		List<MenuEntity> menuList = weixinMenuService.getListByCriteriaQuery(cq, false);
-		
+
 		List<TreeGrid> treeGrids = new ArrayList<TreeGrid>();
 		TreeGridModel treeGridModel = new TreeGridModel();
 		treeGridModel.setTextField("name");
@@ -465,8 +584,8 @@ public class MenuManagerController {
 		treeGrids = systemService.treegrid(menuList, treeGridModel);
 		return treeGrids;
 	}
-	
-	
+
+
 
 	public String getMessage() {
 		return message;
