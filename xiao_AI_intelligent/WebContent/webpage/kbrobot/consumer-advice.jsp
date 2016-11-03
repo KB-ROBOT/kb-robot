@@ -29,14 +29,26 @@
 							<div class="col-lg-12">
 								<table class="table table-model-2 table-hover">
                             	<tr>
-                                	<th>ID</th>
+                                	<th>序号</th>
                                     <th>姓名</th>
-                                    <th>手机号码</th>
-                                    <th>留言内容</th>
+                                    <th>联系方式</th>
                                     <th>操作</th>
                                 </tr>
+                               <!--<tr>
+                                	<td colspan="4" align="center">当前记录为空</td>
+                                </tr>-->
+
                                 <tr>
-                                	<td colspan="6" align="center">当前记录为空</td>
+                                	<td>1</td>
+                                    <td>李四</td>
+                                    <td>11111111111</td>
+                                    <td><button data-toggle="modal" data-target="#advice_modal">查看</button><a href="" class="select">回复</a></td>
+                                </tr>
+                                <tr>
+                                	<td>2</td>
+                                    <td>张三</td>
+                                    <td>11111111111</td>
+                                    <td><button data-toggle="modal" data-target="#advice_modal">查看</button><a href="" class="uncheck">回复</a></td>
                                 </tr>
                             </table>
 							</div>
@@ -51,6 +63,33 @@
 
 	</div>
 
-
+<!--留言内容-->
+<div id="advice_modal" class="modal fade">
+	<div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="myModalLabel">
+               留言内容
+            </h4>
+         </div>
+         <div class="modal-body">
+            <p>留言内容内容内容内容</p>
+         </div>
+         <div class="modal-footer">
+         	<button type="button" class="btn btn-primary">
+               确定
+            </button>
+            <button type="button" class="btn btn-default" 
+               data-dismiss="modal">取消
+            </button>
+            
+         </div>
+      </div></div>
+</div>
+<!--留言内容结束-->
 </body>
 </html>

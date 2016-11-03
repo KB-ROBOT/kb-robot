@@ -277,3 +277,9 @@ body.login{display:block;width: 100%;height: 100%;overflow: hidden;}
 
 /*五等分*/
 .col-xs-1-5{width:20%;float:left;padding:0 15px;}
+
+/*留言*/
+.adviceBox table tr td button{border:none;line-height:30px;padding:0 10px;border-radius:5px;margin-right:5px; outline:none;}
+.adviceBox table tr td a{display:inline-block;line-height:30px;padding:0 10px;border-radius:5px;color:#fff;}
+.adviceBox table tr td a.uncheck{background:#999;}
+.adviceBox table tr td a.select{background:#35a2d8;}
