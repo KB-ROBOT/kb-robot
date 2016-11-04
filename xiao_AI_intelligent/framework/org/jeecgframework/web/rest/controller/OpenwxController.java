@@ -273,7 +273,8 @@ public class OpenwxController {
 			/*
 			 * 查找当前接入微信是否已经存在
 			 */
-			WeixinAccountEntity exitWeixinAccount = weixinAccountService.findUniqueByProperty(WeixinAccountEntity.class, "weixinAccountId", authorizerInfo.getAuthorizer_info().getUser_name());
+			
+			WeixinAccountEntity exitWeixinAccount = weixinAccountService.findByToUsername(authorizerInfo.getAuthorizer_info().getUser_name());
 			if(exitWeixinAccount!=null){
 				weixinAccountEntity = exitWeixinAccount;
 			}
@@ -757,7 +758,9 @@ public class OpenwxController {
 				try{
 					List<WxKfaccount> wxKfaccountList = JwKfaccountAPI.getAllOnlineKfaccount(authorizer_access_token);
 					if(wxKfaccountList.isEmpty()){
-						textMessageResp.setContent("抱歉！现在人工客服不在线。请您稍后再联系。");
+						
+						String leaveMessageUrl = "<a href=\"" + bundler.getString("domain") + "/commonAdviceController.do?leaveMessagePage&accountId="+currentWeixinAccount.getId()+"\">点此链接</a>";
+						textMessageResp.setContent("抱歉！现在人工客服不在线。请您稍后再联系或"+leaveMessageUrl+"留言，我们客服人员会在第一时间联系你。");
 					}
 					else{
 						/*currentMessageResp.setFromUserName(toUserName);

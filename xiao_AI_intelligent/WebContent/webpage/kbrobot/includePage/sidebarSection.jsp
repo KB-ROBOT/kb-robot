@@ -111,11 +111,11 @@
 				</a>
 				<ul>
 					<li>
-						<a href="robotQuestionController.do?advice">问题建议</a>
+						<a href="commonAdviceController.do?leaveMessageList">问题建议</a>
 					</li>
-					<li>
-						<a href="robotQuestionController.do?report">投诉举报</a>
-					</li>
+					<!-- <li>
+						<a href="#">投诉举报</a>
+					</li> -->
 				</ul>
 			</Li>
 			<li>

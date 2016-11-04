@@ -18,42 +18,80 @@
 </head>
 
 <body>
-<div class="wrap">
-    <div class="content">
-    	<h5 class="title">留言</h5>
-    	<form class="comment">
-        	<div><label><font>*</font>姓名：</label><input name="name" type="text" maxlength="16"></div>
-            <div><label><font>*</font>手机号码：</label><input name="tel" type="text" maxlength="20"></div>
-            <div><label><font>*</font>留言：</label><textarea name="comm" maxlength="225"></textarea></div>
-            <a href="javascript:checkForm();" class="submit">提交</a>
-        </form>
-        
-    </div>
-</div>
-<script>
-	
-	function checkForm(){
-		var name = $('input[name=name]').val();
-		var tel = $('input[name=tel]').val();
-		var comm = $('textarea[name=comm]').val();
-		if(name === undefined || name == ''){
-			swal("提交失败", "请填写姓名！", "error");
-			return;
+	<div class="wrap">
+		<div class="content">
+			<h5 class="title">问题建议</h5>
+			<div class="comment">
+				<div>
+					<label><font>*</font>姓名：</label><input name="name" type="text" maxlength="16">
+				</div>
+				<div>
+					<label><font>*</font>手机号码：</label><input name="mobile" type="text" maxlength="20">
+				</div>
+				<div>
+					<label><font>*</font>留言：</label>
+					<textarea name="content" maxlength="225"></textarea>
+				</div>
+				<a href="javascript:checkForm();" class="submit">提交</a>
+			</div>
+		</div>
+	</div>
+	<script>
+		function GetQueryString(name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+			var r = window.location.search.substr(1).match(reg);
+			if (r != null)
+				return unescape(r[2]);
+			return null;
 		}
-		if(tel === undefined || tel == ''){
-			swal("提交失败", "请填写手机号码！", "error");
-			return;
-		}
-		if(comm === undefined || comm == ''){
-			swal("提交失败", "请填写留言内容！", "error");
-			return;
-		}
-		
-		swal("提交成功", "感谢您的留言，我们会及时和您联系并按规定处理！", "success");
-	}
 
+		function checkForm() {
+			var name = $('input[name=name]').val();
+			var mobile = $('input[name=mobile]').val();
+			var content = $('textarea[name=content]').val();
+			if (name === undefined || name == '') {
+				swal("提交失败", "请填写姓名！", "error");
+				return;
+			}
+			if (mobile === undefined || mobile == '') {
+				swal("提交失败", "请填写手机号码！", "error");
+				return;
+			}
+			if (content === undefined || content == '') {
+				swal("提交失败", "请填写留言内容！", "error");
+				return;
+			}
 
-</script>
+			var accountId = GetQueryString('accountId');
+
+			var url = "./commonAdviceController.do?addLeaveMessage&accountId=" + accountId;
+			$.ajax({
+				url : url,// 请求的action路径
+				type : 'post',
+				dataType : "json",
+				data : {
+					"name" : name,
+					"mobile" : mobile,
+					"content" : content
+				},
+				success : function(data) {
+					if (data.success) {
+						swal("提交成功", "感谢您的留言，我们会及时和您联系并按规定处理！", "success");
+						$('input[name=name]').val("");
+						$('input[name=mobile]').val("");
+						$('textarea[name=content]').val("");
+						setTimeout("location.reload()",500);
+					} else {
+						swal("提交失败", data.msg, "error");
+					}
+				},
+				error : function() {// 请求失败处理函数
+
+				},
+			});
+
+		}
+	</script>
 
 </body>
 </html>
