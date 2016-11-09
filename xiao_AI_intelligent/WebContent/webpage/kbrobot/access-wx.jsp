@@ -43,7 +43,6 @@
 
 			},
 		});
-		
 
 		//下拉列表框
 		$(".subscribeType").on("change", function() {
@@ -61,7 +60,7 @@
 				$('.subscribeList').append('<option value="'+eachList[i].id+'">' + eachList[i].templateName + '</option>');
 			}
 		});
-		
+
 		//关键字
 		$(".fa-plus").on("click", function() {
 			currHash = window.location.hash;
@@ -90,33 +89,32 @@
 			var data = {};
 			var msgType = $("select[name=mediaType]").val();
 			var templateId = $("select[name=mediaId]").val();
-			
+
 			//群发消息
 			var groupMsgName = $("#focus_modal input[name='groupMsgName']").val();
 			var groupMsgDesc = $("#focus_modal input[name='groupMsgDesc']").val();
-			
-			if(currHash == 'cont3'){
-				if(groupMsgName == undefined || groupMsgName == ''){
+
+			if (currHash == 'cont3') {
+				if (groupMsgName == undefined || groupMsgName == '') {
 					$("#focus_modal input[name='groupMsgName']").focus();
-					return ;
+					return;
 				}
-				if(groupMsgDesc == undefined || groupMsgDesc == ''){
+				if (groupMsgDesc == undefined || groupMsgDesc == '') {
 					$("#focus_modal input[name='groupMsgDesc']").focus();
-					return ;
+					return;
 				}
-				
+
 				data.groupMsgName = groupMsgName;
 				data.groupMsgDesc = groupMsgDesc;
 			}
-			
+
 			if (templateId == undefined || templateId == '') {
 				$("select[name=mediaId]").focus();
 				return;
 			}
 			data.templateId = templateId;
 			data.msgType = msgType;
-			
-			
+
 			//请求的url
 			var url = '';
 			switch (currHash) {
@@ -243,6 +241,9 @@
 					templateId = $("select[name=menuNews]").val();
 				} else if ("voice" == msgType) {
 					templateId = $("select[name=menuVoice]").val();
+				}
+				else{
+					msgType = $('select[name=menuOtherAction]').val();
 				}
 				menuObject.msgType = msgType;
 				menuObject.templateId = templateId;
@@ -373,11 +374,11 @@
 				},
 			});
 		});
-		
+
 		//群发消息
-		$(".groupMsgSend").click(function(){
+		$(".groupMsgSend").click(function() {
 			var id = $(this).data("msgid");
-			
+
 			dialog({
 				title : "发送群发",
 				content : "确认发送群发消息吗？",
@@ -402,6 +403,22 @@
 				}
 			}).width(320).showModal();
 		});
+
+		//刷新当前菜单配置
+		/* $(".refreshMenu").on("click",function(){
+			
+			var url = './menuManagerController.do?refreshMenu';
+			$.ajax({
+				url : url,// 请求的action路径
+				type : 'post',
+				dataType : "json",
+				success : function(data) {
+					setTimeout("location.reload()", 100);
+				},
+				error : function() {// 请求失败处理函数
+				},
+			});
+		}); */
 
 	});
 </script>
@@ -431,6 +448,9 @@
 							<a href="#cont3">
 								<li data="cont3">群发消息</li>
 							</a>
+							<!-- <a href="#cont5">
+								<li data="cont5">关键字管理</li>
+							</a> -->
 							<a href="#cont4">
 								<li data="cont4">菜单管理</li>
 							</a>
@@ -558,7 +578,9 @@
 								<c:forEach items="${sendGroupMsgList}" var="sendGroupMsg" varStatus="status">
 									<tr>
 										<th>${sendGroupMsg.groupMsgName}</th>
-										<th><a href="#cont3" title="${sendGroupMsg.groupMsgDesc}">${fn:substring(sendGroupMsg.groupMsgDesc, 0, 10)}</a></th>
+										<th>
+											<a href="#cont3" title="${sendGroupMsg.groupMsgDesc}">${fn:substring(sendGroupMsg.groupMsgDesc, 0, 10)}</a>
+										</th>
 										<th>${sendGroupMsg.msgType}</th>
 										<th>${sendGroupMsg.status}</th>
 										<th>${sendGroupMsg.totalCount}</th>
@@ -584,11 +606,38 @@
 								</c:if>
 							</table>
 						</div>
+						<%-- <div class="cont" id="cont5" style="display: none;">
+							<h4 class="title">
+								关键字管理
+								<a data-toggle="modal" data-target="#focus_modal" href="javascript:void(0);" class="fa fa-plus fr" style="margin-top: 20px;" title="添加"></a>
+							</h4>
+							<h5>当前公众号[${sessionScope.WEIXIN_ACCOUNT.accountName}]</h5>
+							<table>
+								<tr>
+									<th>关键字</th>
+									<th>素材</th>
+									<th>操作</th>
+								</tr>
+								<c:forEach items="${autoResponseList}" var="autoResponse" varStatus="status">
+									<tr>
+										<td>${autoResponse.keyWord }</td>
+										<td>${autoResponse.templateName }</td>
+										<td>
+											<div class="choose-btn">
+												<a>编辑</a>
+												<a class="delete-btn">删除</a>
+											</div>
+										</td>
+									</tr>
+								</c:forEach>
+							</table>
+						</div> --%>
 						<div class="cont" id="cont4" style="display: none;">
 							<div class="col-lg-12" style="float: none;">
 								<h4 class="title">
 									自定义菜单
 									<a data-toggle="modal" data-target="#myModal" href="javascript:;" class="fa fa-plus fr" style="margin-top: 20px;" title="添加主菜单"></a>
+									<!-- <a href="javascript:;" class="fa fa-refresh fr refreshMenu" style="margin-top: 20px;" title="刷新当前菜单配置"></a> -->
 								</h4>
 								<h5>当前公众号[${sessionScope.WEIXIN_ACCOUNT.accountName}]</h5>
 								<div class="fans-content">
@@ -645,11 +694,14 @@
 															<div class="define" id="define_set_action">
 																<div class="col-lg-12 choose-btn">
 																	<p>请选择订阅者点击菜单后，公众号做出的相应动作</p>
-																	<a class="tab-pane">
+																	<a class="cancel-btn tab-msg">
 																		<i class="fa fa-envelope-o"></i>发送消息
 																	</a>
 																	<a class="cancel-btn tab-url">
 																		<i class="fa fa-link"></i>跳转链接
+																	</a>
+																	<a class="cancel-btn tab-other">
+																		<i class="fa fa-th"></i>其他功能
 																	</a>
 																</div>
 																<div class="col-lg-12 news" style="display: none;">
@@ -666,7 +718,7 @@
 																			</select>
 																			<div class="col-lg-5 choose-btn">
 																				<a data-type="click" data-msgType="text" class="menu_action_save">保存</a>
-																				<a class="cancel-btn tab-return">返回</a>
+																				<a class="cancel-btn menu-return">返回</a>
 																			</div>
 																		</div>
 																		<div class="new lookup" id="news" style="display: none;">
@@ -675,7 +727,7 @@
 																			</select>
 																			<div class="col-lg-5 choose-btn">
 																				<a data-type="click" data-msgType="news" class="menu_action_save">保存</a>
-																				<a class="cancel-btn tab-return">返回</a>
+																				<a class="cancel-btn menu-return">返回</a>
 																			</div>
 																		</div>
 																		<div class="new lookup" id="voice" style="display: none;">
@@ -684,7 +736,7 @@
 																			</select>
 																			<div class="col-lg-5 choose-btn">
 																				<a data-type="click" data-msgType="voice" class="menu_action_save">保存</a>
-																				<a class="cancel-btn tab-return">返回</a>
+																				<a class="cancel-btn menu-return">返回</a>
 																			</div>
 																		</div>
 																	</div>
@@ -694,7 +746,17 @@
 																	<input type="text" name="menuUrl" class="form-control" placeholder="请输入URL">
 																	<div class="col-lg-5 choose-btn">
 																		<a data-type="view" class="menu_action_save">保存</a>
-																		<a class="cancel-btn url-return">返回</a>
+																		<a class="cancel-btn menu-return">返回</a>
+																	</div>
+																</div>
+																<div class="col-lg-12 others" style="display: none;">
+																	<p>订阅者点击该子菜单会有响应的动作</p>
+																	<select name="menuOtherAction" class="form-control subscribeType">
+																		<option value="customerservice">转接人工</option>
+																	</select>
+																	<div class="col-lg-5 choose-btn">
+																		<a data-type="click"  class="menu_action_save">保存</a>
+																		<a class="cancel-btn menu-return">返回</a>
 																	</div>
 																</div>
 															</div>
@@ -729,8 +791,7 @@
 						</div>
 						<div class="modal-body">
 							<div class="form-group">
-								<label class="control-label">消息类型：</label>
-								<select name="mediaType" class="form-control subscribeType">
+								<label class="control-label">消息类型：</label> <select name="mediaType" class="form-control subscribeType">
 									<option value="text">文本消息</option>
 									<option value="news">图文消息</option>
 									<option value="voice">语音消息</option>
