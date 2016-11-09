@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.RandomUtils;
 import org.dom4j.DocumentException;
 import org.jeecgframework.core.util.LogUtil;
 import org.jeecgframework.core.util.StringUtil;
@@ -26,6 +27,8 @@ import org.jeewx.api.third.JwThirdAPI;
 import org.jeewx.api.third.model.ApiAuthorizerToken;
 import org.jeewx.api.third.model.ApiAuthorizerTokenRet;
 import org.jeewx.api.third.model.ApiComponentToken;
+import org.jeewx.api.wxsendmsg.JwKfaccountAPI;
+import org.jeewx.api.wxsendmsg.model.WxKfaccount;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -364,8 +367,9 @@ public class WeixinThirdUtil {
 	 * @throws WexinReqException 
 	 * @throws JSONException 
 	 * @throws InterruptedException 
+	 * @throws IOException 
 	 */
-	public void replyEventMessage(HttpServletRequest request, HttpServletResponse response,String toUserName, String fromUserName,String msgType,String templateId) throws AesException, JSONException, WexinReqException, InterruptedException{
+	public void replyEventMessage(HttpServletRequest request, HttpServletResponse response,String toUserName, String fromUserName,String msgType,String templateId) throws AesException, JSONException, WexinReqException, InterruptedException, IOException{
 		
 		if (MessageUtil.REQ_MESSAGE_TYPE_TEXT.equals(msgType)) {//文本消息
 			TextTemplate textTemplate = this.systemService.getEntity(TextTemplate.class, templateId);
@@ -400,6 +404,13 @@ public class WeixinThirdUtil {
 			String content = textTemplate.getVoiceText();
 			output(response, "");
 			CustomServiceUtil.sendCustomServiceVoiceMessage(fromUserName, getAuthorizerAccessToken(toUserName), content);
+		}
+		else if(MessageUtil.REQ_MESSAGE_TYPE_CUSTOMERSERVICE.equalsIgnoreCase(msgType)){//转接人工
+			
+			WeixinAccountEntity currentWeixinAccount = weixinAccountService.findByToUsername(toUserName);
+			String authorizerAccessToken = getAuthorizerAccessToken(toUserName);
+			String responseText = transferCustomerService(authorizerAccessToken, fromUserName, currentWeixinAccount.getId());
+			CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizerAccessToken, responseText);
 		}
 
 	}
@@ -458,6 +469,39 @@ public class WeixinThirdUtil {
 	
 	public void updateQuestionMatchTimes(RobotQuestionEntity entity){
 		robotQuestionService.updateRobotQuestionMatchTimes(entity.getId());
+	}
+	
+	
+	public String transferCustomerService(String authorizer_access_token,String fromUserName,String accountId){
+		
+		String responseText = "";
+		
+		try{
+			List<WxKfaccount> wxKfaccountList = JwKfaccountAPI.getAllOnlineKfaccount(authorizer_access_token);
+			if(wxKfaccountList.isEmpty()){
+				
+				String leaveMessageUrl = "<a href=\"" + bundler.getString("domain") + "/commonAdviceController.do?leaveMessagePage&accountId="+accountId+"\">点此链接</a>";
+				responseText ="抱歉！现在人工客服不在线。请您稍后再联系或"+leaveMessageUrl+"留言，我们客服人员会在第一时间联系你。";
+			}
+			else{
+
+				WxKfaccount wxKfaccount = wxKfaccountList.get(RandomUtils.nextInt(wxKfaccountList.size()));
+				JwKfaccountAPI.createSession(authorizer_access_token, wxKfaccount.getKf_account(), fromUserName,"有新的客户接入。");
+				responseText = "您好！已经成功转接到人工客服。您可以通过语音、文字、图片或者短视频等方式向我们的人工客服反馈您的问题了。";
+			}
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			String errorMsg = e.getMessage();
+			if(errorMsg.contains("65400")){
+				responseText = "不好意思，本公众号还未开通人工客服功能。";
+			}
+			else{
+				responseText = "接入失败，请稍后再试。";
+			}
+		}
+		
+		return responseText;
 	}
 
 }

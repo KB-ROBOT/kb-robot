@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.RandomAccess;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -18,8 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.RandomUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -41,8 +38,6 @@ import org.jeewx.api.third.JwThirdAPI;
 import org.jeewx.api.third.model.ApiGetAuthorizer;
 import org.jeewx.api.third.model.ApiGetAuthorizerRet;
 import org.jeewx.api.third.model.ApiGetAuthorizerRetAuthortionFunc;
-import org.jeewx.api.wxsendmsg.JwKfaccountAPI;
-import org.jeewx.api.wxsendmsg.model.WxKfaccount;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -62,7 +57,6 @@ import com.kbrobot.service.RobotQuestionServiceI;
 import com.kbrobot.utils.BaiduMapUtil;
 import com.kbrobot.utils.CustomServiceUtil;
 import com.kbrobot.utils.QuestionMatchUtil;
-import com.kbrobot.utils.RooboUtil;
 import com.kbrobot.utils.TuLingUtil;
 import com.kbrobot.utils.TuLingUtil.ResultKey;
 import com.kbrobot.utils.TuLingUtil.ReturnCode;
@@ -462,8 +456,9 @@ public class OpenwxController {
 	 * @throws WexinReqException 
 	 * @throws JSONException 
 	 * @throws InterruptedException 
+	 * @throws IOException 
 	 */
-	public void processEventMessage(HttpServletRequest request, HttpServletResponse response,Element rootElt,String toUserName, String fromUserName,String authorizer_access_token) throws AesException, JSONException, WexinReqException, InterruptedException{
+	public void processEventMessage(HttpServletRequest request, HttpServletResponse response,Element rootElt,String toUserName, String fromUserName,String authorizer_access_token) throws AesException, JSONException, WexinReqException, InterruptedException, IOException{
 		String eventType = rootElt.elementText("Event");
 
 		WeixinAccountEntity  currentWeixinAccount =  weixinAccountService.findByToUsername(toUserName);
@@ -731,8 +726,12 @@ public class OpenwxController {
 
 			//若匹配不为空
 			if(matchResult!=null&&!matchResult.isEmpty()){
+				
+				//语音提示
+				CustomServiceUtil.sendCustomServiceVoiceMessage(fromUserName, authorizer_access_token, "您好，已为您找到以下内容。");
+				
 				//根据找到的问题 转换成  MessageResp
-
+				
 				currentMessageResp = QuestionMatchUtil.matchResultConvert(new ArrayList<RobotQuestionEntity>(matchResult), toUserName,fromUserName,robotInfo);
 				returnConversationContent = weixinThirdUtilInstance.replyMatchResult(currentMessageResp, request, response);
 
@@ -755,7 +754,9 @@ public class OpenwxController {
 				textMessageResp.setFromUserName(toUserName);
 				textMessageResp.setToUserName(fromUserName);
 				textMessageResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
-				try{
+				
+				textMessageResp.setContent(weixinThirdUtilInstance.transferCustomerService(authorizer_access_token, fromUserName, currentWeixinAccount.getId()));
+				/*try{
 					List<WxKfaccount> wxKfaccountList = JwKfaccountAPI.getAllOnlineKfaccount(authorizer_access_token);
 					if(wxKfaccountList.isEmpty()){
 						
@@ -763,16 +764,16 @@ public class OpenwxController {
 						textMessageResp.setContent("抱歉！现在人工客服不在线。请您稍后再联系或"+leaveMessageUrl+"留言，我们客服人员会在第一时间联系你。");
 					}
 					else{
-						/*currentMessageResp.setFromUserName(toUserName);
+						currentMessageResp.setFromUserName(toUserName);
 						currentMessageResp.setToUserName(fromUserName);
-						currentMessageResp.setMsgType(MessageUtil.REQ_MESSAGE_TYPE_TRANSFER_CUSTOMER_SERVICE);*/
+						currentMessageResp.setMsgType(MessageUtil.REQ_MESSAGE_TYPE_TRANSFER_CUSTOMER_SERVICE);
 
 						WxKfaccount wxKfaccount = wxKfaccountList.get(RandomUtils.nextInt(wxKfaccountList.size()));
 						JwKfaccountAPI.createSession(authorizer_access_token, wxKfaccount.getKf_account(), fromUserName,"有新的客户接入。");
 						textMessageResp.setContent("您好！已经成功转接到人工客服。您可以通过语音、文字、图片或者短视频等方式向我们的人工客服反馈您的问题了。");
-						/*CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizer_access_token, textMessageResp.getContent());
+						CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizer_access_token, textMessageResp.getContent());
 						returnConversationContent.setResponseContent(textMessageResp.getContent());
-						returnConversationContent.setResponseType(MessageUtil.REQ_MESSAGE_TYPE_VOICE);*/
+						returnConversationContent.setResponseType(MessageUtil.REQ_MESSAGE_TYPE_VOICE);
 					}
 				}
 				catch(Exception e){
@@ -784,7 +785,7 @@ public class OpenwxController {
 					else{
 						textMessageResp.setContent("接入失败，请稍后再试。");
 					}
-				}
+				}*/
 				currentMessageResp = textMessageResp;
 
 				returnConversationContent = weixinThirdUtilInstance.replyMatchResult(currentMessageResp, request, response);

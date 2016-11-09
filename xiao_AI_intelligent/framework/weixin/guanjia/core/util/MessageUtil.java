@@ -102,6 +102,11 @@ public class MessageUtil {
      * 事件类型：MASSSENDJOBFINISH（群发结果）
      */
     public static final String EVENT_TYPE_MASSSENDJOBFINISH = "MASSSENDJOBFINISH";
+    
+    /**
+     * 自定义类型：
+     */
+    public static final String REQ_MESSAGE_TYPE_CUSTOMERSERVICE = "customerservice";
 
     /**
      * 解析微信发来的请求（XML）
