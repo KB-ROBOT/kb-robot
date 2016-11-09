@@ -106,12 +106,12 @@
             <Li>
 				<a href="javascript:;" class="submenu">
 					<i class="fa fa-comment-o"></i>
-					<span>纳税人留言</span>
+					<span>问题与建议</span>
 					<font class="fa fa-angle-right"></font>
 				</a>
 				<ul>
 					<li>
-						<a href="commonAdviceController.do?leaveMessageList">问题建议</a>
+						<a href="commonAdviceController.do?leaveMessageList">留言板</a>
 					</li>
 					<!-- <li>
 						<a href="#">投诉举报</a>
