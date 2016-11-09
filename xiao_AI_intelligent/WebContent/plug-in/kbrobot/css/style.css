@@ -90,7 +90,7 @@ img{border: 0 none;height: auto;max-width: 100%;vertical-align: middle;}
 .choose-btn a.cancel-btn{background:#e5e5e5;color:#666;}
 .choose-btn a.delete-btn{background:red;color:#fff;}
 .choose-btn a i{margin-right:10px;}
-.col-lg-12.choose-btn a{width:30%;}
+.col-lg-12.choose-btn a{width:20%;}
 
 .cont table{margin:10px 0px;width:100%;border:1px solid #dedede;border-left:none;border-bottom:none;text-align:center;}
 .cont table tr th,.cont table tr td{line-height:30px;border-bottom:1px solid #dedede;border-left:1px solid #dedede;padding:10px;}

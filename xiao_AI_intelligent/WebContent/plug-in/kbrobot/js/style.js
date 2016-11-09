@@ -24,20 +24,20 @@ $(document).ready(function () {
 	});
 
 
-	//文本返回
-	$('.tab-pane').click(function(){
+	//发送消息
+	$('.tab-msg').click(function(){
 		$(this).parent().hide().siblings('.news').show();
 	});
-	$('.tab-return').click(function(ev){
-
-		$(this).parent().parent().parent().parent().hide().siblings('.choose-btn').show();
-	});
-	//url返回
+	//url
 	$('.tab-url').click(function(){
 		$(this).parent().hide().siblings('.urls').show();
 	});
-	$('.url-return').click(function(ev){
-
+	//其他功能
+	$('.tab-other').click(function(){
+		$(this).parent().hide().siblings('.others').show();
+	});
+	//返回
+	$('.menu-return').click(function(ev){
 		$(this).parent().parent().hide().siblings('.choose-btn').show();
 	});
 	
