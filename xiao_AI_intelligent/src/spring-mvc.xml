@@ -138,6 +138,12 @@
 						<!-- 查看该公众号的热点问题 -->
 						<value>commonWeixinController.do?hotQuestionList</value>
 						<value>commonWeixinController.do?hotQuestionList=</value>
+						<!-- 留言页面 -->
+						<value>commonAdviceController.do?leaveMessagePage</value>
+						<value>commonAdviceController.do?leaveMessagePage=</value>
+						<!-- 添加留言 -->
+						<value>commonAdviceController.do?addLeaveMessage</value>
+						<value>commonAdviceController.do?addLeaveMessage=</value>
 					</list>
 				</property>
 				<!-- 模糊匹配 -->
