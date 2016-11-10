@@ -727,11 +727,8 @@ public class OpenwxController {
 			//若匹配不为空
 			if(matchResult!=null&&!matchResult.isEmpty()){
 				
-				//语音提示
-				CustomServiceUtil.sendCustomServiceVoiceMessage(fromUserName, authorizer_access_token, "您好，已为您找到以下内容。");
 				
 				//根据找到的问题 转换成  MessageResp
-				
 				currentMessageResp = QuestionMatchUtil.matchResultConvert(new ArrayList<RobotQuestionEntity>(matchResult), toUserName,fromUserName,robotInfo);
 				returnConversationContent = weixinThirdUtilInstance.replyMatchResult(currentMessageResp, request, response);
 
@@ -756,36 +753,7 @@ public class OpenwxController {
 				textMessageResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
 				
 				textMessageResp.setContent(weixinThirdUtilInstance.transferCustomerService(authorizer_access_token, fromUserName, currentWeixinAccount.getId()));
-				/*try{
-					List<WxKfaccount> wxKfaccountList = JwKfaccountAPI.getAllOnlineKfaccount(authorizer_access_token);
-					if(wxKfaccountList.isEmpty()){
-						
-						String leaveMessageUrl = "<a href=\"" + bundler.getString("domain") + "/commonAdviceController.do?leaveMessagePage&accountId="+currentWeixinAccount.getId()+"\">点此链接</a>";
-						textMessageResp.setContent("抱歉！现在人工客服不在线。请您稍后再联系或"+leaveMessageUrl+"留言，我们客服人员会在第一时间联系你。");
-					}
-					else{
-						currentMessageResp.setFromUserName(toUserName);
-						currentMessageResp.setToUserName(fromUserName);
-						currentMessageResp.setMsgType(MessageUtil.REQ_MESSAGE_TYPE_TRANSFER_CUSTOMER_SERVICE);
 
-						WxKfaccount wxKfaccount = wxKfaccountList.get(RandomUtils.nextInt(wxKfaccountList.size()));
-						JwKfaccountAPI.createSession(authorizer_access_token, wxKfaccount.getKf_account(), fromUserName,"有新的客户接入。");
-						textMessageResp.setContent("您好！已经成功转接到人工客服。您可以通过语音、文字、图片或者短视频等方式向我们的人工客服反馈您的问题了。");
-						CustomServiceUtil.sendCustomServiceTextMessage(fromUserName, authorizer_access_token, textMessageResp.getContent());
-						returnConversationContent.setResponseContent(textMessageResp.getContent());
-						returnConversationContent.setResponseType(MessageUtil.REQ_MESSAGE_TYPE_VOICE);
-					}
-				}
-				catch(Exception e){
-					e.printStackTrace();
-					String errorMsg = e.getMessage();
-					if(errorMsg.contains("65400")){
-						textMessageResp.setContent("不好意思，本公众号还未开通人工客服功能。");
-					}
-					else{
-						textMessageResp.setContent("接入失败，请稍后再试。");
-					}
-				}*/
 				currentMessageResp = textMessageResp;
 
 				returnConversationContent = weixinThirdUtilInstance.replyMatchResult(currentMessageResp, request, response);
