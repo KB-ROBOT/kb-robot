@@ -144,6 +144,9 @@
 						<!-- 添加留言 -->
 						<value>commonAdviceController.do?addLeaveMessage</value>
 						<value>commonAdviceController.do?addLeaveMessage=</value>
+						<!-- 添加投诉 -->
+						<value>commonReportController.do?reportPage</value>
+						<value>commonReportController.do?reportPage=</value>
 					</list>
 				</property>
 				<!-- 模糊匹配 -->

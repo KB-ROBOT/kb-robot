@@ -113,9 +113,9 @@
 					<li>
 						<a href="commonAdviceController.do?leaveMessageList">留言板</a>
 					</li>
-					<!-- <li>
-						<a href="#">投诉举报</a>
-					</li> -->
+					<li>
+						<a href="commonReportController.do?reportMessageList">投诉举报</a>
+					</li>
 				</ul>
 			</Li>
 			<li>

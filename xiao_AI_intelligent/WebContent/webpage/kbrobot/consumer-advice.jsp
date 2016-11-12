@@ -51,7 +51,7 @@
 			<div class="section row">
 				<div class="panel col-sm-12">
 					<div class="panel-cont">
-						<h4 class="title">问题建议</h4>
+						<h4 class="title">问题与建议</h4>
 						<div class="row">
 							<div class="adviceBox col-lg-12">
 								<table class="table table-model-2 table-hover">
@@ -87,7 +87,7 @@
 							</div>
 						</div>
 						<!-- 页码 -->
-						<div class="row">${questionPageList.pager.getToolsBarByUrl()}</div>
+						<%-- <div class="row">${questionPageList.pager.getToolsBarByUrl()}</div> --%>
 						<!-- 页码 -->
 					</div>
 				</div>
