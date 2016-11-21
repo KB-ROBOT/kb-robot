@@ -19,7 +19,8 @@
 
 <body>
 	<div class="wrap">
-		<div class="content">
+		<h1 class="title"><span>问题建议</span></h1>
+		<!-- <div class="content">
 			<h5 class="title">问题建议</h5>
 			<div class="comment">
 				<div>
@@ -34,6 +35,21 @@
 				</div>
 				<a href="javascript:checkForm();" class="submit">提交</a>
 			</div>
+		</div> -->
+		<div class="content">
+			<form class="leave">
+				<p class="user">
+					<input type="text" placeholder="请输入您的姓名" name="name">
+				</p>
+				<p class="phone">
+					<input type="text" placeholder="请输入联系电话" name="mobile">
+				</p>
+				<div>
+					<textarea placeholder="请输入您的问题或建议" name="content"></textarea>
+				</div>
+				<h6 class="tip">请详细说明您的问题与建议，便于我们及时准确处理与回复。</h6>
+				<a href="javascript:checkForm();" class="submit">提交</a>
+			</form>
 		</div>
 	</div>
 	<script>
@@ -63,6 +79,8 @@
 			}
 
 			var accountId = GetQueryString('accountId');
+			
+			accountId = accountId==null?'':accountId;
 
 			var url = "./commonAdviceController.do?addLeaveMessage&accountId=" + accountId;
 			$.ajax({
@@ -80,7 +98,7 @@
 						$('input[name=name]').val("");
 						$('input[name=mobile]').val("");
 						$('textarea[name=content]').val("");
-						setTimeout("location.reload()",500);
+						setTimeout("location.reload()", 500);
 					} else {
 						swal("提交失败", data.msg, "error");
 					}

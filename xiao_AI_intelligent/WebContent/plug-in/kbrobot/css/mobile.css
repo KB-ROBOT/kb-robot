@@ -1,16 +1,194 @@
-@charset "utf-8";
-/* CSS Document */
-*{margin:0;padding:0;outline:none;}
-body,html {font-family:"Microsoft YaHei"; min-height: 100%;  -webkit-tap-highlight-color: transparent; background-color: #F0F1EC; font-size:16px;}
+*{margin:0;padding:0;outline:none;font-family:"Microsoft YaHei"; }
+body,html {background:#fff;font-family:"Microsoft YaHei"; min-height: 100%;  -webkit-tap-highlight-color: transparent;font-size:16px;}
 .fl{float:left;}
 .fr{float:right;}
-a{text-decoration:none;}
+a{text-decoration:none;color:#333;}
+ul,li{list-style:none;}
 .wrap{position: relative;}
-
+.wrap .content{margin:0 10px;padding-bottom:20px;}
 h5{text-align:center;line-height:4rem;font-size:1.4rem;font-weight:normal;}
-.comment div{margin:10px 0;}
-.comment div label{display:inline-block;width:25%;margin-right:2%;text-align:right;vertical-align: top;}
+/*--------留言--------*/
+.leave{margin-top:30px;}
+.leave p{border:1px solid #dedede;margin:10px auto;padding-left:46px;padding-right: 10px;}
+.leave input{border: none;width:100%;line-height: 36px;}
+.leave p.user{ background:#fff url(../images/name.png) no-repeat 5px center;}
+.leave p.phone{background:#fff url(../images/tel.png) no-repeat 5px center;}
+.leave div{padding:10px;border:1px solid #dedede;background:#fff;margin:10px auto;}
+.leave div textarea{width:100%;min-height:90px;border:none;resize:none;}
+
+.comment div{margin:10px 0;text-align:left;}
+.comment div label{display:inline-block;width:34%;margin-right:2%;text-align:right;vertical-align: top;font-size:0.7rem;line-height:36px;}
 .comment div label font{color:red;}
-.comment div input,.comment div textarea{width:65%;padding:5px 10px;line-height:24px;border:1px solid #dedede;background:#fff;}
-.comment div textarea{min-height:120px;}
-.submit{display:inline-block;width:94%;line-height:36px;background:#35a2d8;color:#fff;text-align:center;margin:0 3%;border-radius:5px;}
+.comment div input,.comment div textarea{width:56%;padding:5px 10px;line-height:24px;border:1px solid #dedede;background:#fff;}
+.comment div textarea{min-height:90px;}
+.submit{display:block;width:100%;line-height:36px;background:#35a2d8;color:#fff;text-align:center;border-radius:5px;}
+.comment div .upload{display:inline-block;width:60px;height:60px;background:url(../images/upload.png) no-repeat;background-size:100%;}
+.comment div .upload input{border:none;width:60px;height:60px;background:#000;padding:0;opacity:0;}
+.uploadList{overflow:hidden;padding:10px;margin-right:-10px;}
+.uploadList li{float:left;width:58px;height:58x;margin-right:10px;list-style:none;border:1px solid #dedede;padding:1px;}
+.uploadList li img{width:100%;height:100%;}
+
+.tip{color:red;font-weight:normal;margin:10px 0;}
+/*-------------一次性告知-------------*/
+.taxList li{float:left;width:50%;text-align:center;margin-top:40%;}
+.taxList li a{color:#333;}
+.taxList li a img{max-width:100px;}
+.irsList li{height:40px;padding:10px;line-height:40px;background:#fff;margin:10px 0;border-radius:5px;position:relative;}
+.irsList li a img{width:40px;height:40px;border-radius:50%;float:left;}
+.irsList li p{margin-left:50px;}
+.irsList li a i{display:inline-block;width:15px;height:15px;position:absolute;top:23px;right:5px;background:url(../images/right.png) no-repeat;background-size:100%;}
+
+/*----------纳税信用查询-----------*/
+.creditBox{margin:10px 0px;}
+.creditBox label{display:inline-block;width:38%;}
+.creditBox input{width:54%;height:30px;line-height:30px;background:#fff;border:1px solid #dedede;padding:0 10px;}
+.creditBox button{display:block;width:100%;background:#3fb2f3;border:none;color:#fff;text-align:center;font-size:1rem;line-height:2.4rem;margin-top:10px; letter-spacing:3px;}
+.tab li{width:50%;float:left;text-align:center;}
+.creditList{margin-top:20px;}
+.creditList p{line-height:2rem;}
+.notabs{display:none;margin-bottom:20px;}
+.tab{overflow:hidden;margin:20px 0;}
+.tab li{line-height:30px;border-bottom:1px solid #dedede;}
+.tab li.curr{border-bottom:2px solid #3fb2f3;}
+
+.issueTit{margin:20px 0;}
+.title{width:100%;background:#3fb2f3;color:#fff;text-align:center;font-size:1.2rem;font-weight:normal;line-height:3rem;}
+.title img{position:absolute;}
+.title span{margin-left:30px;}
+.issueBox{padding:0 10px 10px 10px;border:1px solid #a7a7a7;overflow:hidden;}
+.addBtn{background:#3fb2f3;color:#fff;border:none;padding:10px 40px;float:right;font-size:0.8rem;border-radius:3px;margin-bottom:20px;}
+
+.laborList{border:1px solid #a7a7a7;margin:20px 0px 60px 0px;padding:30px 10px;}
+.laborList table{width:100%;}
+.laborList table tr th,.laborList table tr td{font-size:0.8rem;border-bottom:2px solid #dedede;padding:0px 3px 15px 3px;text-align:center;}
+
+/*-----------发票代开-------------*/
+#login-form {
+	position: relative;
+	width:100%;
+}
+
+.form-group {
+  position: relative;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.form-control {
+  display: block;
+  height: 36px;
+  width: 100%;
+  border: none;
+  border-radius: 0 !important;
+  font-size: 15px;
+  font-family: inherit;
+  font-weight: 300;
+  padding: 0;
+  background-color: transparent;
+  box-shadow: none;
+  border-bottom: 1px solid #bebebe;
+}
+
+.form-control:focus {
+  border-bottom: 2px solid rgb(3, 169, 245);
+  outline: none;
+  box-shadow: none;
+}
+
+.form-highlight {
+  position: absolute;
+  height: 60%;
+  width: 60px;
+  top: 25%;
+  left: 0;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.form-control:focus ~ .form-highlight {
+  -webkit-animation: inputHighlighter 0.3s ease;
+  -moz-animation: inputHighlighter 0.3s ease;
+  animation: inputHighlighter 0.3s ease;
+}
+
+.float-label {
+  position: absolute;
+  left: 0;
+  top: 10px;
+  font-size: 16px;
+  color: #999;
+  font-weight: 300;
+  transition: 0.2s ease all;
+  -moz-transition: 0.2s ease all;
+  -webkit-transition: 0.2s ease all;
+}
+
+.form-control:focus ~ .float-label, .form-control:valid ~ .float-label {
+  top: -15px;
+  font-size: 12px;
+}
+
+
+/*------------底部菜单--------------*/
+.footer{width:100%;background:#fff;border-top:1px solid #b2b2b2;position:fixed;bottom:0;display: -webkit-box;display: -webkit-flex;display: -ms-flexbox;display:flex;}
+.footer a{display: block;-webkit-box-flex: 1;-webkit-flex: 1;-ms-flex: 1;flex:1;text-align:center;border-right:1px solid #dedede;padding:15px 0;}
+.footer a:nth-child(3){border-right:none;}
+
+
+/*------------弹窗----------------*/
+#fillForm{display:block;width:50px;height:50px;border:none;border-radius:15px;background:rgba(0, 0, 0, 0.4) url(../images/fill.png) no-repeat center;position:fixed;bottom:15%;right:0; z-index:999;background-size:100%;}
+.mod-dialog-bg {
+	background: #000;
+	opacity: .5;
+	filter: alpha(opacity=50);
+	height: 100%;
+	left: 0;
+	position: fixed;
+	top: 0;
+	width: 100%;
+	z-index: 1000;
+}
+.mod-dialog {
+	background-color: #fff;
+	border-top: none;
+	max-width:90%;
+	position: fixed;
+	z-index: 1001;
+}
+
+.mod-dialog .dialog-nav {
+	background: #3fb2f3;
+	color: #fff;
+	font-size: 16px;
+	font-family: "\5b8b\4f53";
+	height:36px;
+	line-height:36px;
+}
+.mod-dialog .dialog-title {
+	padding-left: 10px;
+}
+.mod-dialog .dialog-close {
+	background:url(../images/close.png) no-repeat;
+    height: 24px;
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    width: 24px;cursor:pointer;
+}
+.mod-dialog .dialog-main {
+	font-size: 14px;
+	padding: 20px;
+	text-align: left;
+}
+.mod-dialog .dialog-content {
+	font-size: 14px;
+	line-height: 24px;
+}
+.mod-dialog .content-title {
+	background: url(../images/warning.png) 30px 20px no-repeat;
+	font-size: 18px;
+	line-height: 24px;
+	padding: 40px 0 40px 155px;
+}
+
+.console-btn-confirm{color:#fff;}
