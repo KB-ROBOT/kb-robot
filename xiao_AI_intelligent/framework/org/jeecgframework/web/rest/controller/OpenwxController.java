@@ -727,6 +727,7 @@ public class OpenwxController {
 			//若匹配不为空
 			if(matchResult!=null&&!matchResult.isEmpty()){
 				
+				CustomServiceUtil.sendCustomServiceVoiceMessage(fromUserName, authorizer_access_token , "您好，已为您找到以上内容。");
 				
 				//根据找到的问题 转换成  MessageResp
 				currentMessageResp = QuestionMatchUtil.matchResultConvert(new ArrayList<RobotQuestionEntity>(matchResult), toUserName,fromUserName,robotInfo);
