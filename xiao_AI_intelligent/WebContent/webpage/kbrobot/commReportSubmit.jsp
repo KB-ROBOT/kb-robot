@@ -19,8 +19,8 @@
 
 <body>
 	<div class="wrap">
+		<h5 class="title">投诉举报</h5>
 		<div class="content">
-			<h5 class="title">投诉举报</h5>
 			<div class="comment">
 				<div>
 					<label><font>*</font>姓名：</label><input name="name" type="text" maxlength="16">
