@@ -147,6 +147,10 @@
 						<!-- 添加投诉 -->
 						<value>commonReportController.do?reportPage</value>
 						<value>commonReportController.do?reportPage=</value>
+						
+						<!-- 添加投诉 -->
+						<value>commonReportController.do?addReportMessage</value>
+						<value>commonReportController.do?addReportMessage=</value>
 					</list>
 				</property>
 				<!-- 模糊匹配 -->
