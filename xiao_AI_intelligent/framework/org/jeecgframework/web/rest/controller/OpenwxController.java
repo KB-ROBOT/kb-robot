@@ -267,7 +267,7 @@ public class OpenwxController {
 			/*
 			 * 查找当前接入微信是否已经存在
 			 */
-			
+
 			WeixinAccountEntity exitWeixinAccount = weixinAccountService.findByToUsername(authorizerInfo.getAuthorizer_info().getUser_name());
 			if(exitWeixinAccount!=null){
 				weixinAccountEntity = exitWeixinAccount;
@@ -726,9 +726,6 @@ public class OpenwxController {
 
 			//若匹配不为空
 			if(matchResult!=null&&!matchResult.isEmpty()){
-				
-				CustomServiceUtil.sendCustomServiceVoiceMessage(fromUserName, authorizer_access_token , "您好，已为您找到以上内容。");
-				
 				//根据找到的问题 转换成  MessageResp
 				currentMessageResp = QuestionMatchUtil.matchResultConvert(new ArrayList<RobotQuestionEntity>(matchResult), toUserName,fromUserName,robotInfo);
 				returnConversationContent = weixinThirdUtilInstance.replyMatchResult(currentMessageResp, request, response);
@@ -752,7 +749,7 @@ public class OpenwxController {
 				textMessageResp.setFromUserName(toUserName);
 				textMessageResp.setToUserName(fromUserName);
 				textMessageResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
-				
+
 				textMessageResp.setContent(weixinThirdUtilInstance.transferCustomerService(authorizer_access_token, fromUserName, currentWeixinAccount.getId()));
 
 				currentMessageResp = textMessageResp;
@@ -777,7 +774,7 @@ public class OpenwxController {
 				else{
 					textMessageResp.setContent("别问我，我也不知道。");
 				}
-				
+
 				/*
 				 * 布丁的api
 				 */
@@ -826,6 +823,22 @@ public class OpenwxController {
 				weixinConversationContent.setReplyMatchType("0");//未知问题
 			}
 		}
+		
+		//判断是否需要语音读出文字内容
+		if(StringUtil.isNotEmpty(returnConversationContent.getResponseType())
+				&&MessageUtil.RESP_MESSAGE_TYPE_TEXT.equals(returnConversationContent.getResponseType())
+				&&returnConversationContent.getResponseContent()!=null
+				&&returnConversationContent.getResponseContent().length()<150
+				&&StringUtil.isNotEmpty(weixinConversationContent.getReplyMatchType())
+				&&("1".equals(weixinConversationContent.getReplyMatchType())||"2".equals(weixinConversationContent.getReplyMatchType())||"0".equals(weixinConversationContent.getReplyMatchType()) )){
+
+			CustomServiceUtil.sendCustomServiceVoiceMessage(fromUserName, authorizer_access_token , returnConversationContent.getResponseContent());
+
+		}
+		else{
+			CustomServiceUtil.sendCustomServiceVoiceMessage(fromUserName, authorizer_access_token , "您好，已为您找到以上内容。");
+		}
+		
 
 		weixinConversationContent.setResponseContent(returnConversationContent.getResponseContent());
 		weixinConversationContent.setResponseType(returnConversationContent.getResponseType());
