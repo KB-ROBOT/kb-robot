@@ -32,7 +32,9 @@ import org.jeecgframework.web.system.service.SystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -232,6 +234,42 @@ public class RobotQuestionController extends BaseController {
 		j.setMsg(message);
 		return j;
 	}
+	
+	@RequestMapping(params = "saveContextQuestion")
+	@ResponseBody
+	public AjaxJson saveContextQuestion(@RequestBody RobotQuestionEntity[] robotQuestionList) {
+		AjaxJson j = new AjaxJson();
+		
+		if(robotQuestionList!=null&&robotQuestionList.length!=0){
+			
+			//获取当前微信账户id
+			String accountId = ResourceUtil.getWeiXinAccountId();
+			
+			for(RobotQuestionEntity robotQuestion : robotQuestionList){
+				robotQuestion.setAccountId(accountId);
+				robotQuestion.setCreateTime(new Date());
+				robotQuestion.setUpdateTime(new Date());
+				robotQuestionService.save(robotQuestion);
+			}
+			message = "知识库添加成功";
+		
+			systemService.addLog(message, Globals.Log_Type_INSERT, Globals.Log_Leavel_INFO);
+			
+			//添加或更新完成之后立即执行分词定时任务
+			splitWord();
+		}
+		else{
+			message = "添加失败，问题不能为空";
+			j.setSuccess(false);
+		}
+		
+
+		j.setMsg(message);
+		return j;
+	}
+	
+	
+	
 
 	/**
 	 * 知识库添加
@@ -240,6 +278,11 @@ public class RobotQuestionController extends BaseController {
 	@RequestMapping(params = "goQuestionAdd")
 	public ModelAndView goQuestionAdd(){
 		return new ModelAndView("kbrobot/question-add");
+	}
+	
+	@RequestMapping(params = "goQuestionContextAdd")
+	public ModelAndView goQuestionContextAdd(){
+		return new ModelAndView("kbrobot/question-add-context");
 	}
 
 	/**

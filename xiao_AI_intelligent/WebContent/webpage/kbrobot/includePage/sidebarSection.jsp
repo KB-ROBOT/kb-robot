@@ -65,6 +65,9 @@
 					<li>
 						<a href="robotQuestionController.do?goQuestionAdd">添加问题</a>
 					</li>
+					<li>
+						<a href="robotQuestionController.do?goQuestionContextAdd">添加多轮问题</a>
+					</li>
 				</ul>
 			</Li>
 			<li>
