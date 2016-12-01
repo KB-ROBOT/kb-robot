@@ -82,6 +82,7 @@
 											<c:forEach items="${news.newsItemList}" var="newsItem" begin="0" end="0" varStatus="status">
 												<div>
 													<img src="${newsItem.imagePath}">
+													<input type="hidden" name="id" value="${newsItem.id}">
 												</div>
 											</c:forEach>
 										</div>
@@ -91,6 +92,7 @@
 													<h5>${newsItem.title}</h5>
 													<span class="fr">
 														<img src="${newsItem.imagePath}">
+														<input type="hidden" name="id" value="${newsItem.id}">
 													</span>
 												</li>
 											</c:forEach>
