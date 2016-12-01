@@ -19,7 +19,7 @@
 					<span>基本设定</span>
 				</a>
 			</li>
-			<Li>
+			<li>
 				<a href="javascript:;" class="submenu">
 					<i class="fa fa-link"></i>
 					<span>机器人接入</span>
@@ -33,8 +33,8 @@
 						<a href="./robotBindController.do?gowebbind">网页接入</a>
 					</li>
 				</ul>
-			</Li>
-			<Li>
+			</li>
+			<li>
 				<a href="javascript:;" class="submenu">
 					<i class="fa fa-tasks"></i>
 					<span>素材管理</span>
@@ -51,8 +51,8 @@
 						<a href="voiceTemplateController.do?voiceList">语音消息</a>
 					</li>
 				</ul>
-			</Li>
-			<Li>
+			</li>
+			<li>
 				<a href="javascript:;" class="submenu">
 					<i class="fa fa-book"></i>
 					<span>知识库管理</span>
@@ -69,13 +69,13 @@
 						<a href="robotQuestionController.do?goQuestionContextAdd">添加多轮问题</a>
 					</li>
 				</ul>
-			</Li>
-			<li>
+			</li>
+			<!-- <li>
 				<a href="work-order.html">
 					<i class="fa fa-calendar"></i>
 					<span>工单</span>
 				</a>
-			</li>
+			</li> -->
 			<li>
 				<a href="javascript:;" class="submenu">
 					<i class="fa fa-cloud"></i>
@@ -95,9 +95,7 @@
 					<%-- <li>
 						<a href="knowledge-radar.html">知识雷达</a>
 					</li> --%>
-					<li>
-						<a href="dataReportController.do?report-visit-log">访客日志</a>
-					</li>
+
 				</ul>
 			</li>
 			<li>
@@ -106,7 +104,7 @@
 					<span>人工客服</span>
 				</a>
 			</li>
-            <Li>
+			<li>
 				<a href="javascript:;" class="submenu">
 					<i class="fa fa-comment-o"></i>
 					<span>问题与建议</span>
@@ -120,7 +118,13 @@
 						<a href="commonReportController.do?reportMessageList">投诉举报</a>
 					</li>
 				</ul>
-			</Li>
+			</li>
+			<li>
+				<a href="dataReportController.do?report-visit-log">
+					<i class="fa fa-list-alt"></i>
+					<span>系统日志</span>
+				</a>
+			</li>
 			<li>
 				<a href="help.html">
 					<i class="fa fa-wrench"></i>
