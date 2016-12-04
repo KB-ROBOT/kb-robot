@@ -60,7 +60,7 @@ ol, ul {
 					<span id="post-date" class="activity-meta no-extra">
 						<fmt:formatDate value='${question.createTime}' type="date" pattern="yyyy-MM-dd" />
 					</span>
-					<span class="activity-meta"> <a href="http://www.kb-robot.com/about.html">凯博智能机器人</a> </span>
+					
 				</p>
 			</div>
 		</div>
