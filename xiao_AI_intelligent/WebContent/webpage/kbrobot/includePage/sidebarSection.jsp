@@ -14,7 +14,7 @@
 				</a>
 			</li>
 			<li>
-				<a href="set.html">
+				<a href="./robotSetController.do?goRobotSet">
 					<i class="fa fa-cog"></i>
 					<span>基本设定</span>
 				</a>
@@ -118,6 +118,12 @@
 						<a href="commonReportController.do?reportMessageList">投诉举报</a>
 					</li>
 				</ul>
+			</li>
+			<li>
+				<a href="roleManageController.do?roleManage">
+					<i class="fa fa-group"></i>
+					<span>权限管理</span>
+				</a>
 			</li>
 			<li>
 				<a href="dataReportController.do?report-visit-log">
