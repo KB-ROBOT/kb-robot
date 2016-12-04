@@ -39,22 +39,12 @@
 			endTime = e.date;
 			$('.begin_datetime').datetimepicker("setEndDate", endTime);
 		});
-		
-		
-		$(".visitLogSearch").on("click",function(){
-			/* var url = "./dataReportController.do?show-visit-data";
-			$.ajax({
-				url : url,// 请求的action路径
-				dataType : "json",
-				type : "post",
-				data : {"startTime":startTime,"endTime":endTime},
-				success : function(data) {
-					
-				}
-			}); */
-			
-		});
 
+		$(".export").click(function() {
+			$("#searchForm").append('<input name="export" value="export"></input>');
+
+			$("#searchForm").submit();
+		});
 	});
 </script>
 
@@ -78,7 +68,7 @@
 						<div class="panel-body">
 							<div class="row">
 								<div class="col-lg-12" style="margin-bottom: 20px;">
-									<form action="dataReportController.do?report-visit-log" method="post" >
+									<form action="dataReportController.do?report-visit-log" method="post" id="searchForm">
 										<div class="col-sm-2">
 											<span class="dropdown" style="padding: 10px 20px; background: #eee; top: 6px;">
 												<a data-toggle="dropdown" class="dropdown-toggle" href="#">
@@ -98,12 +88,10 @@
 											</span>
 										</div>
 										<div class="col-sm-3">
-											起始时间：
-											<input type="text" name="startTime" value="${startTime}" class="form-control input-append begin_datetime" size="16" style="width: 60%; display: inline-block;">
+											起始时间： <input type="text" name="startTime" value="${startTime}" class="form-control input-append begin_datetime" size="16" style="width: 60%; display: inline-block;">
 										</div>
 										<div class="col-sm-3">
-											结束时间：
-											<input type="text" name="endTime" value="${endTime}" class="form-control input-append end_datetime" size="16" style="width: 60%; display: inline-block;">
+											结束时间： <input type="text" name="endTime" value="${endTime}" class="form-control input-append end_datetime" size="16" style="width: 60%; display: inline-block;">
 										</div>
 										<div class="col-sm-2">
 											<div class="btn-group">
@@ -112,33 +100,8 @@
 												</button>
 												<button type="reset" class="btn btn-white">清空</button>
 											</div>
+											<button class="btn btn-white export">导出</button>
 										</div>
-										<!-- <div class="col-sm-4">
-											<ul class="nav nav-pills pull-right">
-												<li class="dropdown" style="background-color: #fff;">
-													<a data-toggle="dropdown" class="dropdown-toggle" href="#">
-														排序 <b class="caret"></b>
-													</a>
-													<ul class="dropdown-menu" role="menu" style="min-width: 95px;">
-														<li>
-															<a href="#">默认排序</a>
-														</li>
-														<li>
-															<a href="#">时间正序</a>
-														</li>
-														<li>
-															<a href="#">时间倒序</a>
-														</li>
-														<li>
-															<a href="#">访客类型正序</a>
-														</li>
-														<li>
-															<a href="#">访客类型倒序</a>
-														</li>
-													</ul>
-												</li>
-											</ul>
-										</div> -->
 									</form>
 								</div>
 								<div class="col-lg-12">
@@ -152,17 +115,6 @@
 											<th>访客地址</th>
 											<th>操作</th>
 										</tr>
-										<!-- <tr>
-											<td>微信访客（ID=5880621）</td>
-											<td>0</td>
-											<td>0秒</td>
-											<td>2016-07-26 22:55:47</td>
-											<td>2016-07-26 22:55:47</td>
-											<td>湖南省长沙市</td>
-											<td>
-												<a href="#">查看聊天记录</a>
-											</td>
-										</tr> -->
 										<c:if test="${resultList.size()==0 }">
 											<td colspan="7"></td>
 										</c:if>
