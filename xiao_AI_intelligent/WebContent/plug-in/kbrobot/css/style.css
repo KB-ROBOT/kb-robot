@@ -1,4 +1,4 @@
-@charset "utf-8";
+﻿@charset "utf-8";
 /* CSS Document */
 *{margin:0px;padding:0px;}
 
@@ -285,7 +285,7 @@ body.login{display:block;width: 100%;height: 100%;overflow: hidden;}
 .adviceBox table tr td a.select{background:#35a2d8;}
 
 /*角色管理*/
-.roleTable > tbody > tr > th,.roleTable > tbody > tr > td{text-align:center;}
+.roleTable  tr th,.roleTable tr td{text-align:center;}
 .role-set a{margin-right:6px;}
 .role-set a:hover{color:#000;text-decoration:underline;}
 .role-set a i{margin:0px 6px;}
