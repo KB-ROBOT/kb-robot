@@ -152,6 +152,10 @@
 						<!-- 添加投诉 -->
 						<value>commonReportController.do?addReportMessage</value>
 						<value>commonReportController.do?addReportMessage=</value>
+						
+						<!-- jsApi -->
+						<value>ltpController.do?jsApiTicketTest</value>
+						<value>ltpController.do?jsApiTicketTest=</value>
 					</list>
 				</property>
 				<!-- 模糊匹配 -->
