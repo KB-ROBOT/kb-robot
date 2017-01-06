@@ -60,7 +60,7 @@ ol, ul {
 					<span id="post-date" class="activity-meta no-extra">
 						<fmt:formatDate value='${newsItem.createDate}' type="date" pattern="yyyy-MM-dd" />
 					</span>
-					<span class="activity-meta"> 凯博智能机器人 </span>
+					<!-- <span class="activity-meta"> 凯博智能机器人 </span> -->
 					<a href="javascript:viewProfile();" id="post-user" class="activity-meta">
 						<span class="text-ellipsis"> ${newsItem.author} </span>
 						<i class="icon_link_arrow"> </i>
