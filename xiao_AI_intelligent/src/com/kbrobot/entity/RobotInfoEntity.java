@@ -14,7 +14,7 @@ import org.hibernate.annotations.GenericGenerator;
  * @Title: Entity
  * @Description: 机器人设定
  * @author zhangdaihao
- * @date 2016-09-28 15:33:45
+ * @date 2016-12-30 17:40:48
  * @version V1.0   
  *
  */
@@ -32,6 +32,10 @@ public class RobotInfoEntity implements java.io.Serializable {
 	private java.lang.String phoneNumber;
 	/**提醒语句*/
 	private java.lang.String remind;
+	/**机器人名称*/
+	private java.lang.String robotName;
+	/**公司名称*/
+	private java.lang.String companyName;
 	
 	/**
 	 *方法: 取得java.lang.String
@@ -55,7 +59,7 @@ public class RobotInfoEntity implements java.io.Serializable {
 	}
 	/**
 	 *方法: 取得java.lang.String
-	 *@return: java.lang.String  微信公众号ID
+	 *@return: java.lang.String  微信公众号原始ID
 	 */
 	@Column(name ="WEIXIN_ACCOUNT_ID",nullable=true,length=32)
 	public java.lang.String getWeixinAccountId(){
@@ -89,7 +93,7 @@ public class RobotInfoEntity implements java.io.Serializable {
 	 *方法: 取得java.lang.String
 	 *@return: java.lang.String  提醒语句
 	 */
-	@Column(name ="REMIND",nullable=true,length=32)
+	@Column(name ="REMIND",nullable=true,length=100)
 	public java.lang.String getRemind(){
 		return this.remind;
 	}
@@ -100,5 +104,37 @@ public class RobotInfoEntity implements java.io.Serializable {
 	 */
 	public void setRemind(java.lang.String remind){
 		this.remind = remind;
+	}
+	/**
+	 *方法: 取得java.lang.String
+	 *@return: java.lang.String  机器人名称
+	 */
+	@Column(name ="ROBOT_NAME",nullable=true,length=32)
+	public java.lang.String getRobotName(){
+		return this.robotName;
+	}
+
+	/**
+	 *方法: 设置java.lang.String
+	 *@param: java.lang.String  机器人名称
+	 */
+	public void setRobotName(java.lang.String robotName){
+		this.robotName = robotName;
+	}
+	/**
+	 *方法: 取得java.lang.String
+	 *@return: java.lang.String  公司名称
+	 */
+	@Column(name ="COMPANY_NAME",nullable=true,length=32)
+	public java.lang.String getCompanyName(){
+		return this.companyName;
+	}
+
+	/**
+	 *方法: 设置java.lang.String
+	 *@param: java.lang.String  公司名称
+	 */
+	public void setCompanyName(java.lang.String companyName){
+		this.companyName = companyName;
 	}
 }
