@@ -156,6 +156,11 @@
 						<!-- jsApi -->
 						<value>ltpController.do?jsApiTicketTest</value>
 						<value>ltpController.do?jsApiTicketTest=</value>
+						
+						<!-- OAuth2 权限 -->
+						<value>oAuth2JumpController.do?redirectTargetUrl</value>
+						<value>oAuth2JumpController.do?redirectTargetUrl=</value>
+						<value>oAuth2JumpController.do?generateOAuth2Url</value>
 					</list>
 				</property>
 				<!-- 模糊匹配 -->

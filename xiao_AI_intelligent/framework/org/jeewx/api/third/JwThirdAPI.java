@@ -1,13 +1,17 @@
 ﻿package org.jeewx.api.third;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.json.JSONObject;
 import weixin.guanjia.core.util.WeixinUtil;
+import weixin.p3.oauth2.def.WeiXinOpenConstants;
 
 import org.jeewx.api.core.common.WxstoreUtils;
 import org.jeewx.api.core.exception.WexinReqException;
+import org.jeewx.api.core.handler.impl.WeixinReqDefaultHandler;
 import org.jeewx.api.third.model.ApiAuthorizerToken;
 import org.jeewx.api.third.model.ApiAuthorizerTokenRet;
 import org.jeewx.api.third.model.ApiComponentToken;
@@ -19,6 +23,8 @@ import org.jeewx.api.wxstore.order.model.OrderInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.kbrobot.utils.WeixinThirdUtil;
+
 /**
  * 微信--token信息
  * 
@@ -27,22 +33,31 @@ import org.slf4j.LoggerFactory;
  */
 public class JwThirdAPI {
 	private static Logger logger = LoggerFactory.getLogger(JwThirdAPI.class);
+
+	public static final String SNSAPI_USERINFO = "snsapi_userinfo";
+	public static final String SNSAPI_BASE = "snsapi_base";
+
 	//获取预授权码
 	private static String api_create_preauthcode_url = "https://api.weixin.qq.com/cgi-bin/component/api_create_preauthcode?component_access_token=COMPONENT_ACCESS_TOKEN";
 	private static String api_component_token_url = "https://api.weixin.qq.com/cgi-bin/component/api_component_token";
-	private static String get_access_token_bycode_url = "https://api.weixin.qq.com/sns/oauth2/component/access_token?appid=APPID&code=CODE&grant_type=authorization_code&component_appid=COMPONENT_APPID&component_access_token=COMPONENT_ACCESS_TOKEN";
+
+	//OAuth2.0换取code
+	private static String oauth2_get_code_url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=APPID&redirect_uri=REDIRECT_URI&response_type=code&scope=SCOPE&state=STATE&component_appid=COMPONENT_APPID#wechat_redirect";
+	//OAuth2.0通过code换取access_token
+	private static String oauth2_get_access_token_bycode_url = "https://api.weixin.qq.com/sns/oauth2/component/access_token?appid=APPID&code=CODE&grant_type=authorization_code&component_appid=COMPONENT_APPID&component_access_token=COMPONENT_ACCESS_TOKEN";
+
 	private static String api_query_auth_url = "https://api.weixin.qq.com/cgi-bin/component/api_query_auth?component_access_token=xxxx";
 	//客服接口地址
-    public static String send_message_url = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=ACCESS_TOKEN";
-    //4、获取（刷新）授权公众号的令牌
-    private static String api_authorizer_token_url = "https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token=COMPONENT_ACCESS_TOKEN";
-    //5、获取授权方的账户信息
-    private static String api_get_authorizer_info_url = "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token=COMPONENT_ACCESS_TOKEN";
-    //6、获取授权方的选项设置信息
-    private static String api_get_authorizer_option_url = "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_option?component_access_token=COMPONENT_ACCESS_TOKEN";
-    //7、设置授权方的选项信息
-    private static String api_set_authorizer_option_url = "https://api.weixin.qq.com/cgi-bin/component/api_set_authorizer_option?component_access_token=COMPONENT_ACCESS_TOKEN";
-    /**
+	public static String send_message_url = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=ACCESS_TOKEN";
+	//4、获取（刷新）授权公众号的令牌
+	private static String api_authorizer_token_url = "https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token=COMPONENT_ACCESS_TOKEN";
+	//5、获取授权方的账户信息
+	private static String api_get_authorizer_info_url = "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token=COMPONENT_ACCESS_TOKEN";
+	//6、获取授权方的选项设置信息
+	private static String api_get_authorizer_option_url = "https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_option?component_access_token=COMPONENT_ACCESS_TOKEN";
+	//7、设置授权方的选项信息
+	private static String api_set_authorizer_option_url = "https://api.weixin.qq.com/cgi-bin/component/api_set_authorizer_option?component_access_token=COMPONENT_ACCESS_TOKEN";
+	/**
 	 * 1、获取第三方平台access_token
 	 * @param appid
 	 * @param appscret
@@ -62,7 +77,7 @@ public class JwThirdAPI {
 		}
 		return component_access_token;
 	}
-	
+
 	/**
 	 * 2、获取预授权码
 	 * @param appid
@@ -85,7 +100,7 @@ public class JwThirdAPI {
 		}
 		return pre_auth_code;
 	}
-	
+
 	/**
 	 * 3、使用授权码换取公众号的授权信息
 	 * @param appid
@@ -107,8 +122,8 @@ public class JwThirdAPI {
 		}
 		return result;
 	}
-	
-	
+
+
 	/**
 	 * 4、获取（刷新）授权公众号的令牌
 	 * @param apiAuthorizerToken
@@ -140,7 +155,7 @@ public class JwThirdAPI {
 		}
 		return apiGetAuthorizerRet;
 	}
-	
+
 	/**
 	 * 6、获取授权方的选项设置信息
 	 */
@@ -166,49 +181,71 @@ public class JwThirdAPI {
 	 * 8、推送component_verify_ticket协议
 	 * 9、推送取消授权通知
 	 */
-	
-	
-	
+
+
 	/**
-	 * 获取第三方平台access_token
+	 * OAuth2换取code
+	 */
+	public static String getOAuth2ComponentUrl(String targetUrl, String appid, String scope){
+		String shareurl = "";
+		String encodeTargetURL = "";
+
+		try {
+			encodeTargetURL = URLEncoder.encode(targetUrl, "UTF-8");
+		} catch (UnsupportedEncodingException arg5) {
+			arg5.printStackTrace();
+		}
+
+		shareurl = oauth2_get_code_url.replace("COMPONENT_APPID", WeixinThirdUtil.COMPONENT_APPID)
+										.replace("APPID", appid)
+										.replace("REDIRECT_URI", encodeTargetURL)
+										.replace("SCOPE", scope)
+										;
+		return shareurl;
+	}
+
+	/**
+	 * OAuth2 Code换取第三方平台access_token
 	 * @param appid
 	 * @param appscret
 	 * @return kY9Y9rfdcr8AEtYZ9gPaRUjIAuJBvXO5ZOnbv2PYFxox__uSUQcqOnaGYN1xc4N1rI7NDCaPm_0ysFYjRVnPwCJHE7v7uF_l1hI6qi6QBsA
 	 * @throws WexinReqException
 	 */
-	public static ReOpenAccessToken getAccessTokenByCode(String appid,String code,String grant_type,String component_appid,String component_access_token) throws WexinReqException{
-		String requestUrl = get_access_token_bycode_url.replace("COMPONENT_APPID", component_appid).replace("COMPONENT_ACCESS_TOKEN", component_access_token).replace("authorization_code", grant_type).replace("CODE", code).replace("APPID", appid);
+	public static ReOpenAccessToken getOAuth2ComponentAccessTokenByCode(String appid,String code,String component_appid,String component_access_token) throws WexinReqException{
+		String requestUrl = oauth2_get_access_token_bycode_url.replace("COMPONENT_APPID", component_appid).replace("COMPONENT_ACCESS_TOKEN", component_access_token).replace("CODE", code).replace("APPID", appid);
 		JSONObject result = WxstoreUtils.httpRequest(requestUrl,"GET", null);
-		ReOpenAccessToken reOpenAccessToken = (ReOpenAccessToken)JSONObject.toBean(result, OrderInfo.class);
+		ReOpenAccessToken reOpenAccessToken = (ReOpenAccessToken)JSONObject.toBean(result, ReOpenAccessToken.class);
 		if (result.has("errcode")) {
 			logger.error("获取第三方平台access_token！errcode=" + result.getString("errcode") + ",errmsg = " + result.getString("errmsg"));
 			throw new WexinReqException("获取第三方平台access_token！errcode=" + result.getString("errcode") + ",errmsg = " + result.getString("errmsg"));
 		}
 		return reOpenAccessToken;
 	}
+
 	
-	
-	 /**
-     * 发送客服消息
-     * @param obj
-     * @param ACCESS_TOKEN
-     * @return
-     */
-    public static String sendMessage(Map<String,Object> obj,String ACCESS_TOKEN){
-    	JSONObject json = JSONObject.fromObject(obj);
-    	System.out.println("--------发送客服消息---------json-----"+json.toString());
-    	// 调用接口获取access_token
-    	String url = send_message_url.replace("ACCESS_TOKEN",ACCESS_TOKEN);
-    	JSONObject jsonObject = WxstoreUtils.httpRequest(url, "POST", json.toString());
-    	return jsonObject.toString();
-    }
-    
-	
+
+
+	/**
+	 * 发送客服消息
+	 * @param obj
+	 * @param ACCESS_TOKEN
+	 * @return
+	 */
+	public static String sendMessage(Map<String,Object> obj,String ACCESS_TOKEN){
+		JSONObject json = JSONObject.fromObject(obj);
+		System.out.println("--------发送客服消息---------json-----"+json.toString());
+		// 调用接口获取access_token
+		String url = send_message_url.replace("ACCESS_TOKEN",ACCESS_TOKEN);
+		JSONObject jsonObject = WxstoreUtils.httpRequest(url, "POST", json.toString());
+		return jsonObject.toString();
+	}
+
+
 	public static void main(String[] args){
-		 
+
 		try {
 			//String s = JwThirdAPI.getPreAuthCode("wx5412820bba6f6bd6","unisk");
-			
+
 			ApiComponentToken apiComponentToken = new ApiComponentToken();
 			//apiComponentToken.setComponent_appid("wx5412820bba6f6bd6");
 			apiComponentToken.setComponent_appid("??");
