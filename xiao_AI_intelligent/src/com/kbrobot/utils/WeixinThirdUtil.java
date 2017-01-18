@@ -38,6 +38,7 @@ import com.kbrobot.entity.VoiceTemplate;
 import com.kbrobot.entity.system.WeixinConversationContent;
 import com.kbrobot.service.RobotQuestionServiceI;
 
+import net.sf.json.JSONObject;
 import weixin.guanjia.account.entity.WeixinAccountEntity;
 import weixin.guanjia.account.service.WeixinAccountServiceI;
 import weixin.guanjia.core.entity.message.resp.Article;
@@ -45,8 +46,10 @@ import weixin.guanjia.core.entity.message.resp.BaseMessageResp;
 import weixin.guanjia.core.entity.message.resp.NewsMessageResp;
 import weixin.guanjia.core.entity.message.resp.TextMessageResp;
 import weixin.guanjia.core.util.MessageUtil;
+import weixin.guanjia.core.util.WeixinUtil;
 import weixin.guanjia.message.entity.NewsItem;
 import weixin.guanjia.message.entity.TextTemplate;
+import weixin.p3.oauth2.def.WeiXinOpenConstants;
 
 @Controller
 public class WeixinThirdUtil {
@@ -195,6 +198,26 @@ public class WeixinThirdUtil {
 
 			//刷新令牌返回结果
 			ApiAuthorizerTokenRet apiAuthorizerTokenRet = JwThirdAPI.apiAuthorizerToken(apiAuthorizerToken, getComponentAccessToken());
+			
+			{
+				String jsapiticket = null;
+				String jsapi_ticket_url = WeiXinOpenConstants.JSAPI_TICKET_URL.replace("ACCESS_TOKEN", apiAuthorizerTokenRet.getAuthorizer_access_token());
+				JSONObject jsapi_ticket_json = WeixinUtil.httpsRequest(jsapi_ticket_url, "GET", null);
+				if (null != jsapi_ticket_json) {
+					try {
+						jsapiticket = jsapi_ticket_json.getString("ticket");
+						// 重置token
+						//account.setJsApiTicket(jsapiticket);
+						currentWeixinAccount.setJsApiTicket(jsapiticket);
+						// 重置事件
+						currentWeixinAccount.setJsApiTicketTime(new Date());
+					} catch (Exception e) {
+						
+					}
+				}
+			}
+			
+			
 
 			//更新authorizer_access_token与authorizer_refresh_token
 			currentWeixinAccount.setAuthorizerAccessToken(apiAuthorizerTokenRet.getAuthorizer_access_token());
