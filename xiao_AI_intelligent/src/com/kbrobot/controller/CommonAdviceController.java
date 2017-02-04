@@ -63,7 +63,6 @@ public class CommonAdviceController {
 			systemService.save(entity);
 			j.setSuccess(true);
 		}
-		
 		catch(Exception e){
 			j.setMsg("保存异常，请稍后再试");
 			j.setSuccess(false);
