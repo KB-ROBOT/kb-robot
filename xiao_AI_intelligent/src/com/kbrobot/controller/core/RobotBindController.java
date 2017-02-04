@@ -30,6 +30,7 @@ import weixin.guanjia.base.entity.Subscribe;
 import weixin.guanjia.base.service.SubscribeServiceI;
 import weixin.guanjia.menu.entity.MenuEntity;
 import weixin.guanjia.menu.service.WeixinMenuServiceI;
+import weixin.guanjia.message.entity.AutoResponse;
 import weixin.guanjia.message.entity.NewsTemplate;
 import weixin.guanjia.message.entity.TextTemplate;
 import weixin.guanjia.message.service.AutoResponseServiceI;
@@ -103,7 +104,7 @@ public class RobotBindController extends BaseController  {
 		每天的条数：*/
 
 		//关键字
-		//List<AutoResponse> autoResponseList = autoResponseService.findByProperty(AutoResponse.class, "accountId", accountId);
+		List<AutoResponse> autoResponseList = autoResponseService.findByProperty(AutoResponse.class, "accountId", accountId);
 		//推送消息
 		List<WeixinSendGroupMsgEntity> sendGroupMsgList = systemService.findByProperty(WeixinSendGroupMsgEntity.class, "accountId", accountId);
 		
@@ -122,6 +123,7 @@ public class RobotBindController extends BaseController  {
 		modelMap.put("sendGroupMsgList", sendGroupMsgList);
 		modelMap.put("menuList", menuList);
 		modelMap.put("fatherMenuList", fatherMenuList);
+		modelMap.put("autoResponseList", autoResponseList);
 
 		ModelAndView modelAndView = new ModelAndView("kbrobot/access-wx");
 		return modelAndView;
