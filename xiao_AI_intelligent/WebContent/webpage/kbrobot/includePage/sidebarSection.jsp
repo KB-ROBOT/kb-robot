@@ -131,6 +131,12 @@
 					<span>系统日志</span>
 				</a>
 			</li>
+            <li>
+				<a href="./commonBespeakController.do?bespeakList">
+					<i class="fa fa-bell-o"></i>
+					<span>预约办税</span>
+				</a>
+			</li>
 			<li>
 				<a href="help.html">
 					<i class="fa fa-wrench"></i>
