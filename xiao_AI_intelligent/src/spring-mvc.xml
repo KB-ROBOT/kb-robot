@@ -161,6 +161,10 @@
 						<value>oAuth2JumpController.do?redirectTargetUrl</value>
 						<value>oAuth2JumpController.do?redirectTargetUrl=</value>
 						<value>oAuth2JumpController.do?generateOAuth2Url</value>
+						
+						<!-- 预约办税 -->
+						<value>commonBespeakController.do?bespeakSubmit</value>
+						
 					</list>
 				</property>
 				<!-- 模糊匹配 -->
