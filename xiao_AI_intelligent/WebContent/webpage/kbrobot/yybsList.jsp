@@ -250,7 +250,7 @@
 						<div class="form-group">
 							<label class="control-label">说明：</label>
 
-							关于openId的获取，请在微信端访问这个链接：
+							关于openId的获取，请在手机微信端访问这个链接：
 							
 							<textarea class="form-control" readonly="readonly" rows="8">https://open.weixin.qq.com/connect/oauth2/authorize?appid=${weiXinAccount.accountAppid}&redirect_uri=http%3a%2f%2frobot.kb-robot.com%2foAuth2JumpController.do%3fredirectTargetUrl%26targetRedirectUrl%3dhttp%253a%252f%252flbgs.kb-robot.com%252fwebpage%252fshowOpenId.html%253ftargetOpenid%253dOPENID&response_type=code&scope=snsapi_base&state=STATE&component_appid=wx520d1bc0926617f0#wechat_redirect</textarea>
 
