@@ -5,7 +5,7 @@ body,html {background:#fff;font-family:"Microsoft YaHei"; min-height: 100%;  -we
 a{text-decoration:none;color:#333;}
 ul,li{list-style:none;}
 .wrap{position: relative;}
-.wrap .content{margin:0 10px;padding-bottom:20px;}
+.wrap .content{padding:0px 10px 50px 10px;}
 h5{text-align:center;line-height:4rem;font-size:1.4rem;font-weight:normal;}
 /*--------留言--------*/
 .leave{margin-top:30px;}
@@ -192,3 +192,24 @@ h5{text-align:center;line-height:4rem;font-size:1.4rem;font-weight:normal;}
 }
 
 .console-btn-confirm{color:#fff;}
+
+/*--------纳税顾问------*/
+.issueTit {margin: 20px 0;}
+.inforBox{padding-bottom:52px;}
+.inforBox ul{padding:10px;border:1px solid #dedede;}
+.inforNav{display:block;height: 40px;padding: 10px;line-height: 40px;border-bottom:1px solid #dedede;position:relative;}
+.inforNav span{font-size:14px;}
+.inactive i{display:inline-block;width:30px;height:30px;position:absolute;right:0;}
+.inforBox em{float:right;}
+.inactive i{background:url(../images/right.png) no-repeat center bottom;background-size:50%;}
+.inactives i{background:url(../images/bottom.png) no-repeat center bottom;background-size:50%;}
+
+.inforDiv{background:#f7f7f7;padding:0px 20px 20px 0px;display:none;}
+.inforBox ul.inforDiv{border:none;}
+.inforDiv li{overflow:hidden;padding:10px;border-bottom:1px dashed #ddd;}
+.auth{display:block;float:left;width:80px;height:80px;border-radius:50%;overflow:hidden;margin-right:10px;}
+.auth img{width:100%;border-radius:50%;}
+.tel h2{font-size:16px;font-weight:normal;}
+.tel p{margin-top:10px;font-size:14px;}
+.tel p img{width:24px;height:24px;float:left;margin-right:3px;}
+.preface{padding:15px;text-indent:2em;border-bottom:1px solid #dedede;}
