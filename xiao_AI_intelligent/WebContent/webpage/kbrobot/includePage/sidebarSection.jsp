@@ -98,12 +98,22 @@
 
 				</ul>
 			</li>
-			<li>
-				<a href="customServiceController.do?sustomServiceList">
+            <li>
+				<a href="javascript:;" class="submenu">
 					<i class="fa fa-group"></i>
 					<span>人工客服</span>
+					<font class="fa fa-angle-right"></font>
 				</a>
+				<ul>
+					<li>
+						<a href="customServiceController.do?sustomServiceList">微信客服</a>
+					</li>
+					<li>
+						<a href="commonCallServiceController.do?callServiceList">电话客服</a>
+					</li>
+				</ul>
 			</li>
+            
 			<li>
 				<a href="javascript:;" class="submenu">
 					<i class="fa fa-comment-o"></i>

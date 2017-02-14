@@ -106,6 +106,15 @@
 		        }
 			});
 		});
+		
+		//导出
+		$(".bespeakExport").click(function(){
+			var searchParam = $("input[name=searchParam]").val();
+			var searchKey = $("select[name=searchKey]").val();
+			//
+			$("#search_form").attr("action","commonBespeakController.do?exportXls").submit();
+			
+		});
 	});
 </script>
 
@@ -141,7 +150,7 @@
 										</div>
 										<div class="col-sm-3">
 											<div class="btn-group">
-												<button type="button" class="btn btn-success visitDataSearch">
+												<button type="button" class="btn btn-success bespeakExport">
 													<i class="fa fa-files-o"></i>&nbsp;导出
 												</button>
 											</div>
@@ -172,8 +181,7 @@
 
 							<div class="col-lg-12">
 								<div class="col-sm-3">
-									<br/>
-									当前预约信息接收微信：${customerBespeakSetEntity.name }  (
+									<br /> 当前预约信息接收微信：${customerBespeakSetEntity.name } (
 									<a href="javascript:;" class="bespeakEdit">点此修改</a>
 									)
 								</div>
@@ -221,7 +229,7 @@
 							</div>
 						</div>
 						<!-- 页码 -->
-						<div class="row">${questionPageList.pager.getToolsBarByUrl()}</div>
+						<div class="row">${pageList.pager.getToolsBarByUrl()}</div>
 						<!-- 页码 -->
 					</div>
 				</div>
@@ -248,10 +256,8 @@
 							<input type="text" class="form-control" name="openId" maxlength="50">
 						</div>
 						<div class="form-group">
-							<label class="control-label">说明：</label>
+							<label class="control-label">说明：</label> 关于openId的获取，请在手机微信端访问这个链接：
 
-							关于openId的获取，请在手机微信端访问这个链接：
-							
 							<textarea class="form-control" readonly="readonly" rows="8">https://open.weixin.qq.com/connect/oauth2/authorize?appid=${weiXinAccount.accountAppid}&redirect_uri=http%3a%2f%2frobot.kb-robot.com%2foAuth2JumpController.do%3fredirectTargetUrl%26targetRedirectUrl%3dhttp%253a%252f%252flbgs.kb-robot.com%252fwebpage%252fshowOpenId.html%253ftargetOpenid%253dOPENID&response_type=code&scope=snsapi_base&state=STATE&component_appid=wx520d1bc0926617f0#wechat_redirect</textarea>
 
 						</div>
