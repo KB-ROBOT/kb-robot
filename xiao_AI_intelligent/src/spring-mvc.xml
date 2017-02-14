@@ -165,6 +165,9 @@
 						<!-- 预约办税 -->
 						<value>commonBespeakController.do?bespeakSubmit</value>
 						
+						<!-- 纳税顾问 -->
+						<value>commonCallServiceController.do?callServiceLook</value>
+						
 					</list>
 				</property>
 				<!-- 模糊匹配 -->
