@@ -9,6 +9,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import org.jeecgframework.poi.excel.annotation.Excel;
 
 /**   
  * @Title: Entity
@@ -27,16 +28,22 @@ public class CustomerBespeakEntity implements java.io.Serializable {
 	/**id*/
 	private java.lang.String id;
 	/**预约办税人姓名*/
+	@Excel(exportName="预约办税人姓名",orderNum="1")
 	private java.lang.String yybsxm;
 	/**联系方式（号码）*/
+	@Excel(exportName="联系方式（号码）",orderNum="1")
 	private java.lang.String yybshm;
 	/**纳税人识别号*/
+	@Excel(exportName="纳税人识别号",orderNum="1")
 	private java.lang.String yybssbh;
 	/**预约服务项目*/
+	@Excel(exportName="预约服务项目",orderNum="1")
 	private java.lang.String yyfwxm;
 	/**预约日期*/
+	@Excel(exportName="预约日期",orderNum="1")
 	private java.lang.String yyrq;
 	/**预约时间段*/
+	@Excel(exportName="预约时间段",orderNum="1")
 	private java.lang.String yybssh;
 	/**微信公众号ID*/
 	private java.lang.String accountId;
