@@ -142,12 +142,12 @@
 							<div class="col-lg-12">
 								<div class="col-lg-8">
 									<form>
-										<div class="col-sm-3">
+										<!-- <div class="col-sm-3">
 											起始时间： <input type="text" class="form-control input-append begin_datetime" size="16" style="width: 60%; display: inline-block;">
 										</div>
 										<div class="col-sm-3">
 											结束时间： <input type="text" class="form-control input-append end_datetime" size="16" style="width: 60%; display: inline-block;">
-										</div>
+										</div> -->
 										<div class="col-sm-3">
 											<div class="btn-group">
 												<button type="button" class="btn btn-success bespeakExport">

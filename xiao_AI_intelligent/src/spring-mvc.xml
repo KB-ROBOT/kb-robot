@@ -168,6 +168,16 @@
 						<!-- 纳税顾问 -->
 						<value>commonCallServiceController.do?callServiceLook</value>
 						
+						<!-- 纳税顾问统计 -->
+						<value>commonCallServiceController.do?clickTimesCount</value>
+						
+						<!-- 课件表格下载界面 -->
+						<value>commonFileDownloadController.do?downloadExcelPage</value>
+						<value>commonFileDownloadController.do?downloadPowerPointPage</value>
+						
+						<!-- 文件下载 -->
+						<value>commonFileDownloadController.do?commonDownloadFile</value>
+						
 					</list>
 				</property>
 				<!-- 模糊匹配 -->

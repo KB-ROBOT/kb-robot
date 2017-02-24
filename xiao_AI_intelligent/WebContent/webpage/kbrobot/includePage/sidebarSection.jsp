@@ -111,6 +111,9 @@
 					<li>
 						<a href="commonCallServiceController.do?callServiceList">电话客服</a>
 					</li>
+					<li>
+						<a href="commonCallServiceController.do?goCallServiceCountPage">客服统计</a>
+					</li>
 				</ul>
 			</li>
             
@@ -126,6 +129,21 @@
 					</li>
 					<li>
 						<a href="commonReportController.do?reportMessageList">投诉举报</a>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<a href="javascript:;" class="submenu">
+					<i class="fa fa-file"></i>
+					<span>文件管理</span>
+					<font class="fa fa-angle-right"></font>
+				</a>
+				<ul>
+					<li>
+						<a href="commonFileDownloadController.do?powerPointManageList">课件管理</a>
+					</li>
+					<li>
+						<a href="commonFileDownloadController.do?excelManageList">表格管理</a>
 					</li>
 				</ul>
 			</li>

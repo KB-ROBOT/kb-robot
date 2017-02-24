@@ -15,13 +15,52 @@
 <link rel="stylesheet" type="text/css" href="plug-in/kbrobot/css/mobile.css">
 <script type="text/javascript" src="plug-in/kbrobot/js/jquery-1.10.2.js"></script>
 <script type="text/javascript" src="plug-in/kbrobot/js/sweet-alert.min.js"></script>
+
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		
+		$(".mobile,.phone").click(function(){
+			//alert($(this).attr("href"));
+			//console.log($(this).data("id"));
+			
+			var id = $(this).data("id");
+			var customerCallService = {};
+			customerCallService.id = id;
+			
+			var url = "./commonCallServiceController.do?clickTimesCount";
+			$.ajax({
+				url : url,// 请求的action路径
+				dataType : "json",
+				jsonpCallback:"callback",
+				data : customerCallService,
+				success : function(data) {
+					
+					if(data.success){
+						///location.reload();
+					}
+					else{
+						alert("操作失败，请稍后重试");
+					}
+				},
+				error:function(XMLHttpRequest, textStatus, errorThrown){
+		            console.log(textStatus);
+		        }
+			});
+		});
+		
+	});
+	
+	
+</script>
+
 </head>
 
 <body>
 	<div class="wrap">
 		<h1 class="title">
-			<img src="images/title.png">
-			<span>纳税顾问</span>
+			<!-- <img src="images/title.png"> -->
+			纳税顾问
 		</h1>
 		<p class="preface">为广大纳税人成立了专家顾问咨询团队，纳税人有相关纳税业务不熟悉的，需要咨询、需要排忧解难的，可以根据业务类别细分找的纳税顾问，进行纳税业务上的咨询。</p>
 		<div class="content">
@@ -38,17 +77,22 @@
 									<c:if test="${customerCallService.serviceType == 1 }">
 										<li>
 											<span class="auth">
-												<img src="images/women.jpg">
+												<c:if test="${customerCallService.headImg == 1}">
+													<img src="images/man.jpg">
+												</c:if>
+												<c:if test="${customerCallService.headImg == 2}">
+													<img src="images/women.jpg">
+												</c:if>
 											</span>
 											<div class="tel">
 												<h2>${ customerCallService.name }</h2>
 												<p>
 													<img src="images/call.png">
-													<a href="tel:${ customerCallService.mobile }">${ customerCallService.mobile }</a>
+													<a class="mobile" data-id="${ customerCallService.id }" href="tel:${ customerCallService.mobile }">${ customerCallService.mobile }</a>
 												</p>
 												<p>
 													<img src="images/phone.png">
-													<a href="tel:${ customerCallService.phone }">${ customerCallService.phone }</a>
+													<a class="phone" data-id="${ customerCallService.id }"  href="tel:${ customerCallService.phone }">${ customerCallService.phone }</a>
 												</p>
 											</div>
 										</li>
@@ -68,17 +112,22 @@
 									<c:if test="${customerCallService.serviceType == 2 }">
 										<li>
 											<span class="auth">
-												<img src="images/women.jpg">
+												<c:if test="${customerCallService.headImg == 1}">
+													<img src="images/man.jpg">
+												</c:if>
+												<c:if test="${customerCallService.headImg == 2}">
+													<img src="images/women.jpg">
+												</c:if>
 											</span>
 											<div class="tel">
 												<h2>${ customerCallService.name }</h2>
 												<p>
 													<img src="images/call.png">
-													<a href="tel:${ customerCallService.mobile }">${ customerCallService.mobile }</a>
+													<a class="mobile" data-id="${ customerCallService.id }" href="tel:${ customerCallService.mobile }">${ customerCallService.mobile }</a>
 												</p>
 												<p>
 													<img src="images/phone.png">
-													<a href="tel:${ customerCallService.phone }">${ customerCallService.phone }</a>
+													<a class="phone" data-id="${ customerCallService.id }"  href="tel:${ customerCallService.phone }">${ customerCallService.phone }</a>
 												</p>
 											</div>
 										</li>
@@ -98,17 +147,22 @@
 									<c:if test="${customerCallService.serviceType == 3 }">
 										<li>
 											<span class="auth">
-												<img src="images/women.jpg">
+												<c:if test="${customerCallService.headImg == 1}">
+													<img src="images/man.jpg">
+												</c:if>
+												<c:if test="${customerCallService.headImg == 2}">
+													<img src="images/women.jpg">
+												</c:if>
 											</span>
 											<div class="tel">
 												<h2>${ customerCallService.name }</h2>
 												<p>
 													<img src="images/call.png">
-													<a href="tel:${ customerCallService.mobile }">${ customerCallService.mobile }</a>
+													<a class="mobile" data-id="${ customerCallService.id }" href="tel:${ customerCallService.mobile }">${ customerCallService.mobile }</a>
 												</p>
 												<p>
 													<img src="images/phone.png">
-													<a href="tel:${ customerCallService.phone }">${ customerCallService.phone }</a>
+													<a class="phone" data-id="${ customerCallService.id }"  href="tel:${ customerCallService.phone }">${ customerCallService.phone }</a>
 												</p>
 											</div>
 										</li>
@@ -128,17 +182,22 @@
 									<c:if test="${customerCallService.serviceType == 4 }">
 										<li>
 											<span class="auth">
-												<img src="images/women.jpg">
+												<c:if test="${customerCallService.headImg == 1}">
+													<img src="images/man.jpg">
+												</c:if>
+												<c:if test="${customerCallService.headImg == 2}">
+													<img src="images/women.jpg">
+												</c:if>
 											</span>
 											<div class="tel">
 												<h2>${ customerCallService.name }</h2>
 												<p>
 													<img src="images/call.png">
-													<a href="tel:${ customerCallService.mobile }">${ customerCallService.mobile }</a>
+													<a class="mobile" data-id="${ customerCallService.id }" href="tel:${ customerCallService.mobile }">${ customerCallService.mobile }</a>
 												</p>
 												<p>
 													<img src="images/phone.png">
-													<a href="tel:${ customerCallService.phone }">${ customerCallService.phone }</a>
+													<a class="phone" data-id="${ customerCallService.id }"  href="tel:${ customerCallService.phone }">${ customerCallService.phone }</a>
 												</p>
 											</div>
 										</li>
@@ -164,17 +223,22 @@
 									<c:if test="${customerCallService.serviceType == 5 }">
 										<li>
 											<span class="auth">
-												<img src="images/women.jpg">
+												<c:if test="${customerCallService.headImg == 1}">
+													<img src="images/man.jpg">
+												</c:if>
+												<c:if test="${customerCallService.headImg == 2}">
+													<img src="images/women.jpg">
+												</c:if>
 											</span>
 											<div class="tel">
 												<h2>${ customerCallService.name }</h2>
 												<p>
 													<img src="images/call.png">
-													<a href="tel:${ customerCallService.mobile }">${ customerCallService.mobile }</a>
+													<a class="mobile" data-id="${ customerCallService.id }" href="tel:${ customerCallService.mobile }">${ customerCallService.mobile }</a>
 												</p>
 												<p>
 													<img src="images/phone.png">
-													<a href="tel:${ customerCallService.phone }">${ customerCallService.phone }</a>
+													<a class="phone" data-id="${ customerCallService.id }"  href="tel:${ customerCallService.phone }">${ customerCallService.phone }</a>
 												</p>
 											</div>
 										</li>
@@ -194,17 +258,22 @@
 									<c:if test="${customerCallService.serviceType == 6 }">
 										<li>
 											<span class="auth">
-												<img src="images/women.jpg">
+												<c:if test="${customerCallService.headImg == 1}">
+													<img src="images/man.jpg">
+												</c:if>
+												<c:if test="${customerCallService.headImg == 2}">
+													<img src="images/women.jpg">
+												</c:if>
 											</span>
 											<div class="tel">
 												<h2>${ customerCallService.name }</h2>
 												<p>
 													<img src="images/call.png">
-													<a href="tel:${ customerCallService.mobile }">${ customerCallService.mobile }</a>
+													<a class="mobile" data-id="${ customerCallService.id }" href="tel:${ customerCallService.mobile }">${ customerCallService.mobile }</a>
 												</p>
 												<p>
 													<img src="images/phone.png">
-													<a href="tel:${ customerCallService.phone }">${ customerCallService.phone }</a>
+													<a class="phone" data-id="${ customerCallService.id }"  href="tel:${ customerCallService.phone }">${ customerCallService.phone }</a>
 												</p>
 											</div>
 										</li>
@@ -226,17 +295,22 @@
 									<c:if test="${customerCallService.serviceType == 7 }">
 										<li>
 											<span class="auth">
-												<img src="images/women.jpg">
+												<c:if test="${customerCallService.headImg == 1}">
+													<img src="images/man.jpg">
+												</c:if>
+												<c:if test="${customerCallService.headImg == 2}">
+													<img src="images/women.jpg">
+												</c:if>
 											</span>
 											<div class="tel">
 												<h2>${ customerCallService.name }</h2>
 												<p>
 													<img src="images/call.png">
-													<a href="tel:${ customerCallService.mobile }">${ customerCallService.mobile }</a>
+													<a class="mobile" data-id="${ customerCallService.id }" href="tel:${ customerCallService.mobile }">${ customerCallService.mobile }</a>
 												</p>
 												<p>
 													<img src="images/phone.png">
-													<a href="tel:${ customerCallService.phone }">${ customerCallService.phone }</a>
+													<a class="phone" data-id="${ customerCallService.id }"  href="tel:${ customerCallService.phone }">${ customerCallService.phone }</a>
 												</p>
 											</div>
 										</li>

@@ -213,3 +213,17 @@ h5{text-align:center;line-height:4rem;font-size:1.4rem;font-weight:normal;}
 .tel p{margin-top:10px;font-size:14px;}
 .tel p img{width:24px;height:24px;float:left;margin-right:3px;}
 .preface{padding:15px;text-indent:2em;border-bottom:1px solid #dedede;}
+
+/*---------表格下载---------*/
+.search{width: 90%;
+    height: 30px;line-height:30px;
+    border: 1px solid #dedede;
+    margin: 10px auto;
+    border-radius: 3px;text-align:center;}
+.search input{width:85%;border:none;height:30px;line-height:30px;padding-left:10px;}
+.search a{display:inline-block;width:15%;height:30px;background:#3fb2f3;border-radius: 0px 3px 3px 0px;float:right;color:#fff;}
+.downBox{padding:10px;border: 1px solid #a7a7a7;margin:20px auto;}
+.downList li{height:40px;padding:10px 0px;border-bottom:1px solid #dedede;line-height:40px;}
+.downList li p{width:80%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;float:left;}
+.downList li a{display:inline-block;width:40px;height:40px;background:#3fb2f3;color:#fff;text-align:center;line-height:40px;float:right;padding:0 10px;border-radius:5px;}
+

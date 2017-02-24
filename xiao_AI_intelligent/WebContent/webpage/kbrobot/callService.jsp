@@ -180,7 +180,11 @@
 					</div>
 					<div class="form-group">
 						<label class="control-label">头像：</label> 
-						<input type="text" class="form-control" name="headImg" required="required" maxlength="10">
+						<!-- <input type="text" class="form-control" name="headImg" required="required" maxlength="10"> -->
+						<select class="form-control" required="required" name="headImg">
+							<option value="1">男</option>
+							<option value="2">女</option>
+						</select>
 					</div>
 					<div class="form-group">
 						<label class="control-label">电话号码：</label> 

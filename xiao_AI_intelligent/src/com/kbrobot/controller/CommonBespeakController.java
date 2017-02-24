@@ -296,10 +296,7 @@ public class CommonBespeakController {
 			// 根据浏览器进行转码，使其支持中文文件名
 			String browse = BrowserUtils.checkBrowse(request);
 			if ("MSIE".equalsIgnoreCase(browse.substring(0, 4))) {
-				response.setHeader("content-disposition",
-						"attachment;filename="
-								+ java.net.URLEncoder.encode(codedFileName,
-										"UTF-8") + ".xls");
+				response.setHeader("content-disposition","attachment;filename="+ java.net.URLEncoder.encode(codedFileName,"UTF-8") + ".xls");
 			} else {
 				String newtitle = new String(codedFileName.getBytes("UTF-8"),
 						"ISO8859-1");
