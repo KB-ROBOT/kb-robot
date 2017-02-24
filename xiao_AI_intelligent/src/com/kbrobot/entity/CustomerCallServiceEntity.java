@@ -59,6 +59,11 @@ public class CustomerCallServiceEntity implements java.io.Serializable {
 	private java.lang.String accountId;
 	
 	/**
+	 * 点击次数
+	 */
+	private Integer clickTimes;
+	
+	/**
 	 *方法: 取得java.lang.String
 	 *@return: java.lang.String  id
 	 */
@@ -190,4 +195,17 @@ public class CustomerCallServiceEntity implements java.io.Serializable {
 	public void setAccountId(java.lang.String accountId){
 		this.accountId = accountId;
 	}
+
+	@Column(name ="CLICK_TIMES",nullable=true)
+	public Integer getClickTimes() {
+		return clickTimes;
+	}
+	
+
+	public void setClickTimes(Integer clickTimes) {
+		this.clickTimes = clickTimes;
+	}
+	
+	
+	
 }
