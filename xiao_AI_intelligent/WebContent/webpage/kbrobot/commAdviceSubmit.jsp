@@ -81,8 +81,10 @@
 			var accountId = GetQueryString('accountId');
 			
 			accountId = accountId==null?'':accountId;
+			
+			var targetOpenid = GetQueryString('targetOpenid')==null?"":GetQueryString('targetOpenid');
 
-			var url = "./commonAdviceController.do?addLeaveMessage&accountId=" + accountId;
+			var url = "./commonAdviceController.do?addLeaveMessage&accountId=" + accountId + "&targetOpenid=" + targetOpenid;
 			$.ajax({
 				url : url,// 请求的action路径
 				type : 'post',

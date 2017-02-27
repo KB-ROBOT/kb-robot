@@ -68,8 +68,10 @@
 			}
 
 			var accountId = GetQueryString('accountId')==null?"":GetQueryString('accountId');
+			
+			var targetOpenid = GetQueryString('targetOpenid')==null?"":GetQueryString('targetOpenid');
 
-			var url = "./commonReportController.do?addReportMessage&accountId=" + accountId;
+			var url = "./commonReportController.do?addReportMessage&accountId=" + accountId+"&targetOpenid=" + targetOpenid;
 			$.ajax({
 				url : url,// 请求的action路径
 				type : 'post',
