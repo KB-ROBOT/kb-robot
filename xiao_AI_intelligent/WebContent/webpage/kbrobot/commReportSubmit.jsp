@@ -30,7 +30,7 @@
 				</div>
 				<div>
 					<label><font>*</font>投诉内容：</label>
-					<textarea name="content" maxlength="225">（填写的内容请包括 被投诉举报人姓名、地址等信息，这将有利于我们审查）</textarea>
+					<textarea name="content" maxlength="225">（填写的内容请包括 被投诉举报人姓名、地址等信息，这将有利于我们审查，投诉内容将会保密。）</textarea>
 				</div>
 				<a href="javascript:checkForm();" class="submit">提交</a>
 			</div>
