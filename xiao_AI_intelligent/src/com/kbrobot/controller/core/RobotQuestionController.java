@@ -43,6 +43,7 @@ import com.kbrobot.entity.RobotQuestionEntity;
 import com.kbrobot.service.RobotQuestionServiceI;
 import com.kbrobot.task.QuestionWordSplitTask;
 
+import weixin.guanjia.account.service.WeixinAccountServiceI;
 import weixin.util.DateUtils;
 
 /**   
@@ -64,6 +65,7 @@ public class RobotQuestionController extends BaseController {
 
 	@Autowired
 	private RobotQuestionServiceI robotQuestionService;
+	
 	@Autowired
 	private SystemService systemService;
 	@Autowired
@@ -130,6 +132,65 @@ public class RobotQuestionController extends BaseController {
 
 
 		return new ModelAndView("kbrobot/overview-Q&A");
+	}
+	
+	/**
+	 * 分页
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(params = "questionQuery")
+	public ModelAndView questionQuery(HttpServletRequest request){
+
+		//获取当前微信账户id
+		String accountId = request.getParameter("accountId");
+		request.setAttribute("accountId", accountId);
+		
+		//当前页码
+		String curPageNO = request.getParameter("curPageNO");
+		if(StringUtil.isEmpty(curPageNO)){
+			curPageNO = "1";
+		}
+
+		CriteriaQuery cq = new CriteriaQuery(RobotQuestionEntity.class, Integer.valueOf(curPageNO));
+		//搜索参数
+		String searchKey = request.getParameter("searchKey");
+		String searchParam = request.getParameter("searchParam");
+		String questionTitle = request.getParameter("questionTitle");
+		String questionAnswer = request.getParameter("questionAnswer");
+		
+		if(StringUtil.isNotEmpty(accountId)&&(StringUtil.isNotEmpty(searchParam)||StringUtil.isNotEmpty(questionTitle)||StringUtil.isNotEmpty(questionAnswer))){
+			if(StringUtil.isNotEmpty(searchKey)){
+				request.setAttribute("searchKey", searchKey);
+			}
+			else{
+				if(StringUtil.isNotEmpty(questionTitle)){
+					searchKey = "questionTitle";
+					request.setAttribute("searchKey", "questionTitle");
+				}
+				else if(StringUtil.isNotEmpty(questionAnswer)){
+					searchKey = "questionAnswer";
+					request.setAttribute("searchKey", "questionAnswer");
+				}
+				searchParam = StringUtil.isNotEmpty(questionTitle)?questionTitle:questionAnswer;
+			}
+			
+			request.setAttribute("searchParam", searchParam);
+			String[] searchParamArray = searchParam.split(" ");
+			//遍历参数
+			for(String param : searchParamArray){
+				cq.like(searchKey, param);
+			}
+
+			cq.eq("accountId", accountId);
+			cq.setPageSize(15);
+			cq.setMyAction("./robotQuestionController.do?questionQuery");
+			cq.addOrder("createTime", SortDirection.desc);//根据时间顺寻排序
+			cq.add();//加载条件
+			PageList questionPageList = systemService.getPageList(cq, true);
+			request.setAttribute("questionPageList", questionPageList);
+		}
+		return new ModelAndView("kbrobot/question-query");
 	}
 
 	/**
