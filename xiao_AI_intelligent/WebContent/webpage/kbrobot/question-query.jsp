@@ -71,7 +71,7 @@
 								<option value="questionTitle">问题</option>
 								<option value="questionAnswer">答案</option>
 						</select>
-						<input type="text" name="searchParam" value="${searchParam}">
+						<input type="text"  placeholder="输入多个关键词请用空格隔开" name="searchParam" value="${searchParam}">
 					</div>
 
 					<button>查询</button>
@@ -82,7 +82,7 @@
 					<li>
 						<a href="javascript:void();" class="queryTitle">
 							${status.index + 1} .&nbsp;${question.questionTitle}
-							<div>${question.questionAnswer}</div>
+							<div style="display: none;">${question.questionAnswer}</div>
 						</a>
 					</li>
 				</c:forEach>

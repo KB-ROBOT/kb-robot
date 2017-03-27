@@ -43,7 +43,7 @@ h5{text-align:center;line-height:4rem;font-size:1.4rem;font-weight:normal;}
 .tab li.curr{border-bottom:2px solid #3fb2f3;}
 
 .issueTit{margin:20px 0;position:relative;}
-.title{width:100%;background:#3fb2f3;color:#fff;text-align:center;font-size:1.2rem;font-weight:normal;line-height:60px;}
+.title{width:100%;background:#3fb2f3;color:#fff;text-align:center;font-size:1.2rem;font-weight:normal;line-height:60px;margin: 0px 0px 20px 0px;}
 .title img{position:absolute;top:6px;}
 .title span{margin-left:30px;}
 .point{display:inline-block;width:30px;height:16px;background:url(../images/hand.gif) no-repeat;margin-left:5px;}
