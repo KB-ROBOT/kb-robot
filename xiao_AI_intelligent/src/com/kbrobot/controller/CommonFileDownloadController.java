@@ -132,7 +132,7 @@ public class CommonFileDownloadController {
 		try {
 			//限制上传格式
 			if("excel".equals(fileType)){
-				document = systemService.uploadFile(uploadFile,new String[]{"xls","xlsx"});
+				document = systemService.uploadFile(uploadFile,new String[]{"xls","xlsx","doc","docx"});
 			}
 			else{
 				document = systemService.uploadFile(uploadFile,new String[]{"ppt","pptx","doc","docx"});
@@ -256,6 +256,7 @@ public class CommonFileDownloadController {
 		uploadFile.setRealPath(tsDocument.getRealpath());
 		uploadFile.setView(false);
 		uploadFile.setExtend(tsDocument.getExtend());
+		uploadFile.setTitleField(tsDocument.getAttachmenttitle());
 		
 		//commonDao 
 		try {
