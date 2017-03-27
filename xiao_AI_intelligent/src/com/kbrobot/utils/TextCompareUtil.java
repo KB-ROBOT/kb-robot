@@ -11,9 +11,9 @@ import org.json.JSONException;
 
 public class TextCompareUtil {
 	
-	/*public static void main(String args[]){
-		String str1 = "计算机是什么";
-		String str2 = "什么是呵呵";
+	public static void main(String args[]){
+		String str1 = "计算机是啥";
+		String str2 = "什么是计算机";
 		
 		try {
 			System.out.println(getSimilarScore(str1,str2));
@@ -21,11 +21,11 @@ public class TextCompareUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}*/
+	}
 	
 	/**
 	 * 比较两个文本的相似度
-	 * @param text1
+	 * @param text1	
 	 * @param text2
 	 * @return
 	 * @throws IOException 
@@ -39,12 +39,12 @@ public class TextCompareUtil {
 	}
 	
 	public static double getSimilarScore(String[] textArray1,String[] textArray2) throws JSONException, IOException{
-		Map<String, Integer> tfMap1 = getTFMap(textArray1);
-		Map<String, Integer> tfMap2 = getTFMap(textArray2);
+		//短句
+		Map<String, Integer> tfMap1 = getTFMap(textArray1.length<textArray2.length?textArray1:textArray2);
+		//长句
+		Map<String, Integer> tfMap2 = getTFMap(textArray1.length<textArray2.length?textArray2:textArray1);
 
 		Map<String, MutablePair<Integer, Integer>> tfsForward = new HashMap<String, MutablePair<Integer, Integer>>();
-		//计算第二遍
-		Map<String, MutablePair<Integer, Integer>> tfsBackward = new HashMap<String, MutablePair<Integer, Integer>>();
 
 		//计算相似度
 		for (String key : tfMap1.keySet()) {
@@ -62,26 +62,12 @@ public class TextCompareUtil {
 				pairForward.setRight(tfMap2.get(key));
 			}
 			
-			//backward
-			MutablePair<Integer, Integer> pairBackward = new MutablePair<Integer, Integer>(tfMap2.get(key), 0);  
-			tfsBackward.put(key, pairBackward);
-			
-		}
-		for(String key : tfMap1.keySet()){
-			//backward
-			MutablePair<Integer, Integer> pairBackward = tfsBackward.get(key);
-			if (null == pairBackward) {
-				pairBackward = new MutablePair<Integer, Integer>(0, tfMap1.get(key));
-			}
-			else{
-				pairBackward.setRight(tfMap1.get(key));
-			}
+			tfsForward.put(key, pairForward);
 		}
 		
 		double compareResult1 = caclIDF(tfsForward);
-		double compareResult2 = caclIDF(tfsBackward);
 		
-		return (compareResult1 + compareResult2)/2.0;
+		return compareResult1 ;
 	}
 
 	/**
@@ -102,10 +88,10 @@ public class TextCompareUtil {
 			//得出当前词是否所占词频
 			Integer count = map.get(word);
 			if (null == count) {
-				count = word.length();
+				count = 1;
 			}
 			else {
-				count = count + word.length();//以词汇的长度作为判断的参数（长词得分高，短词得分低）
+				count += 1;//以词汇的长度作为判断的参数（长词得分高，短词得分低）
 			}
 			map.put(word, count);
 		}

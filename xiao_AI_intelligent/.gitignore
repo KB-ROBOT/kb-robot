@@ -1,2 +1,8 @@
 /build/
 /bin/
+/questionList.txt
+/questionList.txt.bak1
+/.gitignore
+/questionListFull.txt
+/speechFile/
+/.settings/
