@@ -181,6 +181,9 @@
 						<!-- 问题查找 -->
 						<value>robotQuestionController.do?questionQuery</value>
 						
+						<!-- 问题请求 -->
+						<value>questionApiController.do?query</value>
+						
 					</list>
 				</property>
 				<!-- 模糊匹配 -->
