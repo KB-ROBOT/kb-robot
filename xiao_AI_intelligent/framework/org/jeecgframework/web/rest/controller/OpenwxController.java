@@ -762,10 +762,28 @@ public class OpenwxController {
 				textMessageResp.setFromUserName(toUserName);
 				textMessageResp.setToUserName(fromUserName);
 				textMessageResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
-				Map<ResultKey,Object> tulingResult = TuLingUtil.getResultBySpeakStr(content,fromUserName);//把询问人的id作为会话ID
+				
+				RobotInfoEntity robotInfoEntity = systemService.findUniqueByProperty(RobotInfoEntity.class, "weixinAccountId", toUserName);
+				
+				String tulingStr = "";
+				if(robotInfoEntity==null||robotInfoEntity.getRobotName()==null){
+					tulingStr = content;
+				}
+				else{
+					tulingStr = content.replaceAll("小AI", robotInfoEntity.getRobotName());
+				}
+				
+				
+				Map<ResultKey,Object> tulingResult = TuLingUtil.getResultBySpeakStr(tulingStr,fromUserName);//把询问人的id作为会话ID
 				if(tulingResult.get(ResultKey.resultType)==ReturnCode.TEXT){//文本
 					String resultText = tulingResult.get(ResultKey.text).toString();//文本回复
+					
+					if(robotInfoEntity!=null&&robotInfoEntity.getRobotName()!=null){
+						resultText = resultText.replaceAll("小AI", robotInfoEntity.getRobotName());
+					}
+					
 					textMessageResp.setContent(resultText);
+					
 				}
 				else if(tulingResult.get(ResultKey.resultType)==ReturnCode.LINK){//链接类型
 					String link = "<a href='"+tulingResult.get(ResultKey.url).toString()+"'>"+tulingResult.get(ResultKey.text).toString()+"</a>";
