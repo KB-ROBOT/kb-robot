@@ -54,6 +54,11 @@ public class InitListener  implements javax.servlet.ServletContextListener {
 		String path = System.getProperty("user.dir");
 		System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + path);
 		SpeechUtility.createUtility("appid=" + SpeechSynthesizerUtil.APPID);
+		
+		/**
+		 * 文本相似比较初始化
+		 *//*
+		SemanticSimilarity.getInstance();*/
 	}
 
 }

@@ -178,6 +178,9 @@
 						<!-- 文件下载 -->
 						<value>commonFileDownloadController.do?commonDownloadFile</value>
 						
+						<!-- 问题查找 -->
+						<value>robotQuestionController.do?questionQuery</value>
+						
 					</list>
 				</property>
 				<!-- 模糊匹配 -->

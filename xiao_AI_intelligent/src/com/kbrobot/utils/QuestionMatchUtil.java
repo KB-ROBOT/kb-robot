@@ -3,6 +3,7 @@ package com.kbrobot.utils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -132,6 +133,8 @@ public class QuestionMatchUtil {
 		RobotQuestionEntity selectQueston = null;//选中的问题
 
 		WeixinClientManager weixinClientManager = WeixinClientManager.instance;
+		
+		String accountId = matchResult.get(0).getAccountId();
 
 		if(matchResult.size()>1){
 			//获取对应的微信client 
@@ -154,8 +157,9 @@ public class QuestionMatchUtil {
 			if(StringUtil.isNotEmpty(robotInfo.getPhoneNumber())){
 				artificialStr += "或拨打" + robotInfo.getPhoneNumber() + "咨询人工客服。";
 			}
-			answerContent += "\n如果没有您想要的问题，请完善您的关键词。" + artificialStr;
-
+			answerContent += "\n如果没有您想要的问题，请<a href=\""+ bundler.getString("domain") +"/robotQuestionController.do?questionQuery&accountId="+ accountId +"\">点此链接</a>进行查询。" + artificialStr;
+			
+			LogUtil.info(answerContent);
 		}
 		else{
 			selectQueston = matchResult.get(0);
@@ -164,14 +168,14 @@ public class QuestionMatchUtil {
 			WeixinThirdUtil.getInstance().updateQuestionMatchTimes(selectQueston);
 		}
 
-		answerContent = answerContent==null||answerContent.equals("")?emptyAnswer:answerContent;
+		answerContent = StringUtil.isEmpty(answerContent)?emptyAnswer:answerContent;
 
 		//答案处理
 		if(answerContent.indexOf("<p>")==0&&answerContent.lastIndexOf("</p>")==(answerContent.length()-4)&&answerContent.length()>7){
 			answerContent = answerContent.substring(3, answerContent.length()-4);
 		}
 
-		if(answerContent.contains("<")||answerContent.contains(">")||(answerContent.length()>=200&&matchResult.size()<=1)){ //图文形式
+		if((answerContent.contains("<")||answerContent.contains(">")||answerContent.length()>=200)&&matchResult.size()<=1){ //图文形式
 			Article article = new Article();
 			article.setTitle(selectQueston.getQuestionTitle());
 			article.setDescription("");
@@ -189,6 +193,7 @@ public class QuestionMatchUtil {
 			articleList.add(article);
 
 			NewsMessageResp newsResp = new NewsMessageResp();
+			newsResp.setCreateTime(Long.valueOf(new Date().getTime()));
 			newsResp.setFromUserName(toUserName);
 			newsResp.setToUserName(fromUserName);
 			newsResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_NEWS);
@@ -202,6 +207,7 @@ public class QuestionMatchUtil {
 			answerContent = answerContent.replaceAll("&nbsp;", " ");
 
 			TextMessageResp textMessageResp = new TextMessageResp();
+			textMessageResp.setCreateTime(Long.valueOf(new Date().getTime()));
 			textMessageResp.setFromUserName(toUserName);
 			textMessageResp.setToUserName(fromUserName);
 			textMessageResp.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
