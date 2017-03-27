@@ -29,6 +29,10 @@
 		});
 		
 		$("select[name=searchKey]").val($("select[name=searchKey]").attr("value"));
+		
+		if($("select[name=searchKey]").val() == null){
+			$("select[name=searchKey]").val("questionTitle");
+		}
 	});
 </script>
 <style type="text/css">
